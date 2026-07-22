@@ -1,0 +1,31 @@
+[workspace]
+authors = [
+  "YOUR_NAME <YOUR_EMAIL@ucdavis.edu>"
+]
+name = "workshop_WORKSHOP_NAME"
+description = "Reader for the WORKSHOP_TITLE workshop."
+version = "2026.fall.0"  # <year>.<quarter>.<revision #>
+
+channels = ["conda-forge"]
+platforms = ["linux-64", "osx-64", "osx-arm64", "win-64"]
+
+
+[tasks]
+build = { cmd = "quarto render", description = "Build the reader." }
+publish = { cmd = "ghp-import --no-jekyll --no-history --push _build", description = "Publish the reader to the `gh-pages` branch on GitHub." }
+clean = { cmd = "rm -rf _build/", description = "Remove the build directory." }
+rebuild = { depends-on = ["clean", "build"], description = "Remove the build directory and build the reader." }
+
+
+[dependencies]
+quarto = ">=1.8.27,<2"
+ghp-import = ">=2.1.0,<3"
+r = ">=4.5,<4.6"
+
+
+[activation.env]
+# Make sure R only searches for packages within the Pixi environment.
+PIXI_R_LIBS = "$CONDA_PREFIX/lib/R/library"
+R_LIBS = "$PIXI_R_LIBS"
+R_LIBS_USER = "$PIXI_R_LIBS"
+QUARTO_R = "$CONDA_PREFIX/bin/R"

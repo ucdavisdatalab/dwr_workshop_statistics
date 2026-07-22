@@ -1,0 +1,57 @@
+# Project-specific
+_build/*
+
+# DataLab project directory structure
+data/*
+outputs/*
+
+
+# Data science software files --------------------
+
+# Pixi environments
+.pixi/*
+!.pixi/config.toml
+
+# Python
+__pycache__/
+*.py[cod]
+.python-version
+.ipynb_checkpoints
+
+# R
+*.rds
+.RData
+.Rhistory
+
+# Quarto/Bookdown files
+_main.rds
+docs/*.md
+.Rproj.user
+/.quarto/
+**/*.quarto_ipynb
+
+
+# Operating system files --------------------
+
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Thumbnails
+._*
+
+# Files that might appear in the root of a volume
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+
+# Directories potentially created on remote AFP share
+.AppleDB
+.AppleDesktop
+Network Trash Folder
+Temporary Items
+.apdisk

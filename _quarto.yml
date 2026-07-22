@@ -9,11 +9,11 @@ project:
 book:
   # Metadata (fill this in):
   author:
-    - "YOUR_NAME"
-  title: "WORKSHOP_TITLE"
-  description: "Reader for the WORKSHOP_TITLE workshop."
-  repo-url: "https://github.com/ucdavisdatalab/WORKSHOP_NAME"
-  site-url: "https://ucdavisdatalab.github.io/WORKSHOP_NAME"
+    - "Nick Ulle"
+  title: "Statistics"
+  description: "Reader for the Statistics workshop series."
+  repo-url: "https://github.com/ucdavisdatalab/dwr_workshop_statistics"
+  site-url: "https://ucdavisdatalab.github.io/dwr_workshop_statistics"
   chapters:
     - "index.qmd"
     # List your chapters in order here.

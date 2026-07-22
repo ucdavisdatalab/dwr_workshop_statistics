@@ -18,9 +18,9 @@ rebuild = { depends-on = ["clean", "build"], description = "Remove the build dir
 
 
 [dependencies]
-quarto = ">=1.8.27,<2"
+quarto = ">=1.9.38,<2"
 ghp-import = ">=2.1.0,<3"
-r = ">=4.5,<4.6"
+r-base = ">=4.6.1,<4.7"
 
 
 [activation.env]

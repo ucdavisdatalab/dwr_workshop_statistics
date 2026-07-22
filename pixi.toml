@@ -1,9 +1,9 @@
 [workspace]
 authors = [
-  "YOUR_NAME <YOUR_EMAIL@ucdavis.edu>"
+  "Nick Ulle <naulle@ucdavis.edu>"
 ]
-name = "workshop_WORKSHOP_NAME"
-description = "Reader for the WORKSHOP_TITLE workshop."
+name = "dwr_workshop_statistics"
+description = "Reader for the statistics workshop series."
 version = "2026.fall.0"  # <year>.<quarter>.<revision #>
 
 channels = ["conda-forge"]

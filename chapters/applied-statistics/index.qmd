@@ -1,0 +1,28 @@
+# Overview {.unnumbered}
+
+_Two 2-hour sessions_
+
+:::{.callout-note title="Learning Goals" collapse="false"}
+After this lesson, you should be able to:
+
+* YOUR LEARNING GOALS
+:::
+
+This workshop is an introduction to the foundations of applied statistics. By
+the end of the workshop, you’ll learn:
+
+* What’s meant by statistical “uncertainty” and “models”
+* How to quantify uncertainty about statistical estimates (such as means,
+  standard deviations, and correlations) with the bootstrap algorithm
+* How to train a linear model
+* The assumptions to check after training a linear model
+* What to do to diagnose problems with a linear model
+* How to interpret a linear model
+* An overview of strategies to select the terms in a linear model
+* The fundamental form of hypothesis tests
+* How to carry out a hypothesis test
+* Ways linear models can be generalized to datasets that don’t satisfy their
+  core assumptions
+
+We’ll continue to explore generalizations of linear models to temporal data and
+missing data in subsequent workshops.

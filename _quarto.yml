@@ -17,6 +17,18 @@ book:
   chapters:
     - "index.qmd"
     # List your chapters in order here.
+    - part: "Exploring Data"
+      chapters:
+        - "chapters/exploring-data/index.qmd"
+    - part: "Introduction to Applied Statistics"
+      chapters:
+        - "chapters/applied-statistics/index.qmd"
+    - part: "Working with Temporal Data"
+      chapters:
+        - "chapters/temporal-data/index.qmd"
+    - part: "Working with Censored Data"
+      chapters:
+        - "chapters/censored-data/index.qmd"
   appendices:
     - "chapters/references.qmd"
     - "chapters/assessment.qmd"

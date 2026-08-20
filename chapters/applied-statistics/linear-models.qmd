@@ -10,10 +10,734 @@ After this lesson, you should be able to:
 This chapter uses the following R packages:
 
 * dplyr
+* ggfortify
 * ggplot2
+* palmerpenguins
 
 For a refresher about how to install and load packages, see the
 [Packages][r-basics-packages] section of DataLab's R Basics workshop reader.
 
 [r-basics-packages]: https://ucdavisdatalab.github.io/dwr_workshop_r_basics/chapters/getting-started/getting-started.html#sec-packages
 :::
+
+
+We often want to study features together to make sense of the underlying
+relationship. 
+
+A common application of statistics is to study relationships between features.
+@sec-relationships-between-features introduced visualizations and the
+correlation statistic for this purpose.
+When the
+relationship between two or more features roughly follows a straight line, we
+can fit a **linear model** that estimates the line's intercept and slope.
+
+
+## Fitting a Model
+
+Let's examine the Palmer Penguins dataset (@sec-dataset-palmer-penguins) once
+again. As a reminder, the structure is:
+
+```{r}
+#| warning: false
+library("palmerpenguins")
+
+str(penguins)
+```
+
+For now, we'll focus on the `flipper_length_mm` and `body_mass_g` features. It
+makes sense that they might have some relationship---maybe that penguins with
+higher body mass tend to have longer flippers. Let's use the dataset to try to
+determine whether this is true. First, we'll filter out all of the rows where
+one or both of the features are missing, since they can't help us understand
+the relationship:
+
+```{r}
+#| warning: false
+library("dplyr")
+
+penguins_tidy = filter_out(
+  penguins, is.na(flipper_length_mm), is.na(body_mass_g)
+)
+```
+
+Following the advice of @sec-relationships-between-features, let's make a
+scatter plot of the two features:
+
+```{r}
+#| warning: false
+#| label: fig-flipper_length_mm-body_mass_g
+library("ggplot2")
+
+ggplot(penguins) +
+  aes(x = flipper_length_mm, y = body_mass_g) +
+  geom_point()
+```
+
+@fig-flipper_length_mm-body_mass_g shows that we were correct to think that
+body mass and flipper length increase together. In fact, the points in this
+sample almost seem to follow a straight line. The line can't pass through every
+point because of indivdual variation among the penguins, but it can capture the
+general trend or pattern in the points. Whatever line we draw is a **linear
+model**: a line that approximates the relationship between features.
+
+We can make the linear model concrete by writing the equation for the line. A
+line always has an intercept, which we'll denote by $\beta_0$, and slope, which
+we'll denote by $\beta_1$. Then we can write:
+
+$$
+(\textrm{body mass})
+= \beta_0 + \beta_1(\textrm{flipper length})
+$$
+
+One way to interpret this equation is that the feature on the left-hand side is
+fully determined by the right-hand side. In this interpretation, we call the
+feature on the left-hand side the **response** and each feature on the
+right-hand side a **predictor**. For our model, body mass is the response and
+flipper length is a predictor.
+
+:::{.callout-note title="Note: Alternative Terminology" collapse="true"}
+We'll refer to the feature on the left-hand side as "the response" and each
+feature on the right-hand side as a "predictor" or simply a "feature." However,
+there are many other names for these, and the names are often
+discipline-specific.
+
+The feature on the left-hand side is sometimes called the **dependent** or
+**endogenous** feature.
+
+A feature on the right-hand side is sometimes called a **covariate**, or an
+**independent** or **exogenous** feature.
+:::
+
+:::{.callout-warning}
+Despite the predictor-response interpretation, a linear model alone can't tell
+us whether a relationship between features is causal. To conclude that flipper
+length causes body mass (or vice-versa), we'd have to make additional
+assumptions.
+
+For an introduction to causal inference, see "Part 5: Causal Inference" of
+[_Regression and Other Stories_][ros] [@gelman2020].
+:::
+
+Due to indivdual variation among the penguins, the line can't pass through
+every observation (and might not pass through any!). To account for this, we
+can include a **residual** (or error) term in the model:
+
+$$
+(\textrm{body mass})
+= \beta_0 + \beta_1(\textrm{flipper length}) + (\textrm{residual})
+$$
+
+The residual is a reminder that this is just a model.
+
+Writing the linear model in terms of variables makes it more general (because
+the variables can refer to any features from any dataset) and also more
+convenient to work with mathematically. Let $(x_i, y_i)$ denote observations
+(with two features) and $\epsilon_i$ denote residuals, for $i = 1, \dots, n$.
+Then we can write the model as:
+
+$$
+y_i = \beta_0 + \beta_1 x_i + \epsilon_i
+$$
+
+This notation is the convention in statistics.
+
+:::{.callout-note title="Note: Hat Notation"}
+Another statsitics convention is to write a "hat" above variables that are
+estimators or estimates (including predictions). So we can write the model's
+prediction for $y_i$ as
+
+$$
+\hat{y}_i = \beta_0 + \beta_1 x_i
+$$
+
+We can also use this notation for parameter estimates. For instance,
+$\hat{\mu}$ denotes an estimate for a distribution parameter $\mu$.
+:::
+
+There are many different ways we can chose the intercept $\beta_0$ and slope
+$\beta_1$ for the line. The most widely-used approach, called **ordinary least
+squares** is to choose them to minimize the **residual sum of squares**
+$SS_\epsilon$, defined as
+
+$$
+\textrm{SS}_\epsilon
+= \sum_{i=1}^n \epsilon_i^2
+= \sum_{i=1}^n (y_i - \hat{y}_i)^2
+= \sum_{i=1}^n \left[ y_i - (\beta_0 + \beta_1 x_i) \right]^2
+$$
+
+<!-- TODO: say more about this? MLE? -->
+
+
+In R, we can use the `lm` function to fit a linear model by least squares. The
+function's first argument must be a relationship between features, written with
+a tilde `~` instead of an equals sign. The intercept is included implicitly,
+but you can make it explicit by writing it as a `1` (imagine it as a
+coefficient for a column of ones). In R's class system, this is called a
+`formula`.
+
+The second argument must be a dataset that contains the aforementioned
+features.
+
+So the code to fit the body mass linear model for the penguins dataset is:
+
+```{r}
+model = lm(body_mass_g ~ flipper_length_mm, penguins_tidy)
+model
+```
+
+We can use the `summary` function to get more details about the model:
+
+```{r}
+summary(model)
+```
+
+Let's go through the model summary a few lines at a time. It begins with the R
+code we used to fit the model:
+
+```{.text}
+Call:
+lm(formula = body_mass_g ~ flipper_length_mm, data = penguins_tidy)
+```
+
+Next, it lists the quartiles of the residuals:
+
+```{.text}
+Residuals:
+     Min       1Q   Median       3Q      Max
+-1058.80  -259.27   -26.88   247.33  1288.69
+```
+
+The distribution of the residuals is an important source of diagnostic
+information for linear models, but visualizations are almost always easier to
+interpret than quartiles. @sec-model-diagnostics explains how to make and
+interpret plots of the residuals, as well as other diagnostics.
+
+After the residual quartiles, the summary lists the coefficients in a table:
+
+```{.text}
+Coefficients:
+                   Estimate Std. Error t value Pr(>|t|)
+(Intercept)       -5780.831    305.815  -18.90   <2e-16 ***
+flipper_length_mm    49.686      1.518   32.72   <2e-16 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+```
+
+Each row of the table corresponds to one term in the model. The first is
+typically the intercept $\beta_0$. The remaining rows correspond to features.
+The columns contain an estimate of the coefficient, an estimate of its standard
+error, and two columns related to hypothesis testing. We'll examine these last
+two columns in @sec-hypothesis-tests-for-models.
+
+Finally, the summary lists several statistics about the model as a whole,
+beginning with:
+
+```{.text}
+Residual standard error: 394.3 on 340 degrees of freedom
+```
+
+Residual standard error is the sample standard deviation of the residuals (with
+a statistical correction for the number of terms being estimated in the model).
+Recall that standard deviation is approximately the mean distance to the mean.
+In a linear model with an intercept, the residuals always have mean 0
+($\bar{\epsilon} = 0$), so the residual standard error is approximately the
+mean distance between the actual responses and the fitted line.
+
+:::{.callout-note title="Definition: Residual Standard Deviation" collapse="true"}
+The sample variance of the residuals for a linear model with $k$ terms
+(including the intercept) is defined as
+
+$$
+s_\epsilon^2
+= \frac{\textrm{SS}_\epsilon}{n - k}
+= \frac{1}{n - k} \sum_{i=1}^n (\epsilon_i - 0)^2
+$$
+
+Think of this as the variance in the sample that's not explained by the model.
+
+The sample standard deviation of the residuals $s_\epsilon$ is the square root
+of $s_\epsilon^2$.
+:::
+
+:::{.callout-note title="Note: The Name \"Residual Standard Error\"" collapse="true"}
+The name "residual standard error" is an R invention. Standard error refers to
+the standard deviation of an estimator across many samples, but there's no
+estimator and no resampling at work here. The R documentation even notes that
+this name is inappropriate (in `?sigma`).
+
+Appropriate names include "standard deviation of the residuals" and "residual
+standard deviation" among others.
+
+See [this StackOverflow post][so-rse] for additional discussion.
+
+[so-rse]: https://stats.stackexchange.com/questions/144433/why-do-we-say-residual-standard-error
+:::
+
+```{.text}
+Multiple R-squared:  0.759, Adjusted R-squared:  0.7583
+```
+
+The R-squared statistics, conventionally denoted by $R^2$ and
+$R_\textrm{adj}^2$, are ratios of variance in the response that's explained by
+the model to total variance.
+
+R-squared $R^2$ is always between 0 and 1. Values closer to 1 indicate that the
+model explains more of the variance in the response. R-squared is
+non-decreasing as more terms are included in the model, because more terms
+means more flexibility to fit the observations. This is a limitation: we can't
+use R-squared to decide how many terms to include in the model, because it will
+always suggest more terms are better.
+
+Adjusted R-squared $R_\textrm{adj}^2$ decreases when terms with weak
+explanatory power are added to the model, so it tends to be more useful than
+ordinary R-squared $R^2$. Its value can sometimes be smaller than 0.
+
+:::{.callout-note title="Definition: R-Squared Statistics" collapse="true"}
+The R-squared statistics are based on the idea that the variance of the
+response $y_i$ can be partitioned into two meaningful parts: variance explained
+by the model and unexplained variance from other, often unknown, processes.
+
+Mathematically, variance is a sum of squares. The **total sum of squares** for
+the response $y_i$ is defined as
+
+$$
+\textrm{SS}
+= \sum_{i=1}^n (y_i - \bar{y})^2
+= (n - 1) s^2
+$$
+
+Notice that the total sum of squares is part of and proportional to the sample
+variance $s^2$ (@sec-standard-deviation).
+
+We can partition the total sum of squares into two parts, the **explained sum
+of squares** $\textrm{SS}_\textrm{model}$ and the residual sum of squares
+$\textrm{SS}_\epsilon$:
+
+$$
+\textrm{SS}
+= \textrm{SS}_\textrm{model} + \textrm{SS}_\epsilon
+= \sum_{i=1}^n (\hat{y}_i - \bar{y})^2 + \sum_{i=1}^n (y_i - \hat{y}_i)^2
+$$
+
+Then R-squared $R^2$ is defined in terms of the sums of squares as
+
+$$
+R^2
+= 1 - \frac{\textrm{SS}_\epsilon}{\textrm{SS}}
+= \frac{\textrm{SS}_\textrm{model}}{\textrm{SS}}
+$$
+
+For a model with $k$ terms (excluding the intercept), the adjusted R-squared
+$R_\textrm{adj}^2$ is defined as
+
+$$
+R_\textrm{adj}^2
+= 1 - \frac{\textrm{SS}_\epsilon}{n - k - 1} \cdot \frac{n - 1}{\textrm{SS}}
+= 1 - \frac{s_\epsilon^2}{s^2}
+$$
+
+The denominator $n - k - 1$ accounts for the number of terms in the model.
+:::
+
+R-squared, whether adjusted or not, mostly tells us about how well the model
+fits *the sample*. A model that fits a sample well might not fit the population
+well, and a model that fits the population well might not fit a sample well.
+Moreover, for some populations, observations are always noisy (accurate
+measurement is difficult). Then R-squared can be large even if the model fits
+the population well.
+
+:::{.callout-warning}
+Treat R-squared as one statistic among many when examining a model.
+
+To estimate how well a model will generalize, use other methods specifically
+designed for that purpose, such as cross-validation.
+:::
+
+
+```{.text}
+F-statistic:  1071 on 1 and 340 DF,  p-value: < 2.2e-16
+```
+
+The F statistic is the ratio of variance in the response that's explained by
+the model to unexplained variance. The F statistic is always positive.
+
+The F statistic is also the relative difference between the residual sum of
+squares (unexplained variance) for a simplified model with only an intercept
+(the same as predicting the response with the sample mean) and for the fitted
+model. This perspective is helpful for interpreting the statistic: larger
+values indicate that the fitted model is better at explaining the variance of
+the response than the simplified model.
+
+:::{.callout-note title="Definition: F Statistic" collapse="true"}
+For a model with $k$ terms (excluding the intercept), the F statistic is
+defined as
+
+$$
+F
+= \frac{\textrm{SS}_\textrm{model}} {\textrm{SS}_\epsilon}
+  \cdot \frac{n - k - 1} {k}
+= \frac{\textrm{SS} - \textrm{SS}_\epsilon}{\textrm{SS}_\epsilon}
+  \cdot \frac{n - k - 1}{k}
+$$
+:::
+
+The F statistic is primarily used for a hypothesis test where the null
+hypothesis is that the model coefficients (excluding the intercept) are all 0.
+As @gelman2020 points out, this null hypothesis is unrealistic---if we believe
+it's plausible that a feature is entirely unrelated to the response, we
+shouldn't include it in the model in the first place. The F test is often used
+to decide whether a model with fewer features might be more appropriate, but
+there are better approaches, such as examining standard errors for the
+coefficient estimates to decide whether the estimates are too imprecise to be
+useful.
+
+:::{.callout-warning}
+As with R-squared, treat the F statistic as one statistic among many when
+examining a model.
+:::
+
+:::{.callout-important}
+Treat every model as a simplification of reality. Statistics can help us
+understand how well a model describes data, but can't tell us whether a model
+is "correct" (and it's unclear what it means for a simplification to be
+"correct" anyway).
+:::
+
+
+## Model Assumptions {#sec-model-assumptions}
+
+A linear model involves many assumptions about the features being modeled and
+the dataset used to fit the model. @gelman2020 lists these assumptions (from
+most to least important):
+
+1. Validity: the response should measure what you actually want to study, the
+   model should include all relevant features, and the model should generalize
+   well. For instance, a model for blood pressure should not be treated as a
+   model for general health unless this can be justified by expert knowledge.
+
+2. Representativeness: the dataset you use to train the model should be
+   representative of the population to which you want the model to generalize.
+   For example, a model for how long people can hold their breath should not be
+   based on a sample of Olympic swimmers. On the other hand, a representative
+   sample might include a few Olympic swimmers, because they're people too!
+
+3. Linearity: the relationship between the response and the features _in the
+   model_ should be roughly linear. Often the relationship between the response
+   and the features _in the dataset_ isn't linear, but it's possible to
+   transform the features (or the response) to get a linear relationship.
+
+   When the relationship is not linear, it's often possible
+   to transform the response or the features to get a linear relationship.
+
+4. Independence of errors: the residual for one observation should not depend
+   on the residuals of others. This assumption means linear models are
+   incompatible with most temporal and spatial datasets, although there are
+   modifications we can make to accomodate these kinds of datasets.
+
+5. Equal variance of errors: the residuals should all have the same standard
+   deviation. When they don't, then the model is worse at predicting for some
+   inputs than others. One way to address this is by using weighted least
+   squares to fit the model rather than ordinary least squares.
+
+6. Normality of errors: the residuals should be have a normal distribution.
+   This is assumption really only necessary for hypothesis testing (with
+   CLT-based methods); it doesn't matter for the coefficient estimates. This
+   assumption is sometimes misinterpreted to mean that the response must have a
+   normal distribution, which is not true.
+
+Check these assumptions before and after fitting a linear model. The first two
+assumptions are really about the research question and data collection process,
+so failing to satisfy them usually can't be fixed by changing the model. On the
+other hand, the last four assumptions relate to the model directly, and failing
+to satisfy them can sometimes be fixed by changing the model.
+
+@sec-model-diagnostics describes how to check some of these assumptions with
+model diagnostics.
+
+:::{.callout-tip}
+Many kinds of non-linear relationships can be made linear with transformations.
+
+For example, suppose that the true relationship between two features $x_i$ and
+$y_i$ is quadratic:
+
+$$
+y_i = \beta_0 + \beta_1 x_i^2 + \epsilon_i
+$$
+
+From another perspective, the relationship between $y_i$ and $x_i^2$ is linear.
+So if the dataset only includes $x_i$, square it to get $x_i^2$ and use this
+new feature in the linear model.
+
+Choosing appropriate transformations can be difficult in practice, because we
+rarely know the true nature of the relationship. Fortunately, relationships
+that a model fails to account for typically show up as patterns in its
+residuals. We can use the residuals to decide if and how features should be
+transformed (see @sec-model-diagnostics).
+:::
+
+
+## Model Diagnostics {#sec-model-diagnostics}
+
+Most of the information about how well a model fits is in the residuals, since
+the residuals measure what the model got wrong. We can make a variety of plots
+based on the residuals to check whether the assumptions from
+@sec-model-assumptions are satisfied and whether there are any other problems.
+
+For a linear model with only one feature, a good diagnostic starting point is
+to plot the feature against the residuals. This is called a **residual plot**.
+Patterns in the residual plot can reveal problems with linearity, independence
+of errors, and equal variance of errors. Let's make this plot for the penguins
+dataset and model.
+
+In R, the `predict` function returns predictions from a model. Absent any
+additional arguments, it returns predictions for the dataset used to fit the
+model. So to get the predictions for the penguins dataset:
+
+```{r}
+penguins_tidy$predicted_body_mass_g = predict(model)
+```
+
+We can use the predictions to calculate the residuals, in order to plot the
+residuals against the flipper length feature:
+
+```{r}
+#| label: fig-residuals_flipper_length_mm
+#| fig-cap: >
+#|    Flipper length versus residuals for the penguin body mass linear model.
+ggplot(penguins_tidy) +
+  aes(x = flipper_length_mm, y = body_mass_g - predicted_body_mass_g) +
+  geom_point()
+```
+
+:::{.callout-tip}
+The `resid` function returns the residuals from a model. It's a convenient
+alternative to computing the residuals from the predictions.
+:::
+
+For a dataset and model that satisfy the assumptions (@sec-model-assumptions),
+the residuals should be centered on 0 (mean 0) and should not exhibit any
+patterns. Two kinds of patterns are especially important:
+
+* A trend in the residuals (that is, a line or curve that they follow). This
+  usually means that the linearity assumption isn't satisfied.
+* A "fan" or other shape in the range of the residuals. This usually means that
+  the equal variance assumption isn't satisfied.
+
+The residual plot will also exhibit patterns when the independence assumption
+isn't satisfied, but many different patterns are possible depending on the
+nature of the dependence.
+
+For the penguins dataset and model, the residuals in
+@fig-residuals_flipper_length_mm don't exhibit any strong patterns. The
+residuals are centered at 0, don't have an obvious trend, and range from about
+-1,000 to 1,000 across most of the feature values. So this linear model seems
+to satisfy the assumptions well, although it's certainly possible there are
+better models.
+
+For models with multiple features, we can plot each feature against the
+residuals. We can also plot the predictions against the residuals. These plots
+are all residual plots, and the interpretation is the same as for a model with
+a single feature. Let's plot the predictions against the residuals for the
+penguins model:
+
+```{r}
+#| label: fig-residuals_predicted_penguin
+#| fig-cap: >
+#|    Predictions versus residuals for the penguin body mass linear model.
+ggplot(penguins_tidy) +
+  aes(x = predicted_body_mass_g, y = body_mass_g - predicted_body_mass_g) +
+  geom_point()
+```
+
+Notice that @fig-residuals_flipper_length_mm and
+@fig-residuals_predicted_penguin only differ in the values on the x-axis. This
+is always the case for a model with a single feature. For models with multiple
+features, the residual plots for individual features will not necessarily be
+the same as the plot of predictions versus residuals.
+
+Most statistical software, including R, provide three more diagnostic plots for
+linear models:
+
+* The **normal quantile-quantile plot** (normal QQ plot) displays the quantiles
+  of a normal distribution against the quantiles of the residuals. QQ plots are
+  helpful for checking how similar two distributions are, because similar
+  distributions will have similar quantiles. For a linear model, we can use the
+  normal QQ plot to check the normality assumption. The normal QQ plot is less
+  important than other diagnostics, because the normality assumption is less
+  important than the other assumptions.
+* The **scale-location plot** displays the predictions against the square root
+  of the standardized residuals. This is a transformation of the residual plot,
+  so the interpretation is the same; the transformation simply makes some
+  patterns easier to notice.
+* The **leverage plot** displays a statistic called leverage against the
+  residuals. Leverage is a measure of how far away each observation in the
+  dataset is from the others. Observations with high leverage may be outliers
+  and may have undue influence over the linear model (similar to how extreme
+  values affect the sample mean).
+
+In R, we can use the ggfortify package's `autoplot` function to make all four
+diagnostic plots for a model:
+
+```{r}
+#| warning: false
+#| label: fig-body_mass_g-diagnostics
+#| fig-cap: >
+#|    Diagnostic plots for the penguin body mass linear model. Clockwise from
+#|    the top left, they are the residual plot, normal QQ plot, leverage plot,
+#|    and scale-location plot.
+library("ggfortify")
+
+autoplot(model)
+```
+
+:::{.callout-note title="Note: R's Built-in Diagnostic Plots" collapse="true"}
+Instead of using the ggfortify package, to make diagnostic plots for a model
+with ggplot2, it's also possible to make diagnostic plots with R's built-in
+`plot` function:
+
+```{r}
+plot(model)
+```
+:::
+
+The diagnostic plots in @fig-body_mass_g-diagnostics suggest that overall, the
+model fits the dataset relatively well, as we previously concluded from the
+residual plot alone. This version of the residual plot includes a fitted trend
+line which hints that there could be some trend, but it's mild. The normal QQ
+plot is nearly perfect, with a close match between the normal quantiles and the
+residual quantiles (the dashed line is the line of exact equality). The
+scale-location plot leads to similar conclusions as the residual plot, with the
+trend in residuals notably less pronounced. Finally, the leverage plot
+indicates a few observations with middling leverage that and very large
+residuals; these are annotated with row numbers on the plot. In a thorough
+analysis, we should investigate each of these as potential outliers
+(@sec-outliers).
+
+:::{.callout-note title="See Also"}
+For examples of patterns to look for in residual plots, see:
+
+* The ["Checking model conditions"][ims-model-conditions] section in
+  _Introduction to Modern Statistics_ [@ims]
+* The "Residual plots" section in [_Regression and Other Stories_][ros]
+  [@gelman2020]
+
+[ims-model-conditions]: https://openintrostat.github.io/ims/inf-model-slr.html#sec-tech-cond-linmod
+:::
+
+
+## Selecting Features
+
+A dataset might have dozens or hundreds of features, but including every
+feature in a linear model is usually not a good idea. One problem is that each
+additional feature in the model means an additional coefficient to estimate.
+When the number of observations is low relative to the number of features in
+the model, there usually isn't enough information to compute accurate
+coefficient estimates.
+
+Another problem is that when two features are highly correlated
+(@sec-correlation), they effectively contain redundant information, which again
+makes it difficult (or impossible) to compute accurate coefficient estimates.
+This problem is called **multicollinearity**.
+
+The point is that we 
+
+```{r}
+ggplot(penguins) +
+  aes(x = flipper_length_mm, y = body_mass_g, color = species) +
+  geom_point()
+```
+
+<!-- Explain categorical vs numerical features -->
+
+```{r}
+model_species = lm(body_mass_g ~ species + flipper_length_mm, penguins)
+summary(model_species)
+```
+
+```{r}
+autoplot(model_species)
+```
+
+```{r}
+penguins_tidy$pred = predict(model_species)
+penguins_tidy$resid = resid(model_species)
+
+ggplot(penguins_tidy) +
+  aes(x = pred, y = resid, color = species) +
+  geom_point()
+```
+
+
+### Interactions
+
+```{r}
+model_interact = lm(body_mass_g ~ species * flipper_length_mm, penguins)
+summary(model_interact)
+```
+
+```{r}
+autoplot(model_interact)
+```
+
+:::{.callout-note title="See Also"}
+[_Feature Engineering and Selection_][feature-engineering] [@kuhn2020]
+
+[feature-engineering]: https://feat.engineering/
+:::
+
+
+## Interpreting Models
+
+
+### Hypothesis Tests for Models {#sec-hypothesis-tests-for-models}
+
+$$
+Y_i \sim \mathcal{N}(\beta_0 + \beta_1 x_i, \sigma^2)
+$$
+
+$$
+y_i = \beta_0 + \beta_1 x_i + \epsilon_i
+\quad\textrm{where}\quad
+\epsilon_i \sim \mathcal{N}(0, \sigma^2)
+$$
+
+:::{.callout-tip title="Note: Hypothesis Tests as Models"}
+Introductory statistics courses often teach and encourage students to memorize
+a long list of hypothesis tests tailored to specific circumstances. Most of
+these hypothesis tests can also be described in terms of linear models;
+different terms in the model lead to different tests.
+
+The website ["Common statistical tests are linear models"][tests-are-models]
+[@lindelov2019] provides an introduction and overview of this idea.
+
+[tests-are-models]: https://lindeloev.github.io/tests-as-linear/
+:::
+
+:::{.callout-note title="See Also"}
+This chapter is based on many sources (see [References][refs]), but two
+textbooks were especially influential:
+
+[refs]: /chapters/references.html
+
+* [_Introduction to Modern Statistics_][ims] [@ims] provides a
+  beginner-friendly introduction to data exploration and applied statistics. If
+  you're new to statistics or want a gentle refresher, it's a great starting
+  point for learning more.
+* [_Regression and Other Stories_][ros] [@gelman2020] provides a thorough
+  introduction to linear models (as well as other kinds of models) while
+  keeping the focus solidly on realistic applications. It includes details
+  about several intermediate to advanced topics that aren't covered here, such
+  as Bayesian statistics.
+
+[ims]: https://openintrostat.github.io/ims/
+[ros]: https://avehtari.github.io/ROS-Examples/
+
+For more specifically about interpreting models, we recommend [_Model to
+Meaning_][model-to-meaning] [@arel-bundock2025], which is oriented around case
+studies and serves as an introduction to the R package marginaleffects.
+
+[model-to-meaning]: https://marginaleffects.com/
+:::
+
+

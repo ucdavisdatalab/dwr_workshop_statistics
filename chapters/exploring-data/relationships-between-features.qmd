@@ -235,7 +235,7 @@ between the two features. Breeding pairs and nests do tend to increase
 together.
 
 
-## Correlation
+## Correlation {#sec-correlation}
 
 **Correlation** is a statistic that measures the direction and strength of the
 linear relationship between two numerical features. In other words, correlation

@@ -44,7 +44,145 @@ strategy that was developed before computers became widely available, which is
 still the most-used strategy today.
 
 
-## Example: Height Differences
+## Dataset: CA Market Squid {#sec-ca-market-squid}
+
+The [market squid][] is a small squid that lives along the west coast of North
+America. In California, there are multiple fisheries for market squid. From
+1989 to 1994, the California Department of Fish and Wildlife (CDFW) collected
+mass, length, sex, and maturity measurements for samples of caught squid in
+order to study the effects of fishing on squid size and reproduction.
+
+[market squid]: https://en.wikipedia.org/wiki/Doryteuthis_opalescens
+
+![
+  An illustration of a market squid from the [CDFW Marine Species
+  Portal][cdfw-portal-market-squid].
+](/images/applied-statistics/market_squid.jpg){
+  height=24em
+  fig-alt="A illustration of a squid in profile. The squid has a long body,
+  large blue eye, and tentacles. Its body is white with many brown and orange
+  speckles, as well as a few green and black speckles."
+}
+
+[cdfw-portal-market-squid]: https://marinespecies.wildlife.ca.gov/market-squid/
+
+The CDFW publishes most of the data it collects to the [California Open Data
+Portal][data.ca.gov]. The examples in this and subsequent chapters use a
+cleaned 1989-1994 version of the California market squid dataset.
+
+[data.ca.gov]: https://data.ca.gov/
+
+:::{.callout-important}
+[Click here][ca-market-squid] to download the 1989-1994 California market squid
+dataset.
+
+[ca-market-squid]: https://ucdavis.box.com/s/ru6rpxgt5ohbtbvqlas9cnpua61h0bb2
+
+If you haven't already, we recommend you create a directory for this workshop.
+In your workshop directory, create a `data/` subdirectory. Download and save
+the dataset in the `data/` subdirectory.
+:::
+
+:::{.callout-note
+  title="Documentation for 1989-1994 California Market Squid Dataset"
+  collapse=false
+}
+
+Each row in the dataset contains measurements from one squid.
+
+| Column                    | Description
+| ------------------------: | :----------
+| `sample_id`               | Identifier for the sample
+| `date`                    | When sample was taken
+| `gear`                    | Fishing gear used to catch the squid
+| `location`                | Description of where sample was taken
+| `cdfw_block`              | CDFW fishing block number
+| `port`                    | Nearest port city (always Monterey)
+| `sets`                    | Identifier for the school of squid
+| `squid_number`            | Identifier for the squid (within each sample)
+| `mass_g`                  | Mass in grams (to nearest 0.1 g)
+| `dorsal_mantle_length_mm` | Dorsal mantle length in millimeters
+| `sex`                     | Sex
+| `maturity`                | Maturity category (immature, mature, or spent)
+
+: {.striped .hover tbl-colwidths="[25, 75]"}
+
+The messy source dataset is available [here][ca-market-squid-source]. It
+includes a CDFW report by Robert Leos which explains the sampling procedure and
+analyzes the dataset.
+
+[ca-market-squid-source]: https://data.ca.gov/dataset/market-squid-fishery-historic-biological-samples-1989-1994-california
+:::
+
+The dataset is in RDS format, so we can load it into R with the `readRDS`
+function:
+
+```{r}
+squid = readRDS("data/1989-1994_ca_market_squid.rds")
+
+str(squid)
+```
+
+It includes measurements for 6,202 squid. We can use the `summary` function to
+get a brief statistical summary of the columns:
+
+```{r}
+summary(squid)
+```
+
+The `mass_g` column contains at least one outlier, the maximum value 6,509. The
+density plot reveals that there are several:
+
+```{r}
+#| label: fig-squid-mass_g-density-extreme
+#| fig-cap: A density plot of mass in grams for the CA market squid dataset.
+library("ggplot2")
+
+ggplot(squid) +
+  aes(x = mass_g) +
+  geom_density() +
+  geom_rug()
+```
+
+Market squid typically have body masses around 40 grams. A market squid with
+body mass over ten times that (400 grams) would be extremely unusual. These
+observations are probably erroneous. We could contact CDFW to try to learn
+more, but for now we'll just exclude them from the dataset. We'll also exclude
+observations where mass is missing:
+
+```{r}
+#| warning: false
+library("dplyr")
+
+squid = filter_out(squid, mass_g >= 400 | is.na(mass_g))
+nrow(squid)
+```
+
+After removing the outliers and missing values, we're left with 6,197 squid.
+There are still a few unusually large squid, but most of them are around 40
+grams:
+
+```{r}
+#| label: fig-squid-mass_g-density
+#| fig-cap: >
+#|    A density plot of mass in grams for the CA market squid dataset, after
+#|    removing outliers.
+ggplot(squid) +
+  aes(x = mass_g) +
+  geom_density() +
+  geom_rug()
+```
+
+The sample mean is:
+
+```{r}
+mean(squid$mass_g)
+```
+
+This makes sense given the typical mass of a market squid.
+
+
+## Sampling Variation
 
 We conduct data analysis to learn or answer questions about some population of
 interest. In many cases, we can't collect data for the entire population

@@ -40,7 +40,7 @@ censored data as:
   microgram (or some other detection limit, depending on their instruments) are
   listed only as `< 1` rather than specific quantities.
 
-  Mathematically, we can think of right-censored data as missing data known to
+  Mathematically, we can think of left-censored data as missing data known to
   be in the interval $(-\infty, d)$ or $[0, d)$ for some known detection limit
   $d$.
 
@@ -53,7 +53,7 @@ censored data as:
   throughout, so their time to recurrence is listed only as `> 1825` rather
   than a specific number of days.
 
-  Mathematically, we can think of left-censored data as missing data known to
+  Mathematically, we can think of right-censored data as missing data known to
   be in the interval $(t, \infty)$ for some known end time $t$.
 
 * **Interval-censored** data, where we know censored data lie in specific
@@ -320,7 +320,7 @@ as well as future-proofing code.
 [NADA]: https://doi.org/10.32614/CRAN.package.NADA
 [NADA2]: https://doi.org/10.32614/CRAN.package.NADA2
 
-The [interval][] package package is the primary package for working with
+The [interval][] package is the primary package for working with
 interval-censored data. A few other survival analysis packages also support
 interval-censored data.
 

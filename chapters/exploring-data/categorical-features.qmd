@@ -310,7 +310,7 @@ time. The mode is 2017, and there's a distinct drop in observations in 2018,
 which could indicate a major change in which sites were being monitored.
 
 The counterpoint is a discrete feature with many values that are rarely
-repeated. A good example of this is is the `total_nests` column, which is an
+repeated. A good example of this is the `total_nests` column, which is an
 estimate of the total number of nests for each site-year pair. Here's a bar
 plot of frequencies for `total_nests`:
 

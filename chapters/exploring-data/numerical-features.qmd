@@ -432,10 +432,10 @@ For `total_nests`, the mean is:
 mean(terns$total_nests, na.rm = TRUE)
 ```
 
-Once again, the mean is larger than than the median (42). As we saw in the
-density plot (@fig-total_nests_density), the `total_nests` feature contains a
-few very large values. These don't affect the median much, but they do affect
-on the mean.
+Once again, the mean is larger than the median (42). As we saw in the density
+plot (@fig-total_nests_density), the `total_nests` feature contains a few very
+large values. These don't affect the median much, but they do affect on the
+mean.
 
 The mean is good for getting a general idea of where the center of the data is.
 It's more efficient than the median for this purpose, because it takes all of
@@ -499,7 +499,7 @@ width of the middle 50% of the data.
 
 The 25th, 50th, and 75th percentiles are called **quartiles** (with an "r")
 because they separate the data into four parts (hence "quart-"). So the
-distance between the 75th and and 25th percentile is called the **interquartile
+distance between the 75th and 25th percentile is called the **interquartile
 range** (IQR).
 
 In R, the `IQR` function computes the IQR of a feature. For the toy dataset,

@@ -31,6 +31,8 @@ r-tsibble = ">=1.2.0,<2"
 r-forecast = ">=9.0.2,<10"
 r-ggtime = ">=0.2.0,<0.3"
 r-feasts = ">=0.5.0,<0.6"
+r-fable = ">=0.5.0,<0.6"
+r-lme4 = ">=2.0_6,<3"
 
 
 [activation.env]

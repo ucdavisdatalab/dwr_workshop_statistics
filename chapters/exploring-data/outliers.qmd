@@ -1,0 +1,87 @@
+```{r, echo = FALSE}
+terns = read.csv("data/2000-2023_ca_least_tern.csv")
+```
+
+# Outliers
+
+::: {.callout-note title="Learning Goals" collapse="false"}
+After this lesson, you should be able to:
+
+* Explain what it means for a value to be an "outlier"
+* Locate and count outliers in a data set
+:::
+
+This chapter covers
+
+
+## Outliers
+
+An **outlier** is an anomalous or extreme value in a data set. We can picture
+this as a value that's far away from most of the other values. Sometimes
+outliers are a natural part of the data set. In other situations, outliers can
+indicate errors in how the data were measured, recorded, or cleaned.
+
+There's no specific definition for "extreme" or "far away". A good starting
+point for detecting outliers is to make a plot that shows how the values are
+distributed. Box plots and density plots work especially well for this (you'll
+learn about how to make plots in a later lesson):
+
+```{r}
+library("ggplot2")
+
+ggplot(terns, aes(x = nonpred_eggs)) + geom_boxplot()
+
+# Some sites might have more eggs than others, so a high number of non-predator
+# egg mortalities does not necessarily mean a site is unusually dangerous. We
+# can find dangerous sites by looking at non-predator egg mortalities per nest:
+
+ggplot(terns, aes(x = nonpred_eggs / total_nests)) + geom_boxplot()
+```
+
+Statisticians tend to use the rule of thumb that any value more than 3 standard
+deviations away from the mean is an outlier. You can use the `scale` function
+to compute how many standard deviations the elements in a column are from their
+mean:
+
+```{r}
+z = scale(terns$nonpred_eggs)
+head(z)
+
+which(z <= -3 | 3 <= z)
+```
+
+Be careful to think about what your specific data set measures, as this
+definition isn't appropriate in every situation.
+
+How can you handle outliers? First, try inspecting other features from the row
+to determine whether the outlier is a valid measurement or an error. When an
+outlier is valid, keep it.
+
+If the outlier interferes with a plot you want to make, you can adjust the x
+and y limits on plots as needed to "ignore" the outlier. Make sure to mention
+this in the plot's title or caption.
+
+When an outlier is not valid, first try to correct it. For example:
+
+* Correct with a different covariate from the _same observation_.
+* Estimate with a mean or median of similar observations. This is another
+  example of imputing values.
+
+<!--
+For example, in the Craigslist data, we can use the `text` column to try to
+correct outliers:
+
+```r
+message(cl$text[1261])
+```
+
+Based on the text, this apartment is 819 square feet, not 8190 square feet. So
+we can reassign the value:
+```r
+cl$sqft[1261] = 819
+```
+-->
+
+If other features don't help with correction, try getting information from
+external sources. If you can't correct the outlier but know it's invalid,
+replace it with a missing value `NA`.

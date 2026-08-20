@@ -20,8 +20,11 @@ book:
     - part: "Exploring Data"
       chapters:
         - "chapters/exploring-data/index.qmd"
-        - "chapters/exploring-data/intro-to-data.qmd"
-        - "chapters/exploring-data/data-forensics.qmd"
+        - "chapters/exploring-data/getting-to-know-data.qmd"
+        - "chapters/exploring-data/statistical-summaries.qmd"
+        - "chapters/exploring-data/outliers.qmd"
+        - "chapters/exploring-data/relationships-between-features.qmd"
+        - "chapters/exploring-data/missing-values.qmd"
     - part: "Introduction to Applied Statistics"
       chapters:
         - "chapters/applied-statistics/index.qmd"

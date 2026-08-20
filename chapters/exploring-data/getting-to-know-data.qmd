@@ -1,4 +1,8 @@
-# Introduction to Datasets
+```{r, echo = FALSE}
+terns = read.csv("data/2000-2023_ca_least_tern.csv")
+```
+
+# Getting to Know the Data
 
 ::: {.callout-note title="Learning Goals" collapse="false"}
 After this lesson, you should be able to:
@@ -8,6 +12,7 @@ After this lesson, you should be able to:
 * Explain what an "observation" is
 * Explain what it means for a dataset to be "tidy"
 * Describe some widely-used data types
+* Convert columns to appropriate data types
 :::
 
 :::{.callout-important}
@@ -16,6 +21,8 @@ necessarily cover everything covered in lecture.
 :::
 
 [slides]: https://docs.google.com/presentation/d/1e_LcUT1tU5WsUYnrTQBjTIOL6zIrcCsXBjUigTBKA6w/edit?usp=sharing
+
+This chapter covers
 
 
 ## Tabular Datasets
@@ -225,3 +232,85 @@ The messy source dataset (with more years and more columns) is available
 
 [ca-least-tern-source]: https://data.ca.gov/dataset/california-least-tern-monitoring-sites-generalized-cdfw-ds3146
 :::
+
+
+## Structural Summaries
+
+Whenever you load a data set into R, your next step should be to investigate
+the data's structure. This step is important because it can help you identify
+whether:
+
+* The data was loaded correctly
+* There are structural problems with the data that will make it difficult to
+  use if they aren't fixed
+
+@sec-inspecting-a-data-frame demonstrated several functions for getting
+structural summaries of data. Some of these are:
+
+* `str` to get a detailed structural summary
+* `head`, `tail` to preview the data
+* `nrow`, `ncol`, `dim`, `length` to get dimension information
+* `names`, `colnames`, `rownames` to get element names
+* `class`, `typeof` to get classes and types
+
+That section gave examples with the California Least Terns dataset
+(@sec-ca-least-terns). For instance, the `str` function shows the classes of
+the columns:
+
+```{r}
+str(terns)
+```
+
+Often when you load a new dataset, some of the columns won't have the correct
+data type (or class) for what you want to do. For instance, in the least terns
+dataset, the `site_name`, `region_3`, and `event` columns all contain
+categorical data, so they should be factors.
+
+You can convert these columns to factors with the `factor` function from
+@sec-factors:
+
+```{r}
+terns$site_name = factor(terns$site_name)
+terns$region_3 = factor(terns$region_3)
+terns$event = factor(terns$event)
+```
+
+:::{.callout-tip}
+There's another way we could've done this that uses only two lines of code, no
+matter how many columns there are:
+
+```{r, eval = FALSE}
+cols = c("site_name", "region_3", "event")
+terns[cols] = lapply(terns[cols], factor)
+```
+
+We'll learn more about the `lapply` function in @sec-apply-functions.
+
+You can use whichever approach is more convenient and makes more sense to you.
+If there were other columns to convert, we'd go through the same steps with the
+appropriate conversion function.
+:::
+
+R provides `as.` functions to convert to the most common data types. For
+instance, `as.character` converts an object to a string:
+
+```{r}
+x = 3.1
+class(x)
+
+y = as.character(x)
+y
+class(y)
+```
+
+The `read.csv` function does a good job at identifying columns of numbers, so
+it's rarely necessary to convert columns of numbers manually. However, you may
+have to do this for data you got some other way (rather than loading a file).
+For instance, it's common to make these conversions when scraping data from the
+web.
+
+It's also a good idea to convert categorical columns into factors with the
+`factor` function, and to convert columns of dates into dates (more about this
+in @sec-date-processing).
+
+

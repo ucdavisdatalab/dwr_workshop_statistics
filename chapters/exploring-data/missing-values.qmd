@@ -1,0 +1,65 @@
+```{r, echo = FALSE}
+terns = read.csv("data/2000-2023_ca_least_tern.csv")
+```
+
+# Missing Values
+
+::: {.callout-note title="Learning Goals" collapse="false"}
+After this lesson, you should be able to:
+
+* Locate and count missing values in a data set
+:::
+
+This chapter covers
+
+
+## Missing Values
+
+If your data contains missing values, it's important to think about why the
+values are missing. Statisticians use two different terms to describe why data
+is missing:
+
+* missing at random (MAR)
+* missing not at random (MNAR) - causes bias!
+
+When values are **missing at random**, the cause for missingness is one or more
+features in the data set. For example, if a soil moisture sensor overheats and
+doesn't work on hot days, but air temperature is recorded in the data set,
+values are missing at random.
+
+When values are **missing not at random**, the cause for missingness is one or
+more features *not* in the data set. Think of this as a form of censorship. For
+example, if people in a food survey refuse to report how much sugar they ate on
+days where they ate junk food, values are missing not at random. Values MNAR
+can bias an analysis.
+
+:::{.callout-note}
+Technically, there's a third kind of missing data: **missing completely at
+random** (MCAR). When values are missing completely at random, the cause for
+missingness is completely unrelated to the research question and features of
+interest. This kind of missing data is rare in practice and impossible to
+identify from the data alone. Values MCAR can be ignored without causing any
+bias.
+:::
+
+The default way to handle missing values in R is to ignore them. This is just a
+default, not necessarily the best or even an appropriate way to deal with them.
+You can remove missing values from a data set by indexing:
+
+```{r}
+nonpred_eggs_no_na = terns[!is.na(terns$nonpred_eggs), ]
+
+head(nonpred_eggs_no_na)
+```
+
+The `na.omit` function is less precise than indexing, because it removes rows
+that have a missing value in _any_ column. This means lots of information gets
+lost.
+
+Another way to handle missing values is to **impute**, or fill in, the values
+with estimates based on other data in the data set. We won't get into the
+details of how to impute missing values here, since it is a fairly deep
+subject. Generally it is safe to impute MAR values, but not MNAR values.
+
+
+

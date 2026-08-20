@@ -1,0 +1,165 @@
+```{r, echo = FALSE}
+terns = read.csv("data/2000-2023_ca_least_tern.csv")
+```
+
+# Statistical Summaries {#sec-data-forensics}
+
+::: {.callout-note title="Learning Goals" collapse="false"}
+After this lesson, you should be able to:
+
+* Explain the location statistics mean, median, and mode
+* Explain the scale statistics range and standard deviation
+:::
+
+:::{.callout-important title="Required Packages"}
+This chapter uses the following packages:
+
+* ggplot2
+
+@sec-packages explains how to install and load packages.
+:::
+
+This chapter covers a variety of ways to investigate and summarize tabular data
+in order to understand the data better and identify potential problems. The
+lesson also describes how to fix some of the most common data problems.
+
+
+## Statistical Summaries
+
+After investigating the data's structure, it's a good idea to check some basic
+statistical properties. This step is important because it can help you identify
+limitations of and patterns in the data.
+
+Which statistics are appropriate for a given feature often depends on the type
+of the feature. Recall from @sec-data-types-classes that the types
+statisticians typically think about are:
+
+* **Categorical**
+    + **Nominal** - data separated into specific categories, with no order. For
+      example, hair color (red, brown, blonde, ...) is categorical.
+    + **Ordinal** - data separated into specific categories, with an order. For
+      example, school level (elementary, middle, high, college) is ordinal.
+* **Numerical**
+    + **Discrete** - integers, or a finite set of decimal numbers with no
+      values in between. Sometimes discrete values can also be treated as
+      ordinal. For example, month as a number (1, 2, ..., 12) is discrete.
+    + **Continuous** - decimal numbers. There are no specific categories, but
+      there is an order. For example, height in inches is numerical.
+
+The `table` function, which was introduced in @sec-inspecting-a-data-frame, is
+great for summarizing categorical (and sometimes discrete) data. For example:
+
+```{r}
+table(terns$region_3)
+```
+
+What about numerical data?
+
+Two important questions to ask about data are:
+
+1. Where is it? This is the **location** of the data.
+
+2. How spread out is it? This is the **scale** of the data.
+
+Let's use the data
+
+```{r}
+x = c(-2, -1, -1, -1, 0, 2, 6)
+```
+
+as an example.
+
+Location is generally summarized with a number near the middle or center of
+the data. A few options are:
+
+1.  **Mode** - the value that appears most frequently. The mode can be
+    calculated for any kind of data, but doesn't work well for continuous data.
+
+    For our example, the mode of `x` is -1. You can compute the mode with
+    `table`:
+
+    ```{r}
+    table(x)
+    ```
+
+2.  **Median** - sort the data, then find the value in the middle. The median
+    can be calculated for ordinal or numerical data.
+
+    For our example, the median is -1. Compute this with `median`:
+
+    ```{r}
+    median(x)
+    ```
+
+3.  **Mean** - the balancing point of the data, if a waiter was trying to
+    balance the data on a tray. The mean can only be calculated for numerical
+    data.
+
+    For our example the mean is 0.4285. Compute this with `mean`:
+
+    ```{r}
+    mean(x)
+    ```
+
+Adding large values to the data affects the mean more than the median:
+
+```{r}
+y = c(x, 100)
+mean(y)
+median(y)
+```
+
+Because of this, we say that the median is **robust**.
+
+The mean is good for getting a general idea of where the center of the data
+is, while comparing it with the median reveals whether there are any
+unusually large or small values.
+
+Scale is generally summarized by a number that says how far the data is from
+the center (mean, median, etc...). Two options are:
+
+1.  **Standard Deviation** - square root of the average squared distance to the
+    mean (the distance from a point to a mean is called a **deviation**). You
+    can think of this as approximately the average distance from a data point
+    to the mean. As a rule of thumb, most of the data will be within 3 standard
+    deviations of the mean.
+
+    You can compute the standard deviation with `sd`:
+
+    ```{r}
+    sd(x)
+    ```
+
+2.  **Interquartile Range** (IQR) - difference between the 75th and 25th
+    percentile. The median is the 50th **percentile** of the data; it's at the
+    middle of the sorted data. We can also consider other percentiles. For
+    instance, the 25th percentile is the value one-quarter of the way through
+    the sorted data.
+
+    **Quantile** is another word for percentile. **Quartile** specifically
+    refers to the 25th, 50th, and 75th percentiles because they separate the
+    data into four parts (hence "quart-").
+
+    You can compute quantiles with `quantile`, or compute the IQR directly with
+    `IQR`:
+
+    ```{r}
+    quantile(x)
+
+    # IQR
+    IQR(x)
+    ```
+
+The IQR is more robust than the standard deviation.
+
+Many of the functions for computing statistical summaries have a parameter
+`na.rm` to ignore missing values. Setting `na.rm = TRUE` is often useful when
+you're just trying to do an initial investigation of the data. However, in a
+more complete analysis, you should think carefully about what the missing
+values mean, whether they follow any patterns, and whether there are enough
+non-missing values for statistical summaries to be good representatives of the
+data.
+
+Finally, the `summary` function computes a detailed statistical summary of an R
+object. For data frames, the function computes a summary of each column,
+guessing an appropriate statistic based on the column's data type.

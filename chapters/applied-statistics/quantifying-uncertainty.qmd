@@ -28,43 +28,50 @@ For a refresher about how to install and load packages, see the
 [r-basics-packages]: https://ucdavisdatalab.github.io/dwr_workshop_r_basics/chapters/getting-started/getting-started.html#sec-packages
 :::
 
-Estimating things is one of the primary motivators of statistics. There are
-many different ways to estimate things, so we need to be able to assess how
-well an estimator works. In the same spirit, we need a way to decide how much
-confidence we should put in an estimate. This chapter introduces a versatile
-strategy for addressing both needs. It also briefly explains a second strategy
-that was developed before computers became widely available.
+@sec-numerical-features introduced three estimators for the location or center
+of a distribution: the mode, median, and mean. These aren't the only
+estimators. In fact, for any estimation problem we face, we can invent as many
+estimators as we want. Most of the time, we can rule out a lot of estimators
+that obviously won't work well (such as estimating location with the number 8,
+regardless of the data). For the remaining estimators, we need a way to decide
+how well they work and how much confidence to place in their estimates. Even if
+we know which estimator we want to use, these details are critical to how we
+should interpret and communicate the estimates.
+
+This chapter introduces a versatile strategy for evaluating estimators (whether
+they estimate location or something else). It also briefly explains a second
+strategy that was developed before computers became widely available, which is
+still the most-used strategy today.
 
 
-## The Sampling Distribution {#sec-sampling-distribution}
+## Example: Height Differences
 
-When we do data analysis, it's usually because we want to understand the
-characteristics of some population. In many cases, we can't collect data for
-the entire population because doing so would be unethical (for instance, when
-testing a new, unproven medicine) or because the cost (in time, money, etc.) is
-prohibitive. Instead, we collect a sample from the population, in hope that
-results about the sample generalize to the population. Once we have a sample,
-we can use it to compute estimates.
+We conduct data analysis to learn or answer questions about some population of
+interest. In many cases, we can't collect data for the entire population
+because doing so would be unethical (for instance, when testing a new, unproven
+medicine) or because the cost (in time, money, etc.) is prohibitive. Instead,
+we collect a sample from the population (@sec-collection-strategy), compute
+estimates to answer our questions, and hope that the results for the sample
+generalize to the population.
 
-:::{.callout-note title="See Also"}
-@sec-collection-strategy from DataLab's Exploring Data workshop reader also
-discusses sampling.
-:::
-
-As an example, suppose we want to understand height differences (in inches)
-between adult mothers and daughters. We probably can't collect height
+For example, suppose we want to understand height differences (in inches)
+between adult mothers and eldest daughters. We probably can't collect height
 differences for every mother and daughter in the world, or country, or even
 local region. But we can choose some feasible number of height differences, say
-50, to collect as a sample. After collecting the sample, suppose we compute:
+50, to collect as a sample.
 
 ```{r}
-#| echo: false
-#| output: false
+#| code-fold: true
+#| code-summary: >
+#|    Click HERE for the code to generate the mother-daughter height difference
+#|    dataset.
 set.seed(1215)
 sample1 = rnorm(50)
 sample2 = rnorm(50)
 sample3 = rnorm(50)
 ```
+
+After collecting the sample, suppose we compute:
 
 ```{r}
 summary(sample1)
@@ -115,6 +122,9 @@ The sample mean varies from one sample to the next, because each sample
 consists of different members of the population. If we continued to take
 samples, we'd end up with many different sample means, all estimates of the
 same population mean.
+
+
+## The Sampling Distribution {#sec-sampling-distribution}
 
 Now let's change our perspective to thinking about the sample means themselves
 as a dataset. This dataset tells us about the characteristics of the sample
@@ -193,8 +203,8 @@ might be in the estimates *due to random variation between samples*. The larger
 the standard error is, the more uncertain we are about the estimate.
 
 :::{.callout-important title="Important: Bias"}
-Variation between samples is one of two major sources of estimator error. The
-other is statistical **bias**, where an estimator estimates the wrong quantity.
+Variation between samples is one of two sources of estimator error. The other
+is statistical **bias**, where an estimator estimates the wrong quantity.
 Notice that this definition of bias is much narrower and more specific than the
 definition of bias in ordinary speech and writing.
 

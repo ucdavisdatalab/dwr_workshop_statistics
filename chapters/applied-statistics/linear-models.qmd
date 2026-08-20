@@ -6,7 +6,7 @@ squid = readRDS("data/1989-1994_ca_market_squid.rds")
 squid = filter_out(squid, mass_g >= 400 | is.na(mass_g))
 ```
 
-# Linear Models
+# Linear Models {#sec-linear-models}
 
 ::: {.callout-note title="Learning Goals" collapse="false"}
 After this lesson, you should be able to:
@@ -78,7 +78,7 @@ ggplot(squid) +
 
 Most of the squid are in a dense cloud of points with dorsal mantle length less
 than 200 millimeters and mass less than 150 grams. Even though we removed some
-outliers earlier (@sec-dataset-palmer-penguins), there are still three squid
+outliers earlier (@sec-dataset-ca-market-squid), there are still three squid
 with unusual measurements. We'll leave these in the dataset for now, but they
 do warrant further investigation.
 
@@ -1045,18 +1045,6 @@ than the p-values alone.
 The [marginaleffects][] package and [emmeans][] package provide functions to
 test more sophisticated hypotheses. They support a variety of testing methods,
 including the bootstrap and classical tests.
-
-:::{.callout-tip title="Note: Hypothesis Tests as Models"}
-Introductory statistics courses often teach and encourage students to memorize
-a long list of hypothesis tests tailored to specific circumstances. Most of
-these hypothesis tests can also be described in terms of linear models;
-different terms in the model lead to different tests.
-
-The website ["Common statistical tests are linear models"][tests-are-models]
-[@lindelov2019] provides an introduction and overview of this idea.
-
-[tests-are-models]: https://lindeloev.github.io/tests-as-linear/
-:::
 
 :::{.callout-note title="See Also"}
 This chapter is based on many sources (see [References][refs]), but two

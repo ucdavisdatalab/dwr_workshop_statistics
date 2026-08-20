@@ -20,6 +20,8 @@ book:
     - part: "Exploring Data"
       chapters:
         - "chapters/exploring-data/index.qmd"
+        - "chapters/exploring-data/intro-to-data.qmd"
+        - "chapters/exploring-data/data-forensics.qmd"
     - part: "Introduction to Applied Statistics"
       chapters:
         - "chapters/applied-statistics/index.qmd"

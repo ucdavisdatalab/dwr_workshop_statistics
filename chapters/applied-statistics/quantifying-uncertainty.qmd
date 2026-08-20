@@ -135,7 +135,8 @@ density plot reveals that there are several:
 
 ```{r}
 #| label: fig-squid-mass_g-density-extreme
-#| fig-cap: A density plot of mass in grams for the CA market squid dataset.
+#| fig-cap: >
+#|    A density plot of mass in grams for the California market squid dataset.
 library("ggplot2")
 
 ggplot(squid) +
@@ -165,8 +166,8 @@ grams:
 ```{r}
 #| label: fig-squid-mass_g-density
 #| fig-cap: >
-#|    A density plot of mass in grams for the CA market squid dataset, after
-#|    removing outliers.
+#|    A density plot of mass in grams for the California market squid dataset,
+#|    after removing outliers.
 ggplot(squid) +
   aes(x = mass_g) +
   geom_density() +
@@ -181,6 +182,12 @@ mean(squid$mass_g)
 
 This makes sense given the typical mass of a market squid.
 
+```{r}
+#| echo: false
+#| output: false
+pop_mean = round(mean(squid$mass_g), 2)
+```
+
 
 ## Sampling Variation
 
@@ -192,68 +199,86 @@ we collect a sample from the population (@sec-collection-strategy), compute
 estimates to answer our questions, and hope that the results for the sample
 generalize to the population.
 
+**Sampling variation** is one of two sources of estimator error. When a sample
+is collected randomly, it might be missing important parts of the population,
+which makes estimates worse. Even samples that represent the population well
+will yield different estimates from one to the next.
+
+To get a better understanding of sampling variation, let's pretend that the CA
+market squid dataset is the entire population we want to study. In reality, the
+dataset is just a sample of squid caught along the west coast, but we'll ignore
+this for the moment.
+
+<!--
 For example, suppose we want to understand height differences (in inches)
 between adult mothers and eldest daughters. We probably can't collect height
 differences for every mother and daughter in the world, or country, or even
 local region. But we can choose some feasible number of height differences, say
 50, to collect as a sample.
+-->
+
+Suppose we take a sample of 50 squid from the population. We can do this in R
+with the built-in `sample` function or dplyr's `slice_sample` function. The
+code to collect the sample is:
 
 ```{r}
-#| code-fold: true
-#| code-summary: >
-#|    Click HERE for the code to generate the mother-daughter height difference
-#|    dataset.
 set.seed(1215)
-sample1 = rnorm(50)
-sample2 = rnorm(50)
-sample3 = rnorm(50)
+
+sample1 = slice_sample(squid, n = 50)
 ```
 
-After collecting the sample, suppose we compute:
+Let's examine the distribution of the sample. First, we'll look at a summary:
 
 ```{r}
-summary(sample1)
+summary(sample1$mass_g)
 ```
 
-So the average difference in the sample is about `r round(mean(sample1), 2)`,
-and we hope that this is also a good estimate of the average difference in the
-population.
-
-To get a better sense of how the data are distributed, we can also make a
-density plot:
+Notice that the sample mean is different from the population mean
+(`r pop_mean`). To get a better sense of how the data are distributed, we can
+also make a density plot:
 
 ```{r}
 #| label: fig-sample1-density
 #| fig-cap: >
 #|     Density plot of the empirical distribution of the first sample (50
 #|     observations).
-library("ggplot2")
-
-ggplot(data.frame(x = sample1)) +
-  aes(x = x) +
+ggplot(sample1) +
+  aes(x = mass_g) +
   geom_density()
 ```
 
-The density plot in @fig-sample1-density shows an **empirical distribution**,
-the distribution of the observations *in a dataset*. Here the dataset is the
-sample of height differences. Like the sample mean estimates the population
-mean, the emprical distribution estimates the population distribution. The
-population distribution might have longer tails, or be more symmetrical, or
-have some other characteristic that's underrepresented in the dataset. We turn
-to the empirical distribution because it's the best we can do with the sample
-we have.
+Remember that we're pretending the California market squid dataset is our
+entire population of interest. We collected the sample randomly from that
+population. So the distribution in @fig-sample1-density is an estimate of the
+population distribution in @fig-squid-mass_g-density. We call this estimate an
+**empirical distribution** because it's based on our empirical knowledge (a
+sample).
 
-Suppose our colleagues decide to collect two more samples of 50 height
-differences each, to compare the results. For sample 2, the statistics are:
+For this sample, the empirical distribution is quite a bit different from the
+population distribution. Like a sample mean estimates a population mean, an
+emprical distribution estimates a population distribution. The population
+distribution might have longer tails, or be more symmetrical, or have some
+other characteristic that's underrepresented in the dataset. We turn to the
+empirical distribution because it's the best we can do with the sample we have.
+
+Now suppose our colleagues decide to collect two more samples of 50 squid
+each, to compare the results:
 
 ```{r}
-summary(sample2)
+sample2 = slice_sample(squid, n = 50)
+sample3 = slice_sample(squid, n = 50)
+```
+
+For sample 2, the statistics are:
+
+```{r}
+summary(sample2$mass_g)
 ```
 
 And for sample 3, the statistics are:
 
 ```{r}
-summary(sample3)
+summary(sample3$mass_g)
 ```
 
 The sample mean varies from one sample to the next, because each sample
@@ -262,13 +287,16 @@ samples, we'd end up with many different sample means, all estimates of the
 same population mean.
 
 
-## The Sampling Distribution {#sec-sampling-distribution}
+### The Sampling Distribution {#sec-sampling-distribution}
 
 Now let's change our perspective to thinking about the sample means themselves
-as a dataset. This dataset tells us about the characteristics of the sample
-mean as an estimator. We can use a density plot to visualize the distribution
-of the sample means. For 1,000 sample means (from 1,000 samples), it looks like
-this:
+as a dataset. This dataset tells us about the characteristics and distribution
+of the sample mean as an estimator. We call the distribution of an estimator a
+**sampling distribution**, because it describes how the estimates are
+distributed across samples.
+
+We can use a density plot to visualize the distribution of the sample means.
+For 1,000 sample means from 1,000 samples, it looks like this:
 
 ```{r}
 #| echo: false
@@ -276,47 +304,34 @@ this:
 #| fig-cap: >
 #|     Density plot of the sampling distribution of the mean, based on 1,000
 #|     estimates.
+library("purrr")
 
 n = 50  # sample size
 k = 1000  # number of samples
-x = rnorm(k * n)
-m = rowMeans(matrix(x, k, n))
+
+m = map_dbl(seq_len(k), \(i) {
+  mass = sample(squid$mass_g, n, replace = TRUE)
+  mean(mass)
+})
 
 ggplot(data.frame(sample_mean = m)) +
   aes(x = sample_mean) +
   geom_density()
 ```
 
-The density plot in @fig-sample_mean-density shows a **sampling distribution**,
-the distribution of an estimator across many samples. In this case, it's the
-sampling distribution for the sample mean in the height differences example. We
-can see that the sample means are centered near 0 and vary around it
-symmetrically. All are within about 0.4 inches.
+Notice that the sampling distribution in @fig-sample_mean-density is different
+from the population distribution (@fig-squid-mass_g-density). It's still
+centered on the population mean (`r pop_mean`), but it's less spread out (every
+sample mean is within about 6 grams of the population mean) and it's more
+symmetrical.
+
+The sampling distribution is also different from any given empirical
+distribution (such as @fig-sample1-density) since they estimate the population
+distribution.
 
 :::{.callout-important}
-The sampling distribution of an estimator, like the one in
-@fig-sample_mean-density, will generally be different from the population
-distribution. It will generally also be different from empirical distributions
-(of samples), like the one in @fig-sample1-density, since they estimate the
-population distribution.
-
-Comparing @fig-sample_mean-density and @fig-sample1-density, the empirical
-distribution is about 10 times more spread out.
-
-Even if we combine all 1,000 samples and make a density plot, the distribution
-is notably different from the sampling distribution of the mean in
-@fig-sample_mean-density:
-
-```{r}
-#| echo: false
-#| label: fig-1000samples-density
-#| fig-cap: >
-#|     Density plot of the empirical distribution of all 1,000 samples
-#|     combined (50,000 observations).
-ggplot(data.frame(x = x)) +
-  aes(x = x) +
-  geom_density()
-```
+An estimator's sampling distribution will usually be different from the
+population distribution (and any empirical distributions).
 :::
 
 The scale (@sec-scale-statistics) of a distribution measures uncertainty about
@@ -333,15 +348,18 @@ scale is small, the estimates tend to agree regardless of the sample, so we can
 be more certain. In other words, we can judge how confident to be about an
 estimator based on the scale of its sampling distribution.
 
-For the sample means that lead to @fig-sample_mean-density, the sample standard
-deviation is about `r round(sd(m), 2)`. The standard deviation of an estimator
-is called its **standard error**, because it helps us judge how uncertain to be
-about the estimates. In other words, it informs us about how much error there
-might be in the estimates *due to random variation between samples*. The larger
-the standard error is, the more uncertain we are about the estimate.
+For the sample means summarized by @fig-sample_mean-density, the sample
+standard deviation is about `r round(sd(m), 2)`. The standard deviation of an
+estimator is called its **standard error**, because it helps us judge how
+uncertain to be about the estimates. In other words, it informs us about how
+much error there might be in the estimates *due to random variation between
+samples*. The larger the standard error is, the more uncertain we are about the
+estimate.
 
-:::{.callout-important title="Important: Bias"}
-Variation between samples is one of two sources of estimator error. The other
+
+## Bias
+
+Sampling variation is only one of the two sources of estimator error. The other
 is statistical **bias**, where an estimator estimates the wrong quantity.
 Notice that this definition of bias is much narrower and more specific than the
 definition of bias in ordinary speech and writing.
@@ -356,7 +374,6 @@ even the best unbiased estimator. We call this tension the **bias-variance
 tradeoff** (variance is the squared standard error). Whether or not it's
 appropriate to accept some bias to reduce standard error depends on the
 specific estimation problem.
-:::
 
 :::{.callout-note title="Note: Consistency"}
 Consistency is another important statistical property. We say an estimator is
@@ -371,9 +388,9 @@ sample size increases. Biased estimators can also be consistent.
 ## The Bootstrap Algorithm {#sec-bootstrap-algorithm}
 
 Most of the time, we only have one sample. And if we had more than one sample,
-we'd combine them into a single sample, since more data generally leads to
-better estimates. So if we want to evaluate an estimator, we need a way to
-estimate its sampling distribution with only one sample.
+we'd combine them into a single sample, since more observations generally lead
+to more accurate estimates. So if we want to evaluate an estimator, we need a
+way to estimate its sampling distribution with only one sample.
 
 The **bootstrap**, or bootstrap algorithm, is one such method. The main idea is
 to draw new samples from the dataset (which is itself a sample) rather than the
@@ -408,12 +425,19 @@ estimate for the original dataset. On the other hand, the scale is about the
 same as in the sampling distribution, so we can use it to estimate standard
 error.
 
-Let's apply the bootstrap to the height differences example from
-@sec-sampling-distribution. We can generate a bootstrap sample from the
-original sample with this code:
+Let's apply the bootstrap to the California market squid dataset. We'll stop
+pretending that the dataset is the population. Instead, we'll treat the dataset
+as a sample (because it is), and we'll try to estimate the distribution of the
+sample mean.
+
+To make resampling easier, we'll extract the `mass_g` column as a variable.
+Then we can use R's `sample` function to generate a bootstrap resample. We need
+to set `replace = TRUE` to make the function sample with replacement. The
+function samples the same number of observations by default:
 
 ```{r}
-boot = sample(sample1, replace = TRUE)
+mass_g = squid$mass_g
+boot = sample(mass_g, replace = TRUE)
 ```
 
 The density plot for the bootstrap resample is:
@@ -421,17 +445,17 @@ The density plot for the bootstrap resample is:
 ```{r}
 #| label: fig-boot1-density
 #| fig-cap: >
-#|     Density plot of the first bootstrap resample (50 observations).
+#|     Density plot of the first bootstrap resample.
 ggplot(data.frame(x = boot)) +
   aes(x = x) +
   geom_density()
 ```
 
-@fig-sample1-density shows the distribution the original sample, while
+@fig-squid-mass_g-density shows the distribution of the original dataset, while
 @fig-boot1-density shows the distribution of the bootstrap resample. The two
-distributions are similar, but in the bootstrap resample, the mode at -1 is
-much more pronounced. The sample mean is also notably lower on the bootstrap
-resample (the original was `r round(mean(sample1), 2)`):
+distributions are nearly identical, which is typical for large samples.
+Nevertheless, the sample mean is slightly different from the population mean
+(`r pop_mean`):
 
 ```{r}
 mean(boot)
@@ -446,8 +470,8 @@ appropriate:
 library("purrr")
 
 b = 1000
-boot_resamples = map(seq_len(b), \(i) {
-  sample(sample1, replace = TRUE)
+boot_resamples = map(1:b, \(i) {
+  sample(mass_g, replace = TRUE)
 })
 ```
 
@@ -472,11 +496,11 @@ original sample:
 #|     sample.
 slice = 1:5
 df = data.frame(
-  x = c(sample1, unlist(boot_resamples[slice])),
+  x = c(mass_g, unlist(boot_resamples[slice])),
   # Make a categorical feature to identify each resample.
   sample = rep(
-    c("sample1", paste0("resample", slice)),
-    each = length(sample1)
+    c("original", paste0("resample", slice)),
+    each = length(mass_g)
   )
 )
 
@@ -506,13 +530,21 @@ ggplot(data.frame(bootstrap_mean = boot_means)) +
 ```
 
 Two details of @fig-bootstrap_mean-density are important to notice. First, the
-distribution is centered at roughly `r round(mean(sample1), 2)`, the mean of
-the original sample. This is always the case for a bootstrap sampling
-distribution, and a major difference from the actual sampling distribution,
-which will typically be centered near the population parameter.
+distribution is centered at roughly `r pop_mean`, the mean of the original
+sample. For an unbiased estimator, the bootstrap sampling distribution is
+always centered on the original estimate.
 
-Second, notice that the spread of the bootstrap sampling distribution is about
-the same as the spread of the sampling distribution in
+:::{.callout-warning}
+Remember that the bootstrap sampling distribution is itself an estimate and
+its center is usually different from the actual sampling distribution.
+
+Fortunately, the scale of the bootstrap sampling distribution tends to be
+similar to the actual sampling distribution. So we can still use it to estimate
+standard error.
+:::
+
+Second, notice that the spread of the bootstrap sampling distribution is much
+smaller than the spread of the sampling distribution in
 @fig-sample_mean-density. In fact, the standard deviation of the bootstrap
 estimates is:
 
@@ -520,10 +552,10 @@ estimates is:
 sd(boot_means)
 ```
 
-This is nearly `r round(sd(m), 2)`, the standard deviation of the sampling
-distribution. Most of the time, the scale of the bootstrap sampling
-distribution is relatively similar to the scale of the actual sampling
-distribution.
+This is about 1/10th of the standard error (`r round(sd(m), 2)`) we found in
+@sec-sampling-distribution. The reason for this difference is that now each
+sample has `r nrow(squid)` observations instead of 50 observations, so the
+estimates of the mean are much more accurate.
 
 The takeaway is that the bootstrap sampling distribution is useful for
 estimating standard error, even though its center (and sometimes its shape) can
@@ -802,19 +834,20 @@ $$
 In this case, $q$ is the $1 - \alpha / 2$ quantile of $t_{n - 1}$.
 
 In R, the `qt` function computes quantiles of the t distribution. So the code
-to construct a 95% confidence interval for the height differences example is:
+to construct a 95% confidence interval for mass in the California market squid
+example is:
 
 ```{r}
-n = length(sample1)
-std_err = sd(sample1) / sqrt(n)
+n = length(squid$mass_g)
+std_err = sd(squid$mass_g) / sqrt(n)
 
 # For a 0.95 = 1 - 0.05 confidence interval.
-ci = mean(sample1) + qt(c(0.025, 0.975), n - 1) * std_err
-round(ci, 4)
+ci = mean(squid$mass_g) + qt(c(0.025, 0.975), n - 1) * std_err
+round(ci, 2)
 ```
 
-This t distribution confidence interval is similar to but a bit wider than the
-bootstrap percentile interval (0.0112, 0.5188).
+This t distribution confidence interval almost identical to the bootstrap
+percentile interval (39.87, 40.63).
 
 Compared to bootstrap percentile intervals, t distribution confidence intervals
 have several advantages. They're cheaper to compute since no resampling is

@@ -11,6 +11,7 @@ This chapter uses the following R packages:
 
 * dplyr
 * ggplot2
+* palmerpenguins
 
 For a refresher about how to install and load packages, see the
 [Packages][r-basics-packages] section of DataLab's R Basics workshop reader.
@@ -88,8 +89,116 @@ specific by comparing the mean blood pressure of the two groups.
 -->
 
 
+## The Framework
+
+Every hypothesis test consists of the following steps:
+
+1. Describe the hypothesis in terms of two competing claims. The first, called
+   the **null hypothesis**, should be a reasonable default or baseline. The
+   second, called the **alternative hypothesis** should be the hypothesis you
+   want to test. The null and alternative hypotheses must be mutually
+   exclusive, meaning only one can possibly be true.
+
+2. Identify a statistic related to the hypothesis with a known sampling
+   distribution. Many hypothesis tests use the sample mean, since its
+   distribution is well-understood. Compute the statistic on the sample.
+
+3. Assume the null hypothesis is true. Use the sampling distribution to compute
+   the probability of getting a statistic at least as unlikely as the sample
+   statistic. For most hypothesis tests, we interpret "unlikely" as extreme
+   (farther out in the distribution's tails). This probability, called a
+   **p-value**, is a measure of evidence against the null hypothesis.
+
+4. If the p-value is very small, the sample statistic is unlikely under the
+   null hypothesis. In this case, we say that the result is **statistically
+   discernable** and reject the null hypothesis. Otherwise, the sample
+   statistic is compatible with the null hypothesis, so we do not reject it.
+
+In step 4, the convention is to choose a specific threshhold for "very small,"
+called the **discernibility level**. This is usually denoted by the Greek
+letter $\alpha$ (alpha). The discernibility level is the approximate
+probability of rejecting the null hypothesis when it's true (a false positive).
+Most statistical software defaults to $\alpha = 0.05$ (5%), but you should
+think carefully about what an acceptable false positive rate is for your work.
+
+:::{.callout-important}
+This framework only allows us to test whether the null hypothesis is unlikely!
+
+A small p-value does not guarantee that the alternative hypothesis is correct
+if multiple alternatives are possible. Along the same lines, a large p-value
+does not guarantee that the null hypothesis is correct, nor that the
+alternative hypothesis is incorrect.
+:::
+
+:::{.callout-note title="Note: Statistical Significance"}
+"Statistically significant" is another term for for statistically discernable.
+We prefer the latter, because somtimes a result is statistically discernable
+but not important or meaningful in any real-world sense. Calling such a result
+"significant" can easily give the wrong impression.
+:::
+
+:::{.callout-note title="Note: Power"}
+After learning about the discernibility level, you might wonder: what about the
+probability of failing to reject the null hypothesis when it's false (a false
+negative)?
+
+Statisticians usually denote this probability by the Greek letter $\beta$
+(beta). Its inverse, $1 - \beta$, is called the **power** of the hypothesis
+test. The power is the approximate probability that the test (correctly)
+rejects the null hypothesis when it's false. Hypothesis tests are often
+designed to maximize the power $1 - \beta$ for a given discernibility level
+$\alpha$.
+
+Power depends on the sampling distribution(s) under the alternative hypothesis.
+It's usually impossible to compute the exact power of a test, because the
+alternative hypothesis depends on unknown population parameters rather than
+specifying them. That said, for many tests, we can estimate power by choosing
+reasonably likely parameter estimates (for example, based on other data).
+
+Power also depends on sample size. If you plan to collect a dataset and carry
+out a hypothesis test, you should take power estimates into account when
+selecting the sample size. An experiment that uses an underpowered hypothesis
+test is a waste of resources.
+:::
+
+
 ## Dataset: Palmer Penguins
 
+![
+  Artwork by [Allison Horst][horst].
+](/images/applied-statistics/lter_penguins.png){#fig-penguins}
+
+[horst]: https://allisonhorst.com/
+
+As a source of examples, we'll use the [Palmer Penguins dataset][penguins],
+which was collected by [Dr. Kristen Gorman][gorman] at [Palmer Station,
+Antarctica][palmer]. [Alison Horst][horst] packaged the data for public use.
+The package is called palmerpenguins.
+
+[penguins]: https://allisonhorst.github.io/palmerpenguins/
+[gorman]: https://www.uaf.edu/cfos/people/faculty/detail/kristen-gorman.php
+[palmer]: https://pallter.marine.rutgers.edu/
+
+:::{.callout-important}
+Install the palmerpenguins package now if you didn't earlier.
+
+Load the package with the `library` function to access the dataset, which is
+called `penguins`.
+:::
+
+:::{.callout-warning}
+In recent versions of R, the `penguins` dataset is built-in, but has slightly
+different column names. If you want to follow along with this reader, make sure
+to use the dataset from the package rather than the built-in dataset.
+:::
+
+The dataset consists of observations of 344 penguins from 3 different species:
+[Adélie][], [Chinstrap][], and [Gentoo][]. The measurements include flipper
+length, bill width, sex, and body mass.
+
+[Adélie]: https://en.wikipedia.org/wiki/Ad%C3%A9lie_penguin
+[Chinstrap]: https://en.wikipedia.org/wiki/Chinstrap_penguin
+[Gentoo]: https://en.wikipedia.org/wiki/Gentoo_penguin
 
 
 ## Permutation Tests

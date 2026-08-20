@@ -3,7 +3,13 @@
 ::: {.callout-note title="Learning Goals" collapse="false"}
 After this lesson, you should be able to:
 
-* TODO
+* Explain the purpose of a hypothesis test
+* Describe the characteristics of a testable hypothesis
+* Construct a testable hypothesis for a research question
+* Explain what null and alternative hypotheses are
+* Explain what a p-value is
+* Explain what it means for an effect to be statistically discernable
+* Use a permutation test to test a hypothesis
 :::
 
 :::{.callout-important title="Required Packages"}
@@ -100,8 +106,8 @@ Every hypothesis test consists of the following steps:
    believe might be true and want to test. The null and alternative hypotheses
    must be mutually exclusive, meaning only one can possibly be true.
 
-2. Identify a statistic related to the hypothesis with a known sampling
-   distribution. Many hypothesis tests use the sample mean, since its
+2. Identify a **test statistic** related to the hypothesis with a known
+   sampling distribution. Many hypothesis tests use the sample mean, since its
    distribution is well-understood (@sec-central-limit-theorem). Compute the
    statistic on the sample.
 
@@ -388,4 +394,9 @@ well as many more examples, see [_Introduction to Modern Statistics_][ims]
 [@ims]. This book also presents some classical hypothesis tests.
 
 [ims]: https://openintrostat.github.io/ims/
+
+In R, there are built-in functions to carry out classical hypothesis tests. The
+[coin][] package provides functions to carry out permutation tests.
+
+[coin]: https://doi.org/10.32614/CRAN.package.coin
 :::

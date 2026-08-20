@@ -8,3 +8,9 @@ After this lesson, you should be able to:
 
 This chapter covers
 
+
+## Visualizing Relationships
+
+
+## Correlation
+

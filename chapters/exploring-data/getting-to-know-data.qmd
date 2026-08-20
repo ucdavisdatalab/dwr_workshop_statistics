@@ -15,23 +15,100 @@ After this lesson, you should be able to:
 * Convert columns to appropriate data types
 :::
 
+<!--
 :::{.callout-important}
 We teach this lecture with [a slide deck][slides]. This chapter does not
 necessarily cover everything covered in lecture.
 :::
 
 [slides]: https://docs.google.com/presentation/d/1e_LcUT1tU5WsUYnrTQBjTIOL6zIrcCsXBjUigTBKA6w/edit?usp=sharing
+-->
 
-This chapter covers
+This chapter explains where to start when you explore a dataset. Whether it's
+data you collected yourself or a new and unfamiliar dataset, the steps to go
+through and details to check at the beginning of an exploration are the same.
+Some of these are qualitative: now is a good time to think about how and why
+the data were collected, and whether they're appropriately representative to
+address the questions you want to answer. Others are computational, such as
+whether the dataset's structure matches expectations and is convenient for
+analysis. The chapter also briefly discusses fixes for common problems, with
+references to where you can learn more.
 
 
-## Tabular Datasets
+## Be a Data Biographer
+
+The first step in getting to know a dataset is understanding who collected it
+and why they did so.
+
+* Who collected the dataset?
+* Why was the dataset collected?
+
+Next, think about the concrete details of how the dataset was collected. What
+was the collection procedure?
+
+From which population is the dataset drawn? Does the dataset include the entire
+population? If the dataset is a sample of the population, how was the sample
+taken? Is it possible that subgroups within the population were undersampled or
+left out, either by coincidence, due to natural constraints, or intentionally?
+
+Is the dataset also associated with other populations?
+
+Consider whether any special privacy or security precautions are necessary for
+the dataset.
+
+Finally, think about the impact of the dataset and analyses based on it. Who
+benefits? Who, if anyone, might be harmed?
+
+:::{.callout-important}
+Keep these questions in mind throughout your time working with the dataset.
+When you arrive at results you want to share, revisit these questions before
+doing so.
+:::
+
+A **data biography** is a document that attempts to answer these kinds of
+questions and provide any other background and context relevant to a dataset.
+When collecting a dataset, providing a biography as one part of the
+documentation is a best practice. If the dataset you're working with doesn't
+include a biography, try to write one yourself! Doing so will force you to
+confront the questions above, and give you a document you can use to help
+explain the results of your analyses. In some cases, sharing the data biography
+might help coworkers or colleagues who also want to work with the dataset.
+
+
+## Structure Matters
 
 The structure of a dataset---its shape and organization---has enormous
-influence on how difficult it will be to analyze. When you start working with a
-dataset, examining its structure is one of the first things you should do. This
-way you can identify and correct potential problems, and prepare the dataset
-for the analyses you'd like to carry out.
+influence on how difficult it will be to analyze.
+
+Datasets can take many different forms, or **structures**, depending on what
+they represent and the information they contain. For instance, a dataset that
+represents:
+
+<!-- TODO: pictures! or links to data? e.g., night heron range -->
+<!-- Same dataset, different structures? -->
+
+* People in a family, such as the Roosevelts, might be organized as a (family)
+  tree, with connections from parents to children.
+* Monthly population estimates for a fish species in the Sacramento River might
+  be a series of numbers.
+* Relationships between cats in a small town might be a graph (or network),
+  with a node for each cat and an edge (connection) between each pair of cats
+  that have met.
+* Individual consumer reviews for several different vacuums might be a table
+  with a row for each review and columns to identify the individual, vacuum
+  model, and review score.
+* Bike paths in Davis, CA might be a collection of geospatial coordinates that
+  describe points, lines, and shapes.
+
+<!-- FIXME: this is pretty abstract, can we be more concrete? -->
+Different structures have tradeoffs.
+
+Structure matters because it affects which avenues of exploration and analysis
+are appropriate and realistic. It can also affect how you access and query data
+in the dataset.
+
+Sometimes, transforming a dataset to a different structure
+makes analysis easier.
 
 A **tabular** dataset is one that's structured as a table, with rows and
 columns. This reader focuses on tabular datasets, since they're common in
@@ -44,7 +121,7 @@ tabular dataset:
 | banana | 541      | 0.79
 | pear   | 10       | 1.99
 
-Researchers think about datasets in terms of two components:
+Data scientists think about datasets in terms of two components:
 
 * A **feature** (also called a **covariate**) is measurement of something,
   usually across multiple subjects. For example, we might decide to measure the
@@ -63,6 +140,14 @@ Every dataset has features and observations, regardless of whether the dataset
 is tabular.
 
 
+A **data dictionary** is documentation that describes each feature in a dataset
+in detail. For a tabular dataset, a data dictionary typically describes the
+unit of observation (in other words, what a subject is) and what each column
+measures. The description explain the range of realistic values, regardless of
+whether the feature is quantitative or qualitative. For quantitative features,
+it should also specify the units of measurement.
+
+<!--
 ## Tidy Datasets {#sec-tidy-data}
 
 In 2014, [Hadley Wickham][hadley] refined and formalized the conventions for
@@ -98,45 +183,7 @@ is an observation and each column is a feature.
 
 @sec-reshaping-data gives examples of tidy and untidy data, as well as
 explanations of how to make untidy data tidy.
-
-
-## Types of Data {#sec-types-of-data}
-
-Different types of data require different approaches and analysis methods. For
-example, if your data are numbers, you can summarize them by computing a sum or
-an average. On the other hand, if your data are categories, like genres of
-music (rock, pop, classical, ...), you can't use these summarization methods
-and have to do something else.
-
-Researchers categorize data into **types** based on sets of shared
-characteristics. This makes it easier to reason about how to transform,
-analyze, and present the data. Some widely-understood data types are:
-
-* **Categorical**
-    + **Nominal** - data separated into specific categories, with no order. For
-      example, hair color (red, brown, blonde, ...) is categorical.
-    + **Ordinal** - data separated into specific categories, with an order. For
-      example, school level (elementary, middle, high, college) is ordinal.
-* **Numerical**
-    + **Discrete** - integers, or a finite set of decimal numbers with no
-      values in between. Sometimes discrete values can also be treated as
-      ordinal. For example, month as a number (1, 2, ..., 12) is discrete.
-    + **Continuous** - decimal numbers. There are no specific categories, but
-      there is an order. For example, height in inches is numerical.
-
-Of course, other types of data, like graphs (networks) and natural language
-(books, speech, and so on), are also possible. Categorizing data this way is
-useful for reasoning about which methods to apply to which data.
-
-:::{.callout-tip}
-Because a feature measures something, we often think and talk about types of
-features rather than types of individual values. For example, for a feature
-that measures temperature in degrees Celsius, all of the data values will be
-numeric (and probably continuous). So we can say the feature is numeric.
-
-In a tidy dataset, each feature has its own column, so it also makes sense to
-talk about the types of the columns.
-:::
+-->
 
 
 ## Dataset: CA Least Terns {#sec-ca-least-terns}
@@ -236,8 +283,12 @@ The messy source dataset (with more years and more columns) is available
 
 ## Structural Summaries
 
-Whenever you load a data set into R, your next step should be to investigate
-the data's structure. This step is important because it can help you identify
+When you start working with a dataset, examining its structure is one of the
+first things you should do. This way you can identify and correct potential
+problems, and prepare the dataset for the analyses you'd like to carry out.
+
+Whenever you load a dataset into R, your next step should be to investigate the
+data's structure. This step is important because it can help you identify
 whether:
 
 * The data was loaded correctly
@@ -260,6 +311,51 @@ the columns:
 ```{r}
 str(terns)
 ```
+
+
+## Types of Data {#sec-types-of-data}
+
+Different types of data require different approaches and analysis methods. For
+example, if your data are numbers, you can summarize them by computing a sum or
+an average. On the other hand, if your data are categories, like genres of
+music (rock, pop, classical, ...), you can't use these summarization methods
+and have to do something else.
+
+Data scientists categorize data into **types** based on sets of shared
+characteristics. This makes it easier to reason about how to transform,
+analyze, and present the data. Some widely-understood data types are:
+
+* **Categorical**
+    + **Nominal** - data separated into specific categories, with no order. For
+      example, hair color (red, brown, blonde, ...) is categorical.
+    + **Ordinal** - data separated into specific categories, with an order. For
+      example, school level (elementary, middle, high, college) is ordinal.
+* **Numerical**
+    + **Discrete** - integers, or a finite set of decimal numbers with no
+      values in between. Sometimes discrete values can also be treated as
+      ordinal. For example, month as a number (1, 2, ..., 12) is discrete.
+    + **Continuous** - decimal numbers. There are no specific categories, but
+      there is an order. For example, height in inches is numerical.
+
+<!--
+Of course, other types of data, like graphs (networks) and natural language
+(books, speech, and so on), are also possible.
+-->
+Categorizing data this way is useful for reasoning about which methods to apply
+to which data.
+
+:::{.callout-tip}
+Because a feature measures something, we often think and talk about types of
+features rather than types of individual values. For example, for a feature
+that measures temperature in degrees Celsius, all of the data values will be
+numeric (and probably continuous). So we can say the feature is numeric.
+
+In a tidy dataset, each feature has its own column, so it also makes sense to
+talk about the types of the columns.
+:::
+
+
+## Correcting Data Types
 
 Often when you load a new dataset, some of the columns won't have the correct
 data type (or class) for what you want to do. For instance, in the least terns

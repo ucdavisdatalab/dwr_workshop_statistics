@@ -23,8 +23,13 @@ This chapter covers a variety of ways to investigate and summarize tabular data
 in order to understand the data better and identify potential problems. The
 lesson also describes how to fix some of the most common data problems.
 
+## What Is a Distribution?
 
-## Statistical Summaries
+
+## Categorical Data
+
+
+## Numerical Data
 
 After investigating the data's structure, it's a good idea to check some basic
 statistical properties. This step is important because it can help you identify

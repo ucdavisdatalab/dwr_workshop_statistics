@@ -559,7 +559,7 @@ $$
 \textrm{SE} = \frac{\sigma}{\sqrt{n}} \approx \frac{S}{\sqrt{n}}.
 $$
 
-For large samples (say $n \geq 30$), we can also replace $\sigma$ with $s$ in
+For large samples (say $n \geq 30$), we can also replace $\sigma$ with $S$ in
 the CLT. For small samples, $S$ tends to underestimate, so the standard score
 is larger and doesn't have a standard normal distribution. The density is still
 bell-shaped, but the tails are notably heavier. We call this **Student's t

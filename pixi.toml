@@ -27,6 +27,10 @@ r-dplyr = ">=1.2.1,<2"
 r-purrr = ">=1.2.2,<2"
 r-palmerpenguins = ">=0.1.1,<0.2"
 r-ggfortify = ">=0.4.23,<0.5"
+r-tsibble = ">=1.2.0,<2"
+r-forecast = ">=9.0.2,<10"
+r-ggtime = ">=0.2.0,<0.3"
+r-feasts = ">=0.5.0,<0.6"
 
 
 [activation.env]

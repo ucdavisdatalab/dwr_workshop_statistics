@@ -1,9 +1,19 @@
 # Overview {.unnumbered}
 
+_One 2-hour session_
+
+<!--
 :::{.callout-note title="Learning Goals" collapse="false"}
 After this lesson, you should be able to:
 
 * YOUR LEARNING GOALS
 :::
+-->
 
-YOUR DESCRIPTION, PREREQUISITES, ETC
+This workshop introduces a variety of statistical methods and models to account
+for missing or censored measurements in datasets. We’ll begin by reviewing
+different types of missingness and censorship. We’ll then discuss specific
+models and strategies for imputation and estimation, when they’re appropriate,
+and when they break down. Extra emphasis will be given to techniques for
+working with nondetect (left-censored) measurements.
+

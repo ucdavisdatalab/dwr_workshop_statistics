@@ -1,9 +1,28 @@
 # Overview {.unnumbered}
 
+_One 2-hour session_
+
 :::{.callout-note title="Learning Goals" collapse="false"}
 After this lesson, you should be able to:
 
-* YOUR LEARNING GOALS
+* Explain the differences between time series and repeated measures
+* Clean and prepare time series for further analysis
+* Explain what trend and seasonality are
+* Decompose a time series into trend, seasonal, and remainder components
+* Use statistical models to forecast future values of a time series
+* Explain what partial pooling is
+* Use R to fit a hierarchical model with a partially pooled intercept
 :::
 
-YOUR DESCRIPTION, PREREQUISITES, ETC
+This workshop is an overview of statistical methods for working with datasets
+collected over time or for which time is a key component. We’ll explain two
+common kinds of temporal datasets: measurements taken at many time points for
+just one or a few subjects (time series) and measurements taken at just a few
+time points for many subjects (longitudinal or repeated measures). For each
+case, we’ll introduce models and techniques that are good starting points for
+more sophisticated analyses, such as autoregressive models and hierarchical
+(mixed effects) models. We’ll also discuss themes and concerns common to both
+cases, such as autocorrelations, trends, and seasonality. While the examples
+will focus on temporal datasets, many of the methods and models generalize to
+or have extensions for serial correlation in other contexts, such as in spatial
+datasets.

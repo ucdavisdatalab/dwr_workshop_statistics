@@ -37,15 +37,14 @@ For a refresher about how to install and load packages, see the
 :::
 
 
-We often want to study features together to make sense of the underlying
-relationship. 
-
 A common application of statistics is to study relationships between features.
 @sec-relationships-between-features introduced visualizations and the
-correlation statistic for this purpose.
-When the
-relationship between two or more features roughly follows a straight line, we
-can fit a **linear model** that estimates the line's intercept and slope.
+correlation statistic for this purpose. When the relationship between two or
+more features roughly follows a line, we can fit a **linear model** (or linear
+regression) that estimates the line's intercept and slope. Linear models are
+suprisingly flexible: by transforming features, we can use linear models to
+summarize many kinds of lines and curves. This chapter introduces the
+fundamentals of linear models.
 
 <!--
 Any straight line we draw is a linear model: a line that approximates the
@@ -1064,4 +1063,12 @@ textbooks were especially influential:
 
 [ims]: https://openintrostat.github.io/ims/
 [ros]: https://avehtari.github.io/ROS-Examples/
+
+DataLab also has two older workshops about linear models:
+
+* [A Practical Introduction to Regression Modeling in R][dl-reg-model]
+* [Model Validation for Applied Data Science][dl-model-valid]
+
+[dl-reg-model]: https://ucdavisdatalab.github.io/workshop_regression/
+[dl-model-valid]: https://ucdavisdatalab.github.io/workshop-model-validation/
 :::

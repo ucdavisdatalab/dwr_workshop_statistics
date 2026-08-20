@@ -12,6 +12,7 @@ This chapter uses the following R packages:
 * dplyr
 * ggplot2
 * palmerpenguins
+* purrr
 
 For a refresher about how to install and load packages, see the
 [Packages][r-basics-packages] section of DataLab's R Basics workshop reader.
@@ -89,19 +90,20 @@ specific by comparing the mean blood pressure of the two groups.
 -->
 
 
-## The Framework
+## The Framework {#sec-framework}
 
 Every hypothesis test consists of the following steps:
 
 1. Describe the hypothesis in terms of two competing claims. The first, called
    the **null hypothesis**, should be a reasonable default or baseline. The
    second, called the **alternative hypothesis** should be the hypothesis you
-   want to test. The null and alternative hypotheses must be mutually
-   exclusive, meaning only one can possibly be true.
+   believe might be true and want to test. The null and alternative hypotheses
+   must be mutually exclusive, meaning only one can possibly be true.
 
 2. Identify a statistic related to the hypothesis with a known sampling
    distribution. Many hypothesis tests use the sample mean, since its
-   distribution is well-understood. Compute the statistic on the sample.
+   distribution is well-understood (@sec-central-limit-theorem). Compute the
+   statistic on the sample.
 
 3. Assume the null hypothesis is true. Use the sampling distribution to compute
    the probability of getting a statistic at least as unlikely as the sample
@@ -203,7 +205,187 @@ length, bill width, sex, and body mass.
 
 ## Permutation Tests
 
-Despite the name, the conclusion of a hypothesis test is not guaranteed to be
-correct, and other sources of knowledge about the hypothesis should also be
-taken into account.
+We can use the Palmer Penguins dataset to explore how hypothesis tests work in
+practice. Suppose we hypothesize that Adélie and Chinstrap penguins have
+different mean body masses. Let $\mu_a$ denote the population mean body mass
+for Adélie penguins and $\mu_c$ denote the same for Chinstrap penguins. Then we
+can formalize our hypothesis in two parts:
 
+* A null hypothesis $H_0: \mu_a = \mu_c$ that the means are equal. Another way
+  to write this is $H_0: \mu_a - \mu_c = 0$, that the difference in means is 0.
+
+* An alternative hypothesis $H_A: \mu_a \neq \mu_c$ that the means are not
+  equal.
+
+With the dataset, we can estimate $\mu_a - \mu_c$ with the difference of sample
+means $\bar{x}_a - \bar{x}_c$. In R, we'll first set up a helper function to
+compute the sample mean of each group and then compute their difference:
+
+```{r}
+#| warning: false
+library("dplyr")
+
+# This function computes the difference in sample means for Adelie and
+# Chinstrap penguins.
+difference_of_means_ac = function(data) {
+  adelie = filter(data, species == "Adelie")
+  chinstrap = filter(data, species == "Chinstrap")
+
+  mean_a = mean(adelie$body_mass_g, na.rm = TRUE)
+  mean_c = mean(chinstrap$body_mass_g, na.rm = TRUE)
+
+  mean_a - mean_c
+}
+```
+
+We can use the function to estimate the difference in mean body mass for Adélie
+and Chinstrip penguins:
+
+```{r}
+#| warning: false
+library("palmerpenguins")
+
+penguins_ac = filter(penguins, species %in% c("Adelie", "Chinstrap"))
+diff_ac = difference_of_means_ac(penguins_ac)
+diff_ac
+```
+
+The difference is not zero, but that could be due to the sample rather than a
+property of the entire population. But let's assume the null hypothesis is
+true, so the two species have the same mean body mass. Is it likely that a
+sample would have a `r round(diff_ac, 3)` difference? To address this, we need
+to know the sampling distribution of the difference.
+
+Under the null hypothesis, the two species are indistinguishable in terms of
+mean body mass. So if we resample by permuting the species, the difference in
+sample means should still be close to 0. By computing many resamples, we can
+approximate the sampling distribution of the difference when the null
+hypothesis is true. Then we can determine whether the difference for the
+original sample is likely. This procedure is a kind of hypothesis test called a
+**permutation test** or **randomization test**.
+
+:::{.callout-note title="Algorithm: Permutation Test"}
+Suppose we want to test a hypothesis about the relationship between two
+features, and we can quantify the hypothesis with a statistic. To test the
+hypothesis with a permutation test:
+
+1. Construct a new sample by permuting one of the two features. Permuting means
+   shuffling or sampling *without* replacement.
+2. Compute the statistic on the new sample.
+3. Repeat steps 1-2 to compute a collection of $k$ statistics.
+4. Use the collected statistics to estimate the sampling distribution.
+5. Use the sampling distribution to estimate a p-value for the statistic
+   computed on the original sample.
+
+Depending on the size of the original sample, it's sometimes possible to
+compute all permutations (without any random sampling). Then we say the test is
+**exact**.
+:::
+
+Let's work through a permutation test for the Adélie and Chinstrap penguins. In
+R, we can use the `sample` function to permute a feature. We'll also use the
+purrr package's `map` function to repeat the permutation step:
+
+```{r}
+library("purrr")
+
+set.seed(12099)
+
+# Resample `species` by shuffling (no replacement).
+perm_resamples = map(seq_len(1000), \(i) {
+  samp = penguins_ac
+  samp$species = sample(samp$species)
+
+  samp
+})
+```
+
+Next, we need to compute the difference of sample means on each new sample. For
+instance, on the first new sample:
+
+```{r}
+difference_of_means_ac(perm_resamples[[1]])
+```
+
+We can use the purrr package again to repeat this for all of the new samples:
+
+```{r}
+perm_diffs_ac = map_dbl(perm_resamples, difference_of_means_ac)
+```
+
+This collection of statistics enables us to estimate the sampling distribution.
+We can make a density plot and mark where the original sample statistic lies:
+
+```{r}
+#| label: fig-permutation-density
+#| fig-cap: >
+#|     Density plot of the sampling distribution of the difference of means,
+#|     assuming the null hypothesis that the means are equal is true. The
+#|     dotted vertical line marks the value of the original sample statistic.
+library("ggplot2")
+
+ggplot(data.frame(difference_of_means = perm_diffs_ac)) +
+  aes(x = difference_of_means) +
+  geom_density() +
+  geom_vline(xintercept = diff_ac, linetype = "dotted")
+```
+
+Based on @fig-permutation-density, the original sample statistic is fairly
+close to the center of the distribution. In other words, it's a plausible
+difference even if the null hypothesis is true.
+
+To compute a p-value, we need to estimate the probability of getting a value at
+least as extreme as the original sample statistic. We can use a **cumulative
+distribution function**, a function that estimates the cumulative probability
+of all values up to a given value, to do this. Since we don't know the
+mathematical form of the sampling distribution, we'll use an **empirical
+cumulative distribution function** (ECDF), an estimate based on the collection
+of statistics we computed by permuting.
+
+R's `ecdf` function computes an ECDF based on a sample. The ECDF is itself a
+function, which we can use to estimate the p-value:
+
+```{r}
+ecdf(perm_diffs_ac)(diff_ac)
+```
+
+So under the null hypothesis, there's a roughly 30% chance of getting a more
+extreme (more negative) difference than `r round(diff_ac, 3)`. At level $\alpha
+= 0.05$, the difference in means is not statistically discernable. We fail to
+reject the null hypothesis. It's still possible that Adélie and Chinstrap
+penguins do have different mean body masses, but we would need to collect
+additional data to prove it.
+
+:::{.callout-warning}
+The conclusion of a hypothesis test is not guaranteed to be correct, and other
+sources of knowledge about the hypothesis should also be taken into account!
+:::
+
+:::{.callout-note title="Note: Classical Hypothesis Tests"}
+Like the bootstrap algorithm, permutation tests only became possible in the age
+of computing. Before that, statisticians developed a wide variety of hypothesis
+tests based on mathematical approximations. Many of these rely on the CLT
+(@sec-central-limit-theorem).
+
+We don't cover classical hypothesis tests here (beyond the framework in
+@sec-framework) because there are so many different kinds---they're usually
+tailored to specific kinds of hypotheses and statistics.
+
+Permutation tests are superior to classical hypothesis tests in most situations
+because they make fewer assumptions. However, they do have a few disadvantages:
+
+* They're only suitable for testing datasets where the observations are
+  exchangeable under the null hypothesis. In other words, datasets where
+  permuting won't break some other inherent structure. For instance,
+  permuatation tests are usually not appropriate for testing time series.
+* They take longer to compute. This is usually only a problem if the sample
+  size is very large.
+:::
+
+:::{.callout-note title="See Also"}
+For a more thorough explanation of hypothesis tests and permutation tests, as
+well as many more examples, see [_Introduction to Modern Statistics_][ims]
+[@ims]. This book also presents some classical hypothesis tests.
+
+[ims]: https://openintrostat.github.io/ims/
+:::

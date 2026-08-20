@@ -17,3 +17,84 @@ For a refresher about how to install and load packages, see the
 
 [r-basics-packages]: https://ucdavisdatalab.github.io/dwr_workshop_r_basics/chapters/getting-started/getting-started.html#sec-packages
 :::
+
+Statistics help us make informed decisions about the world. Sometimes the goal
+is to evaluate whether a particular belief or **hypothesis** is true. We can
+weigh the evidence in a dataset for (or against) a hypothesis with a
+statistical procedure called a **hypothesis test**. Hypothesis tests take many
+forms and are often tailored to specific problems. Nonetheless, all hypothesis
+tests are based on a general framework. This chapter introduces the hypothesis
+testing framework as well as a specific kind of hypothesis test that's broadly
+applicable because of its minimal assumptions.
+
+
+## Forming Hypotheses
+
+The first step in hypothesis testing is forming a suitable hypothesis. The best
+time to come up with a hypothesis is before you collect the dataset you'll use
+to evaluate it. If the dataset has already been collected, the best time is
+*before* doing any exploration. This way the dataset serves as a fair,
+independent sample for testing the hypothesis.
+
+:::{.callout-warning}
+When you form a hypothesis based on patterns you see in a dataset, no matter
+how slight, using the same dataset to test the hypothesis will overstate the
+strength of the evidence.
+
+To test a hypothesis formed by exploring a dataset, you must collect an
+entirely new dataset from the same population.
+:::
+
+Ideally, your hypothesis is based on a clear conceptual model rooted in
+personal experience and expert knowledge about the topic. This knowledge may
+include prior work with *other* datasets. A good way to check is to write an
+explanation of your hypothesis and why you believe it might be true. Ask
+yourself whether a peer would find your argument convincing enough to warrant
+further investigation, and if not, adjust the hypothesis.
+
+:::{.callout-important}
+We form hypotheses about a population and use hypothesis tests to test them on
+samples. If you can collect data for the entire population, there's no need to
+conduct a hypothesis test---the sample statistics are the population
+statistics!
+:::
+
+In order to test a hypothesis with data, there are two requirements. First, the
+hypothesis must relate to something that can be measured. If you can't measure
+it, you can't test it (although in some cases you can choose and test a proxy).
+If you already have a dataset, make sure that its features allow asking the
+kinds of questions you want to ask.
+
+Second, the hypothesis must be specific and falsifiable. Data and statistics
+can't help with a hypothesis that's too broad or impossible to disprove. Try to
+translate your hypothesis into a statement about a population parameter.
+
+As an example, suppose you study trout in California rivers. You suspect that
+the trout population in one river increased over the past year. You're not able
+to conduct a complete census of the trout population, so you collect counts at
+specific locations and times. These counts are the feature you can use to
+address the hypothesis. There are several ways to make the hypothesis specific
+enough to test; a simple one is to ask whether the mean counts in the current
+year (averaging over locations) are higher than the mean counts in the previous
+year.
+
+<!--
+As an example, suppose you've developed a new medicine to lower blood pressure.
+Naturally, your hypothesis is that people who take the medicine will have lower
+blood pressure than people who don't, all other things being equal. When you
+collect a dataset, you must measure blood pressure in order to be able to
+conclude anything about the hypothesis. You can make the hypothesis more
+specific by comparing the mean blood pressure of the two groups.
+-->
+
+
+## Dataset: Palmer Penguins
+
+
+
+## Permutation Tests
+
+Despite the name, the conclusion of a hypothesis test is not guaranteed to be
+correct, and other sources of knowledge about the hypothesis should also be
+taken into account.
+

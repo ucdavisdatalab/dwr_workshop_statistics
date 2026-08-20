@@ -1,9 +1,26 @@
+```{r}
+#| echo: false
+#| warning: false
+library("dplyr")
+squid = readRDS("data/1989-1994_ca_market_squid.rds")
+squid = filter_out(squid, mass_g >= 400 | is.na(mass_g))
+```
+
 # Linear Models
 
 ::: {.callout-note title="Learning Goals" collapse="false"}
 After this lesson, you should be able to:
 
-* TODO
+* Explain what a linear model is
+* Specify a linear model in terms of an outcome and predictors
+* Fit a linear model on a dataset
+* Describe the assumptions of a linear model
+* Create diagnotic plots for a linear model
+* Interpret diagnotic plots to decide whether the linear model assumptions are
+  satisfied
+* Explain some strategies for selecting features to use as predictors
+* Interpret linear models and their estimates
+* Conduct and interpret hypothesis tests for linear model coefficients
 :::
 
 :::{.callout-important title="Required Packages"}
@@ -12,7 +29,6 @@ This chapter uses the following R packages:
 * dplyr
 * ggfortify
 * ggplot2
-* palmerpenguins
 
 For a refresher about how to install and load packages, see the
 [Packages][r-basics-packages] section of DataLab's R Basics workshop reader.
@@ -31,118 +47,118 @@ When the
 relationship between two or more features roughly follows a straight line, we
 can fit a **linear model** that estimates the line's intercept and slope.
 
+<!--
+Any straight line we draw is a linear model: a line that approximates the
+relationship between features.
+-->
+
 
 ## Fitting a Model
 
-Let's examine the Palmer Penguins dataset (@sec-dataset-palmer-penguins) once
-again. As a reminder, the structure is:
+To demonstrate how to fit, inspect, and interpret a linear model, we'll once
+again turn to the California market squid dataset
+(@sec-dataset-ca-market-squid). As a reminder, the structure is:
 
 ```{r}
-#| warning: false
-library("palmerpenguins")
-
-str(penguins)
+str(squid)
 ```
 
-For now, we'll focus on the `flipper_length_mm` and `body_mass_g` features. It
-makes sense that they might have some relationship---maybe that penguins with
-higher body mass tend to have longer flippers. Let's use the dataset to try to
-determine whether this is true. First, we'll filter out all of the rows where
-one or both of the features are missing, since they can't help us understand
-the relationship:
+Suppose we want to understand the relationship between the mass and dorsal
+mantle length of squid. We can start investigating by making a scatter plot of
+the two relevant features:
 
 ```{r}
-#| warning: false
-library("dplyr")
-
-penguins_tidy = filter_out(
-  penguins, is.na(flipper_length_mm), is.na(body_mass_g)
-)
-```
-
-Following the advice of @sec-relationships-between-features, let's make a
-scatter plot of the two features:
-
-```{r}
-#| warning: false
-#| label: fig-flipper_length_mm-body_mass_g
+#| label: fig-squid-scatter
 library("ggplot2")
 
-ggplot(penguins) +
-  aes(x = flipper_length_mm, y = body_mass_g) +
-  geom_point()
+ggplot(squid) +
+  aes(x = dorsal_mantle_length_mm, y = mass_g) +
+  geom_point(alpha = 0.5)
 ```
 
-@fig-flipper_length_mm-body_mass_g shows that we were correct to think that
-body mass and flipper length increase together. In fact, the points in this
-sample almost seem to follow a straight line. The line can't pass through every
-point because of indivdual variation among the penguins, but it can capture the
-general trend or pattern in the points. Whatever line we draw is a **linear
-model**: a line that approximates the relationship between features.
+Most of the squid are in a dense cloud of points with dorsal mantle length less
+than 200 millimeters and mass less than 150 grams. Even though we removed some
+outliers earlier (@sec-dataset-palmer-penguins), there are still three squid
+with unusual measurements. We'll leave these in the dataset for now, but they
+do warrant further investigation.
+
+The cloud of points is triangular or slightly curved, not a perfect straight
+line. We can get a better view of it by temporarily removing the outliers:
+
+```{r}
+#| warning: false
+#| label: fig-squid-scatter-clean
+library("dplyr")
+
+squid_cloud = filter(squid, dorsal_mantle_length_mm <= 200, mass_g <= 150)
+
+ggplot(squid_cloud) +
+  aes(x = dorsal_mantle_length_mm, y = mass_g) +
+  geom_point(alpha = 0.5)
+```
+
+In @fig-squid-scatter-clean, the relationship looks like it might be quadratic
+or exponential. Nonetheless, we'll start by modeling the relationship with a
+straight line and adjust later based on model diagnostics.
+
+Setting the nature of the relationship aside, a single line or curve can't pass
+through every point because of individual variation among the squid. The best
+we can hope for is that it captures the general trend or pattern in the points.
 
 We can make the linear model concrete by writing the equation for the line. A
-line always has an intercept, which we'll denote by $\beta_0$, and slope, which
-we'll denote by $\beta_1$. Then we can write:
+line has an intercept, which we'll denote by $\beta_0$, and slope, which we'll
+denote by $\beta_1$. In order to account for individual variation, we'll also
+include a **residual** term in the equation, which we'll denote by $\epsilon$.
+The residual is a reminder that this is just a model; when we plot the model or
+use it to make predictions, we'll omit the residual. So the equation for the
+line is:
 
 $$
-(\textrm{body mass})
-= \beta_0 + \beta_1(\textrm{flipper length})
+\texttt{mass\_g}
+= \beta_0 + \beta_1\cdot\texttt{dorsal\_mantle\_length\_mm} + \epsilon
 $$
 
 One way to interpret this equation is that the feature on the left-hand side is
-fully determined by the right-hand side. In this interpretation, we call the
-feature on the left-hand side the **response** and each feature on the
-right-hand side a **predictor**. For our model, body mass is the response and
-flipper length is a predictor.
-
-:::{.callout-note title="Note: Alternative Terminology" collapse="true"}
-We'll refer to the feature on the left-hand side as "the response" and each
-feature on the right-hand side as a "predictor" or simply a "feature." However,
-there are many other names for these, and the names are often
-discipline-specific.
-
-The feature on the left-hand side is sometimes called the **dependent** or
-**endogenous** feature.
-
-A feature on the right-hand side is sometimes called a **covariate**, or an
-**independent** or **exogenous** feature.
-:::
+an **outcome** predicted by the features on the right-hand side, which we call
+**predictors**. In our model, mass is the outcome and flipper length is the
+only predictor.
 
 :::{.callout-warning}
-Despite the predictor-response interpretation, a linear model alone can't tell
-us whether a relationship between features is causal. To conclude that flipper
-length causes body mass (or vice-versa), we'd have to make additional
+Despite the outcome-predictor interpretation, a linear model alone can't tell
+us whether a relationship between features is causal. To conclude that dorsal
+mantle length *causes* mass (or vice-versa), we'd have to make additional
 assumptions.
 
 For an introduction to causal inference, see "Part 5: Causal Inference" of
 [_Regression and Other Stories_][ros] [@gelman2020].
 :::
 
-Due to indivdual variation among the penguins, the line can't pass through
-every observation (and might not pass through any!). To account for this, we
-can include a **residual** (or error) term in the model:
+:::{.callout-note title="Note: Alternative Terminology" collapse="true"}
+We use the names "outcome" and "predictor" for features in a linear model, but
+these concepts go by many names, which are often discipline-specific. Also keep
+in mind that features are called "variables" in most disciplines.
 
-$$
-(\textrm{body mass})
-= \beta_0 + \beta_1(\textrm{flipper length}) + (\textrm{residual})
-$$
+Other names for outcome include response, dependent feature, and endogenous
+feature.
 
-The residual is a reminder that this is just a model.
+Other names for predictor include covariate, independent feature, and exogenous
+feature.
+:::
 
-Writing the linear model in terms of variables makes it more general (because
-the variables can refer to any features from any dataset) and also more
-convenient to work with mathematically. Let $(x_i, y_i)$ denote observations
-(with two features) and $\epsilon_i$ denote residuals, for $i = 1, \dots, n$.
-Then we can write the model as:
+Writing the linear model in terms of mathematical variables rather than feature
+names makes it more concise and more general (because the variables could refer
+to any features from any dataset). To do so, let $(x_i, y_i)$ denote
+observations (with two features) and $\epsilon_i$ denote residuals, for $i = 1,
+2, \dots, n$. Then the equation becomes:
 
 $$
 y_i = \beta_0 + \beta_1 x_i + \epsilon_i
 $$
 
-This notation is the convention in statistics.
+This notation is standard in most disciplines.
 
-:::{.callout-note title="Note: Hat Notation"}
-Another statsitics convention is to write a "hat" above variables that are
+:::{.callout-note title="Note: Hat Notation" collapse="true"}
+In statistics, another convention is to write a "hat" above variables that are
 estimators or estimates (including predictions). So we can write the model's
 prediction for $y_i$ as
 
@@ -154,42 +170,534 @@ We can also use this notation for parameter estimates. For instance,
 $\hat{\mu}$ denotes an estimate for a distribution parameter $\mu$.
 :::
 
-There are many different ways we can chose the intercept $\beta_0$ and slope
-$\beta_1$ for the line. The most widely-used approach, called **ordinary least
-squares** is to choose them to minimize the **residual sum of squares**
-$SS_\epsilon$, defined as
+
+### Least Squares
+
+Another way to think about the residuals in a linear model is as the **errors**
+in the model's predictions. We can reorganize the equation for the line to
+emphasize this:
+
+$$
+\epsilon_i = y_i - (\beta_0 + \beta_1 x_i)
+$$
+
+Thinking about the residuals as errors is a hint that we might want to choose
+the coefficients $\beta_0$ and $\beta_1$ to minimize error. There are many
+different ways to do this, but the most widely-used approach, called **ordinary
+least squares**, is to minimize the **residual sum of squares** $SS_\epsilon$,
+defined as
 
 $$
 \textrm{SS}_\epsilon
 = \sum_{i=1}^n \epsilon_i^2
-= \sum_{i=1}^n (y_i - \hat{y}_i)^2
 = \sum_{i=1}^n \left[ y_i - (\beta_0 + \beta_1 x_i) \right]^2
+= \sum_{i=1}^n (y_i - \hat{y}_i)^2
 $$
 
-<!-- TODO: say more about this? MLE? -->
+Squaring the residuals puts extra emphasis on errors that are very large
+(whether positive or negative). This is desirable if large errors are more
+costly than small errors. Squaring the residuals also leads to a variety of
+convenient mathematical properties, such as making it straightforward to find
+the minimum.
 
+:::{.callout-note title="Note: Maximum Likelihood Estimation" collapse="true"}
+A different approach, called **maximum likelihood estimation**, treats the
+outcome as a random variable $Y_i$ with an assumed distribution. We can use
+the distribution to choose estimates for the coefficients $\beta_0$ and
+$\beta_1$ which maximize the probability of the data.
+
+Ordinary least squares is equivalent to maximum likelihood estimation where we
+assume that the $Y_i$ are normally distributed with means $\beta_0 + \beta_1
+x_i$.
+
+Maximum likelihood estimates have many useful statistical properties, including
+an analogue of the Central Limit Theorem (@sec-central-limit-theorem), which we
+can use to make confidence intervals and for hypothesis tests.
+:::
 
 In R, we can use the `lm` function to fit a linear model by least squares. The
-function's first argument must be a relationship between features, written with
-a tilde `~` instead of an equals sign. The intercept is included implicitly,
-but you can make it explicit by writing it as a `1` (imagine it as a
-coefficient for a column of ones). In R's class system, this is called a
-`formula`.
+function's first argument must be a description of the features in the model; R
+calls this a (model) formula. The model formula is similar to the model
+equation, but replaces the equals sign with a tilde `~` and omits the
+coefficients and residual. The intercept is included implicitly, but you can
+make it explicit by writing it as a `1` (imagine the intercept as a coefficient
+for a column of ones).
 
-The second argument must be a dataset that contains the aforementioned
-features.
+The second argument must be the dataset: a data frame with columns
+corresponding to the features in the model.
 
-So the code to fit the body mass linear model for the penguins dataset is:
+So the code to fit the mass model for the California market squid is:
 
 ```{r}
-model = lm(body_mass_g ~ flipper_length_mm, penguins_tidy)
+model = lm(mass_g ~ dorsal_mantle_length_mm, squid)
 model
 ```
 
-We can use the `summary` function to get more details about the model:
+The output shows the estimates for the coefficients. We'll learn more about how
+to interpret models in @sec-interpreting-models. Before that, we need to review
+the assumptions of a linear model and examine whether they're satisfied for
+this model.
+
+
+## Model Assumptions {#sec-model-assumptions}
+
+A linear model involves many assumptions about the features being modeled and
+the dataset used to fit the model. @gelman2020 lists these assumptions (from
+most to least important):
+
+1. Validity: the outcome should measure what you actually want to study, the
+   model should include all relevant features, and the model should generalize
+   well. For instance, a model for blood pressure should not be treated as a
+   model for general health unless this can be justified by expert knowledge.
+
+2. Representativeness: the dataset you use to train the model should be
+   representative of the population to which you want the model to generalize.
+   For example, a model for how long people can hold their breath should not be
+   based on a sample of Olympic swimmers. On the other hand, a representative
+   sample might include a few Olympic swimmers, because they're people too!
+
+3. Linearity: the relationship between the outcome and the predictors should be
+   roughly linear. Often the relationship between the outcome and the features
+   in the dataset isn't linear, but it's possible to transform the outcome or
+   features to get a linear relationship (see @sec-selecting-features).
+
+4. Independence of errors: the residual for one observation should not depend
+   on the residuals of others. This assumption means linear models are
+   incompatible with most temporal and spatial datasets, although there are
+   modifications we can make to accomodate these kinds of datasets.
+
+5. Equal variance of errors: the residuals should all have the same standard
+   deviation. When they don't, then the model is worse at predicting for some
+   inputs than others. One way to address this is by using weighted least
+   squares to fit the model rather than ordinary least squares.
+
+6. Normality of errors: the residuals should be have a normal distribution.
+   This is assumption really only necessary for hypothesis testing (with
+   CLT-based methods); it doesn't matter for the coefficient estimates. This
+   assumption is sometimes misinterpreted to mean that the outcome must have a
+   normal distribution, which is not true.
+
+Check these assumptions before and after fitting a linear model. The first two
+assumptions are really about the research question and data collection process,
+so failing to satisfy them usually can't be fixed by changing the model. On the
+other hand, the last four assumptions relate to the model directly, and failing
+to satisfy them can sometimes be fixed by changing the model.
+
+@sec-model-diagnostics describes how to check some of these assumptions with
+model diagnostics.
+
+
+## Model Diagnostics {#sec-model-diagnostics}
+
+Most of the information about how well a model fits is in the residuals, since
+the residuals measure what the model got wrong. We can make a variety of plots
+based on the residuals to check whether the assumptions from
+@sec-model-assumptions are satisfied and whether there are any other problems.
+
+For a linear model with only one feature, a good diagnostic starting point is
+to plot the feature against the residuals. This is called a **residual plot**.
+Patterns in the residual plot can reveal problems with linearity, independence
+of errors, and equal variance of errors. Let's make this plot for the residuals
+from the mass model for the California market squid dataset.
+
+In R, the `predict` function returns predictions from a model. Absent any
+additional arguments, it returns predictions for the dataset used to fit the
+model. So to get the predictions for the squid mass model:
 
 ```{r}
-summary(model)
+squid$predicted_mass_g = predict(model)
+```
+
+We can use the predictions to calculate the residuals, in order to plot the
+residuals against the flipper length feature:
+
+```{r}
+#| label: fig-squid-residuals-predictor
+#| fig-cap: >
+#|    Dorsal mantle length versus residuals for the squid mass linear model.
+ggplot(squid) +
+  aes(x = dorsal_mantle_length_mm, y = mass_g - predicted_mass_g) +
+  geom_point()
+```
+
+:::{.callout-tip}
+The `resid` function returns the residuals from a model. It's a convenient
+alternative to computing the residuals from the predictions.
+:::
+
+For a dataset and model that satisfy the assumptions (@sec-model-assumptions),
+the residuals should be centered on 0 (mean 0) and should not exhibit any
+patterns. Four kinds of patterns are especially important signs of problems:
+
+* A trend in the residuals (that is, a line or curve that they follow): this
+  usually means that the linearity assumption isn't satisfied.
+* A "fan" or other shape in the range of the residuals: this usually means that
+  the equal variance assumption isn't satisfied.
+* Extreme residuals: like shapes, this usually means that the equal variance
+  assumption isn't satisfied.
+* Extreme predictor values: this means the representativeness assumption isn't
+  satisfied. Even if the residuals are small, predictions might not generalize
+  well because the model doesn't have many examples (observations) around the
+  extreme value.
+
+The residual plot will also exhibit patterns when the independence assumption
+isn't satisfied, but many different patterns are possible depending on the
+nature of the dependence.
+
+The residuals for the squid mass model in @fig-squid-residuals-predictor
+exhibit all four of the problem patterns. The residuals lie on a U-shaped
+curve which tapers at each end. There are three extreme residuals, one of which
+corresponds to an extreme predictor value; we should investigate these as
+potential outliers and possibly exclude them when fitting the model.
+
+For models with multiple predictors, we can plot each one separately against
+the residuals. We can also plot the predictions against the residuals. These
+plots are all residual plots, and the interpretation is the same as for a model
+with a single feature, with the exception that we can't check for extreme
+predictor values in the predictions versus residuals plot. Let's plot the
+predictions against the residuals for the squid mass model:
+
+```{r}
+#| label: fig-squid-residuals-predicted
+#| fig-cap: >
+#|    Predictions versus residuals for the squid mass linear model.
+ggplot(squid) +
+  aes(x = predicted_mass_g, y = mass_g - predicted_mass_g) +
+  geom_point()
+```
+
+Notice that @fig-squid-residuals-predictor and @fig-squid-residuals-predicted
+only differ in the values on the x-axis. This is always the case for a model
+with a single feature. For models with multiple features, the residual plots
+for individual features will not necessarily be the same as the plot of
+predictions versus residuals.
+
+Most statistical software, including R, provide three more diagnostic plots for
+linear models:
+
+* The **normal quantile-quantile plot** (normal QQ plot) displays the quantiles
+  of a normal distribution against the quantiles of the residuals. QQ plots are
+  helpful for checking how similar two distributions are, because similar
+  distributions will have similar quantiles. For a linear model, we can use the
+  normal QQ plot to check the normality assumption. The normal QQ plot is less
+  important than other diagnostics, because the normality assumption is less
+  important than the other assumptions.
+* The **scale-location plot** displays the predictions against the square root
+  of the standardized residuals. This is a transformation of the residual plot,
+  so the interpretation is the same (although the mean of the standardized
+  residuals will not be 0); the transformation simply makes some patterns
+  easier to notice.
+* The **leverage plot** displays a statistic called leverage against the
+  residuals. Leverage is a measure of how far away each observation in the
+  dataset is from the others. Observations with high leverage may be outliers
+  and may have undue influence over the linear model (similar to how extreme
+  values affect the sample mean).
+
+In R, we can use the ggfortify package's `autoplot` function to make all four
+diagnostic plots for a model:
+
+```{r}
+#| warning: false
+#| label: fig-squid-diagnostics
+#| fig-cap: >
+#|    Diagnostic plots for the squid mass linear model. Clockwise from
+#|    the top left, they are the residual plot, normal QQ plot, leverage plot,
+#|    and scale-location plot.
+library("ggfortify")
+
+autoplot(model)
+```
+
+The residual plot in @fig-squid-diagnostics is the same as
+@fig-squid-residuals-predicted; the scale-location plot exhibits similar
+problems. The normal QQ plot shows that the residuals are probably not normally
+distributed, with extreme values in both tails. The leverage plot shows that
+the observation with extreme dorsal mantle length has a lot of leverage; since
+it also has a large residual, this means it's exerting a lot of influence on
+the model without much benefit.
+
+Let's refit the model without the extreme observations we noted in
+@fig-squid-diagnostics (and also in @fig-squid-scatter). We can use the
+`squid_cloud` subset from earlier for this:
+
+```{r}
+#| label: fig-squid-diagnostics-clean
+#| fig-cap: >
+#|    Diagnostic plots for the squid mass linear model, after removing extreme
+#|    observations.
+model = lm(mass_g ~ dorsal_mantle_length_mm, squid_cloud)
+autoplot(model)
+```
+
+The new diagnostic plots in @fig-squid-diagnostics-clean show that removing the
+extreme observations improved two problems: the most extreme residuals are
+closer to the others, and the high-leverage residuals are smaller.
+Nevertheless, there's still a distinct curve and a taper to the residuals in
+the residual plot that suggest non-linearity and unequal variance,
+respectively; we'll address these problems in @sec-selecting-features by adding
+additional terms to the model.
+
+:::{.callout-note collapse="true"}
+```{r}
+resid_df = data.frame(residual = resid(model))
+resid_sd = sigma(model)
+ggplot(resid_df) +
+  aes(x = residual) +
+  geom_density() +
+  geom_function(fun = dnorm, args = list(sd = resid_sd), n = 1000, linetype =
+    "dotted")
+```
+:::
+
+:::{.callout-note title="Note: R's Built-in Diagnostic Plots" collapse="true"}
+Instead of using the ggfortify package, to make diagnostic plots for a model
+with ggplot2, it's also possible to make diagnostic plots with R's built-in
+`plot` function:
+
+```{r}
+plot(model)
+```
+:::
+
+
+:::{.callout-note title="See Also"}
+For examples of patterns to look for in residual plots, see:
+
+* The ["Checking model conditions"][ims-model-conditions] section in
+  _Introduction to Modern Statistics_ [@ims]
+* The "Residual plots" section in [_Regression and Other Stories_][ros]
+  [@gelman2020]
+
+[ims-model-conditions]: https://openintrostat.github.io/ims/inf-model-slr.html#sec-tech-cond-linmod
+:::
+
+
+## Selecting Features {#sec-selecting-features}
+
+A dataset might have dozens or hundreds of features, but including every
+feature in a linear model is usually not a good idea. One problem is that each
+additional predictor in the model means an additional coefficient to estimate.
+When the number of observations is low relative to the number of predictors,
+there usually isn't enough information to compute accurate coefficient
+estimates.
+
+Another problem, **multicollinearity**, is that when two predictors are highly
+correlated (@sec-correlation), they effectively contain redundant information.
+As we add more predictors to the model, it becomes more likely that two (or
+more) will be correlated. Multicollinearity makes it difficult (or impossible)
+to compute accurate coefficient estimates for the affected predictors.
+
+:::{.callout-tip}
+If two predictors are highly correlated, consider removing one of them from the
+model.
+:::
+
+The point is that we should be cautious about which predictors we add to a
+model. The best approach is to base the model on expert knowledge or a
+hypothesis about the relationship between the outcome and other features in the
+dataset. In exploratory work, we can instead or additionally use the model
+diagonistics (@sec-model-diagnostics) to decide whether it might be missing
+important predictors (and whether adding a predictor improves the fit).
+
+The diagnostic plots (@fig-squid-diagnostics-clean) for the squid mass model
+exhibit a U-shaped curve in the residuals, and the scatter plot of dorsal
+mantle length versus mass (@fig-squid-scatter-clean) also exhibits a curve. The
+curve in both looks like it could be quadratic; this suggests we're missing a
+squared predictor. For most physical objects, mass is proportional to volume,
+which is roughly length cubed; considering this, it makes sense to include
+squared or even cubed dorsal mantle length in the mass model.
+
+Let's try adding squared dorsal mantle length to the mass model. We'll also
+keep the original dorsal mantle length predictor; when including a power of a
+feature in a model, it's often a good idea to include lower powers as well.
+
+We can square the `dorsal_mantle_length_mm` feature in the model formula by
+writing it inside of the `I` function (which makes R treat arithmetic in a
+formula as arithmetic):
+
+```{r}
+quad_model = lm(
+  mass_g ~ dorsal_mantle_length_mm + I(dorsal_mantle_length_mm^2),
+  squid_cloud
+)
+quad_model
+```
+
+To see how this changes things, we'll recreate the diagnostic plots:
+
+```{r}
+#| label: fig-squid-diagnostics-quad
+#| fig-cap: >
+#|    Diagnostic plots for the squid mass linear model, with a squared dorsal
+#|    mantle length term.
+autoplot(quad_model)
+```
+
+The diagnostics in @fig-squid-diagnostics-quad are much improved. In the
+residual plot, there's no longer any signs of a curve. There still is in the
+scale-location plot, but it's minor. The residuals still taper at the tails of
+the prediction range, but much less than they did in
+@fig-squid-diagnostics-clean. The leverage plot also shows improvement, with
+high-leverage residuals nearly halved. The QQ plot is about the same. On the
+whole, the diagnostics are now good enough to keep the model, with some caution
+when interpreting hypothesis tests that assume normally distributed residuals.
+
+:::{.callout-note title="Note: Adding a Cubic Term" collapse="true"}
+Based on our reasoning earlier, we might want to try adding cubed dorsal mantle
+length to the model too:
+
+```{r}
+#| label: fig-squid-diagnostics-cubic
+#| fig-cap: >
+#|    Diagnostic plots for the squid mass linear model, with a cubed dorsal
+#|    mantle length term.
+cubic_model = lm(
+  mass_g ~
+    dorsal_mantle_length_mm +
+    I(dorsal_mantle_length_mm^2) +
+    I(dorsal_mantle_length_mm^3),
+  squid_cloud
+)
+
+autoplot(cubic_model)
+```
+
+Overall, @fig-squid-diagnostics-cubic is similar to
+@fig-squid-diagnostics-quad. There's a little improvement in the high-leverage
+residuals, but any other improvements are subtle. At this point, we can leave
+the cubic term out to make the model simpler, or include it, because it matches
+our intuition about the relationship between mass and volume. We can also check
+other diagnostics, such as adjusted R-squared (more about this in
+@sec-interpreting-models) or an estimate of the model's accuracy on new data
+points (for example, by cross-validating the model).
+:::
+
+
+### Categorical Predictors
+
+Up to this point, we've only considered linear models with numerical
+predictors. Linear models can also have categorical predictors. For a
+categorical predictor, we add a constant offset to the prediction for each
+category. We still call the offsets coefficients, because each category can be
+represented by a feature that's 1 for observations in the category and 0
+otherwise.
+
+:::{.callout-note title="Note: Indicators"}
+The 0 and 1 representation for a category is called an **indicator** or
+**one-hot encoding**.
+:::
+
+In R and most other statistical software, the first category is treated as a
+baseline or reference category with coefficient 0, so a categorical predictor
+with $k$ categories only requires $k - 1$ coefficient estimates.
+
+Let's try fitting a model with a categorical predictor to the California market
+squid dataset. Suppose we want to examine whether the age of a squid affects it
+size. We'll use mass as a substitute for size use maturity as substitute for
+age. Then the linear model is:
+
+```{r}
+maturity_model = lm(mass_g ~ maturity, squid_cloud)
+maturity_model
+```
+
+There are three maturity categories: immature, mature, and spent. The model
+treats immature as the baseline category, so the model output only lists
+coefficients for the mature and spent categories. Think of these coefficients
+as the additional mass for the given category compared to the reference
+category.
+
+As usual, it's a good idea to check the model diagnostics:
+
+```{r}
+#| label: fig-squid-diagnostics-maturity
+#| fig-cap: >
+#|    Diagnostic plots for the squid mass linear model based on maturity alone.
+autoplot(maturity_model)
+```
+
+In @fig-squid-diagnostics-maturity, notice that the there are only three
+different predicted values; this reflects that there are only three maturity
+categories, and maturity is the only predictor in the model. The residual plot
+and scale-location plot don't show any trends. On the other hand, the residuals
+spread out more for more mature squid, which means there's unequal variance.
+The QQ plot shows that the residuals are probably not normally distributed. The
+leverage plot looks okay. The takeaway for this model is that the coefficient
+and standard error estimates are likely accurate, but because there's evidence
+that the residuals do not have equal variance and are not normally distributed,
+we should be cautious about using standard hypothesis tests for the model.
+There are several test statistics designed for groups with unequal variance; we
+should use one of these if we want to conduct a test.
+
+
+### Interactions
+
+Sometimes an outcome depends on how two or more predictors **interact**. That
+is, the relationship between the outcome and one of the predictors changes when
+the other predictor changes. We can model a multipicative interaction in a
+linear model by including a term for the product of two or more features
+(whether they are numerical or categorical). Generally, if we include an
+interaction term for two features, we should also include terms for each
+feature separately.
+
+
+### Transformations
+
+Mathematically transforming the outcome or predictors in a linear model is
+often helpful when the assumptions of linearity, equal variance of errors, and
+normality of errors aren't satisfied. We saw an example of this at the
+beginning of this section, where adding a quadratic term to the squid mass
+model corrected problems with non-linearity and unequal variance.
+
+Choosing appropriate transformations can be difficult in practice, because we
+rarely know the true nature of the relationship. Fortunately, relationships
+that a model fails to account for typically show up as patterns in its
+residuals (@sec-model-diagnostics). We can use the residuals to decide if and
+how features should be transformed.
+
+:::{.callout-tip}
+Many kinds of non-linear relationships can be made linear with transformations.
+
+For example, suppose that the true relationship between two features $x_i$ and
+$y_i$ is exponential:
+
+$$
+y_i = \textrm{e}^{\beta_0 + \beta_1 x_i}
+$$
+
+We can make the relationship linear by taking logarithms:
+
+$$
+\ln{y_i} = \beta_0 + \beta_1 x_i
+$$
+
+In this case, we should fit a linear model with $\ln{y_i}$ as the outcome and
+$x_i$ as a predictor.
+:::
+
+:::{.callout-note title="See Also"}
+We recommend the textbook [_Feature Engineering and
+Selection_][feature-engineering] [@kuhn2020] as a thorough introduction to
+transforming and selecting features for linear models, as well as many other
+kinds of models.
+
+[feature-engineering]: https://feat.engineering/
+:::
+
+
+## Interpreting Models {#sec-interpreting-models}
+
+Once we've fitted a model and checked that the diagnostics look okay, we can
+move on to interpreting the coefficients and other model statistics. This
+section describes a few different tools for interpretation.
+
+
+### Model Summary
+
+We can use R's `summary` function to get a detailed description of a model:
+
+```{r}
+summary(quad_model)
 ```
 
 Let's go through the model summary a few lines at a time. It begins with the R
@@ -197,29 +705,31 @@ code we used to fit the model:
 
 ```{.text}
 Call:
-lm(formula = body_mass_g ~ flipper_length_mm, data = penguins_tidy)
+lm(formula = mass_g ~ dorsal_mantle_length_mm + I(dorsal_mantle_length_mm^2),
+    data = squid_cloud)
 ```
 
 Next, it lists the quartiles of the residuals:
 
 ```{.text}
 Residuals:
-     Min       1Q   Median       3Q      Max
--1058.80  -259.27   -26.88   247.33  1288.69
+    Min      1Q  Median      3Q     Max
+-35.237  -3.267   0.521   3.775  52.794
 ```
 
 The distribution of the residuals is an important source of diagnostic
-information for linear models, but visualizations are almost always easier to
-interpret than quartiles. @sec-model-diagnostics explains how to make and
-interpret plots of the residuals, as well as other diagnostics.
+information. We recommend visualizing the residuals, as in
+@sec-model-diagnostics, but their quartiles are occasionally useful for quickly
+inspecting a model.
 
 After the residual quartiles, the summary lists the coefficients in a table:
 
 ```{.text}
 Coefficients:
-                   Estimate Std. Error t value Pr(>|t|)
-(Intercept)       -5780.831    305.815  -18.90   <2e-16 ***
-flipper_length_mm    49.686      1.518   32.72   <2e-16 ***
+                              Estimate Std. Error t value Pr(>|t|)
+(Intercept)                  77.386910   3.670391   21.08   <2e-16 ***
+dorsal_mantle_length_mm      -1.538497   0.057980  -26.54   <2e-16 ***
+I(dorsal_mantle_length_mm^2)  0.009674   0.000228   42.44   <2e-16 ***
 ---
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ```
@@ -230,11 +740,14 @@ The columns contain an estimate of the coefficient, an estimate of its standard
 error, and two columns related to hypothesis testing. We'll examine these last
 two columns in @sec-hypothesis-tests-for-models.
 
+
+#### Residual Standard Deviation {.unnumbered}
+
 Finally, the summary lists several statistics about the model as a whole,
 beginning with:
 
 ```{.text}
-Residual standard error: 394.3 on 340 degrees of freedom
+Residual standard error: 5.9 on 6191 degrees of freedom
 ```
 
 Residual standard error is the sample standard deviation of the residuals (with
@@ -242,7 +755,7 @@ a statistical correction for the number of terms being estimated in the model).
 Recall that standard deviation is approximately the mean distance to the mean.
 In a linear model with an intercept, the residuals always have mean 0
 ($\bar{\epsilon} = 0$), so the residual standard error is approximately the
-mean distance between the actual responses and the fitted line.
+mean distance between the actual outcomes and the fitted line.
 
 :::{.callout-note title="Definition: Residual Standard Deviation" collapse="true"}
 The sample variance of the residuals for a linear model with $k$ terms
@@ -274,19 +787,22 @@ See [this StackOverflow post][so-rse] for additional discussion.
 [so-rse]: https://stats.stackexchange.com/questions/144433/why-do-we-say-residual-standard-error
 :::
 
+
+#### R-Squared Statistics {.unnumbered}
+
 ```{.text}
-Multiple R-squared:  0.759, Adjusted R-squared:  0.7583
+Multiple R-squared:  0.8404,    Adjusted R-squared:  0.8403
 ```
 
 The R-squared statistics, conventionally denoted by $R^2$ and
-$R_\textrm{adj}^2$, are ratios of variance in the response that's explained by
+$R_\textrm{adj}^2$, are ratios of variance in the outcome that's explained by
 the model to total variance.
 
 R-squared $R^2$ is always between 0 and 1. Values closer to 1 indicate that the
-model explains more of the variance in the response. R-squared is
-non-decreasing as more terms are included in the model, because more terms
-means more flexibility to fit the observations. This is a limitation: we can't
-use R-squared to decide how many terms to include in the model, because it will
+model explains more of the variance in the outcome. R-squared is non-decreasing
+as more terms are included in the model, because more terms means more
+flexibility to fit the observations. This is a limitation: we can't use
+R-squared to decide how many terms to include in the model, because it will
 always suggest more terms are better.
 
 Adjusted R-squared $R_\textrm{adj}^2$ decreases when terms with weak
@@ -294,12 +810,12 @@ explanatory power are added to the model, so it tends to be more useful than
 ordinary R-squared $R^2$. Its value can sometimes be smaller than 0.
 
 :::{.callout-note title="Definition: R-Squared Statistics" collapse="true"}
-The R-squared statistics are based on the idea that the variance of the
-response $y_i$ can be partitioned into two meaningful parts: variance explained
-by the model and unexplained variance from other, often unknown, processes.
+The R-squared statistics are based on the idea that the variance of the outcome
+$y_i$ can be partitioned into two meaningful parts: variance explained by the
+model and unexplained variance from other, often unknown, processes.
 
 Mathematically, variance is a sum of squares. The **total sum of squares** for
-the response $y_i$ is defined as
+the outcome $y_i$ is defined as
 
 $$
 \textrm{SS}
@@ -355,19 +871,21 @@ designed for that purpose, such as cross-validation.
 :::
 
 
+#### F Statistic {.unnumbered}
+
 ```{.text}
-F-statistic:  1071 on 1 and 340 DF,  p-value: < 2.2e-16
+F-statistic: 1.63e+04 on 2 and 6191 DF,  p-value: < 2.2e-16
 ```
 
-The F statistic is the ratio of variance in the response that's explained by
-the model to unexplained variance. The F statistic is always positive.
+The F statistic is the ratio of variance in the outcome that's explained by the
+model to unexplained variance. The F statistic is always positive.
 
 The F statistic is also the relative difference between the residual sum of
 squares (unexplained variance) for a simplified model with only an intercept
-(the same as predicting the response with the sample mean) and for the fitted
+(the same as predicting the outcome with the sample mean) and for the fitted
 model. This perspective is helpful for interpreting the statistic: larger
 values indicate that the fitted model is better at explaining the variance of
-the response than the simplified model.
+the outcome than the simplified model.
 
 :::{.callout-note title="Definition: F Statistic" collapse="true"}
 For a model with $k$ terms (excluding the intercept), the F statistic is
@@ -384,8 +902,8 @@ $$
 
 The F statistic is primarily used for a hypothesis test where the null
 hypothesis is that the model coefficients (excluding the intercept) are all 0.
-As @gelman2020 points out, this null hypothesis is unrealistic---if we believe
-it's plausible that a feature is entirely unrelated to the response, we
+As @gelman2020 point out, this null hypothesis is unrealistic---if we believe
+it's plausible that a predictor is entirely unrelated to the outcome, we
 shouldn't include it in the model in the first place. The F test is often used
 to decide whether a model with fewer features might be more appropriate, but
 there are better approaches, such as examining standard errors for the
@@ -405,302 +923,128 @@ is "correct" (and it's unclear what it means for a simplification to be
 :::
 
 
-## Model Assumptions {#sec-model-assumptions}
+### Predictions and Marginal Means
 
-A linear model involves many assumptions about the features being modeled and
-the dataset used to fit the model. @gelman2020 lists these assumptions (from
-most to least important):
+When a model only has one or two predictors, and they're not transformed, we
+often interpret the model by examining the coefficients directly.
+Interpretation is more difficult for models with a many predictors, especially
+if some are transformed or have interactions. We might also want to ask
+questions about the model that aren't easy to answer based on the coefficients
+alone, such as how the outcome varies across different subpopulations of
+interest.
 
-1. Validity: the response should measure what you actually want to study, the
-   model should include all relevant features, and the model should generalize
-   well. For instance, a model for blood pressure should not be treated as a
-   model for general health unless this can be justified by expert knowledge.
+One solution to these problems is to examine **marginal means**, means of (or
+"marginalized over") the predictions on a grid of predictor values. The choice
+of grid depends on the question we want to answer. In some disciplines,
+marginal means are also called **marginal effects**.
 
-2. Representativeness: the dataset you use to train the model should be
-   representative of the population to which you want the model to generalize.
-   For example, a model for how long people can hold their breath should not be
-   based on a sample of Olympic swimmers. On the other hand, a representative
-   sample might include a few Olympic swimmers, because they're people too!
+For example, suppose we want to investigate whether a new treatment lowers
+blood pressure. We conduct a study where half of the subjects receive the
+treatment and half don't. In addition to blood pressure, we also collect other
+information about the people in the study, such as their age and medical
+history. Although we can compare the blood pressure of those who received the
+treatment to those who didn't directly, what we really want is to compare
+**counterfactuals**: what would the blood pressure of people who received the
+treatment be if they hadn't received it, and what would the blood pressure of
+people who didn't receive the treatment be if they had? We can use marginal
+means to address these questions as well as many others.
 
-3. Linearity: the relationship between the response and the features _in the
-   model_ should be roughly linear. Often the relationship between the response
-   and the features _in the dataset_ isn't linear, but it's possible to
-   transform the features (or the response) to get a linear relationship.
+In R, the [marginaleffects][] package and the [emmeans][] package each provide
+a variety of functions to compute marginal means. The also have many other
+features, such as functions to create grids, carry out hypothesis tests, and
+compute other aggregates of model predictions.
 
-   When the relationship is not linear, it's often possible
-   to transform the response or the features to get a linear relationship.
-
-4. Independence of errors: the residual for one observation should not depend
-   on the residuals of others. This assumption means linear models are
-   incompatible with most temporal and spatial datasets, although there are
-   modifications we can make to accomodate these kinds of datasets.
-
-5. Equal variance of errors: the residuals should all have the same standard
-   deviation. When they don't, then the model is worse at predicting for some
-   inputs than others. One way to address this is by using weighted least
-   squares to fit the model rather than ordinary least squares.
-
-6. Normality of errors: the residuals should be have a normal distribution.
-   This is assumption really only necessary for hypothesis testing (with
-   CLT-based methods); it doesn't matter for the coefficient estimates. This
-   assumption is sometimes misinterpreted to mean that the response must have a
-   normal distribution, which is not true.
-
-Check these assumptions before and after fitting a linear model. The first two
-assumptions are really about the research question and data collection process,
-so failing to satisfy them usually can't be fixed by changing the model. On the
-other hand, the last four assumptions relate to the model directly, and failing
-to satisfy them can sometimes be fixed by changing the model.
-
-@sec-model-diagnostics describes how to check some of these assumptions with
-model diagnostics.
-
-:::{.callout-tip}
-Many kinds of non-linear relationships can be made linear with transformations.
-
-For example, suppose that the true relationship between two features $x_i$ and
-$y_i$ is quadratic:
-
-$$
-y_i = \beta_0 + \beta_1 x_i^2 + \epsilon_i
-$$
-
-From another perspective, the relationship between $y_i$ and $x_i^2$ is linear.
-So if the dataset only includes $x_i$, square it to get $x_i^2$ and use this
-new feature in the linear model.
-
-Choosing appropriate transformations can be difficult in practice, because we
-rarely know the true nature of the relationship. Fortunately, relationships
-that a model fails to account for typically show up as patterns in its
-residuals. We can use the residuals to decide if and how features should be
-transformed (see @sec-model-diagnostics).
-:::
-
-
-## Model Diagnostics {#sec-model-diagnostics}
-
-Most of the information about how well a model fits is in the residuals, since
-the residuals measure what the model got wrong. We can make a variety of plots
-based on the residuals to check whether the assumptions from
-@sec-model-assumptions are satisfied and whether there are any other problems.
-
-For a linear model with only one feature, a good diagnostic starting point is
-to plot the feature against the residuals. This is called a **residual plot**.
-Patterns in the residual plot can reveal problems with linearity, independence
-of errors, and equal variance of errors. Let's make this plot for the penguins
-dataset and model.
-
-In R, the `predict` function returns predictions from a model. Absent any
-additional arguments, it returns predictions for the dataset used to fit the
-model. So to get the predictions for the penguins dataset:
-
-```{r}
-penguins_tidy$predicted_body_mass_g = predict(model)
-```
-
-We can use the predictions to calculate the residuals, in order to plot the
-residuals against the flipper length feature:
-
-```{r}
-#| label: fig-residuals_flipper_length_mm
-#| fig-cap: >
-#|    Flipper length versus residuals for the penguin body mass linear model.
-ggplot(penguins_tidy) +
-  aes(x = flipper_length_mm, y = body_mass_g - predicted_body_mass_g) +
-  geom_point()
-```
-
-:::{.callout-tip}
-The `resid` function returns the residuals from a model. It's a convenient
-alternative to computing the residuals from the predictions.
-:::
-
-For a dataset and model that satisfy the assumptions (@sec-model-assumptions),
-the residuals should be centered on 0 (mean 0) and should not exhibit any
-patterns. Two kinds of patterns are especially important:
-
-* A trend in the residuals (that is, a line or curve that they follow). This
-  usually means that the linearity assumption isn't satisfied.
-* A "fan" or other shape in the range of the residuals. This usually means that
-  the equal variance assumption isn't satisfied.
-
-The residual plot will also exhibit patterns when the independence assumption
-isn't satisfied, but many different patterns are possible depending on the
-nature of the dependence.
-
-For the penguins dataset and model, the residuals in
-@fig-residuals_flipper_length_mm don't exhibit any strong patterns. The
-residuals are centered at 0, don't have an obvious trend, and range from about
--1,000 to 1,000 across most of the feature values. So this linear model seems
-to satisfy the assumptions well, although it's certainly possible there are
-better models.
-
-For models with multiple features, we can plot each feature against the
-residuals. We can also plot the predictions against the residuals. These plots
-are all residual plots, and the interpretation is the same as for a model with
-a single feature. Let's plot the predictions against the residuals for the
-penguins model:
-
-```{r}
-#| label: fig-residuals_predicted_penguin
-#| fig-cap: >
-#|    Predictions versus residuals for the penguin body mass linear model.
-ggplot(penguins_tidy) +
-  aes(x = predicted_body_mass_g, y = body_mass_g - predicted_body_mass_g) +
-  geom_point()
-```
-
-Notice that @fig-residuals_flipper_length_mm and
-@fig-residuals_predicted_penguin only differ in the values on the x-axis. This
-is always the case for a model with a single feature. For models with multiple
-features, the residual plots for individual features will not necessarily be
-the same as the plot of predictions versus residuals.
-
-Most statistical software, including R, provide three more diagnostic plots for
-linear models:
-
-* The **normal quantile-quantile plot** (normal QQ plot) displays the quantiles
-  of a normal distribution against the quantiles of the residuals. QQ plots are
-  helpful for checking how similar two distributions are, because similar
-  distributions will have similar quantiles. For a linear model, we can use the
-  normal QQ plot to check the normality assumption. The normal QQ plot is less
-  important than other diagnostics, because the normality assumption is less
-  important than the other assumptions.
-* The **scale-location plot** displays the predictions against the square root
-  of the standardized residuals. This is a transformation of the residual plot,
-  so the interpretation is the same; the transformation simply makes some
-  patterns easier to notice.
-* The **leverage plot** displays a statistic called leverage against the
-  residuals. Leverage is a measure of how far away each observation in the
-  dataset is from the others. Observations with high leverage may be outliers
-  and may have undue influence over the linear model (similar to how extreme
-  values affect the sample mean).
-
-In R, we can use the ggfortify package's `autoplot` function to make all four
-diagnostic plots for a model:
-
-```{r}
-#| warning: false
-#| label: fig-body_mass_g-diagnostics
-#| fig-cap: >
-#|    Diagnostic plots for the penguin body mass linear model. Clockwise from
-#|    the top left, they are the residual plot, normal QQ plot, leverage plot,
-#|    and scale-location plot.
-library("ggfortify")
-
-autoplot(model)
-```
-
-:::{.callout-note title="Note: R's Built-in Diagnostic Plots" collapse="true"}
-Instead of using the ggfortify package, to make diagnostic plots for a model
-with ggplot2, it's also possible to make diagnostic plots with R's built-in
-`plot` function:
-
-```{r}
-plot(model)
-```
-:::
-
-The diagnostic plots in @fig-body_mass_g-diagnostics suggest that overall, the
-model fits the dataset relatively well, as we previously concluded from the
-residual plot alone. This version of the residual plot includes a fitted trend
-line which hints that there could be some trend, but it's mild. The normal QQ
-plot is nearly perfect, with a close match between the normal quantiles and the
-residual quantiles (the dashed line is the line of exact equality). The
-scale-location plot leads to similar conclusions as the residual plot, with the
-trend in residuals notably less pronounced. Finally, the leverage plot
-indicates a few observations with middling leverage that and very large
-residuals; these are annotated with row numbers on the plot. In a thorough
-analysis, we should investigate each of these as potential outliers
-(@sec-outliers).
+[marginaleffects]: https://doi.org/10.32614/CRAN.package.marginaleffects
+[emmeans]: https://rvlenth.github.io/emmeans/
 
 :::{.callout-note title="See Also"}
-For examples of patterns to look for in residual plots, see:
+To learn more about how to interpret models with marginal means, we recommend
+[_Model to Meaning_][model-to-meaning] [@arel-bundock2025]. The book is
+oriented around case studies and serves as an introduction to the R package
+marginaleffects.
 
-* The ["Checking model conditions"][ims-model-conditions] section in
-  _Introduction to Modern Statistics_ [@ims]
-* The "Residual plots" section in [_Regression and Other Stories_][ros]
-  [@gelman2020]
-
-[ims-model-conditions]: https://openintrostat.github.io/ims/inf-model-slr.html#sec-tech-cond-linmod
+[model-to-meaning]: https://marginaleffects.com/
 :::
 
 
-## Selecting Features
+## Testing Models {#sec-hypothesis-tests-for-models}
 
-A dataset might have dozens or hundreds of features, but including every
-feature in a linear model is usually not a good idea. One problem is that each
-additional feature in the model means an additional coefficient to estimate.
-When the number of observations is low relative to the number of features in
-the model, there usually isn't enough information to compute accurate
-coefficient estimates.
+Linear models are often useful in data analyses where we want to test some
+hypothesis (@sec-statistical-tests). Three different approaches (among many)
+that we can take to test coefficients are:
 
-Another problem is that when two features are highly correlated
-(@sec-correlation), they effectively contain redundant information, which again
-makes it difficult (or impossible) to compute accurate coefficient estimates.
-This problem is called **multicollinearity**.
+* Permutation tests: we can test whether the outcome and all predictors are
+  correlated (that is, null hypothesis $\beta_1 = \dots = \beta_k = 0$ for a
+  model with $k$ predictors). However, we can't test individual coefficients
+  with a permutation test, and we can't test for non-zero coefficient values.
 
-The point is that we 
+* Bootstrap confidence intervals: we can resample the residuals with
+  replacement, adding them back to the model predictions, to generate bootstrap
+  estimates and confidence intervals for the coefficients and other statistics.
+  By inverting the confidence intervals, we can test individual coefficients
+  and other statistics.
+
+* Classical tests: by assuming that the errors are independent, normally
+  distributed, and have equal variance, we can use classical tests (typically
+  based on Student's t distribution) for the individual coefficients and other
+  statistics. Specifically, in the single predictor case, we assume for $i = 1,
+  \dots, n$ that
+
+  $$
+  y_i = \beta_0 + \beta_1 x_i + \epsilon_i
+  \quad\textrm{where}\quad
+  \epsilon_i \sim \mathcal{N}(0, \sigma^2)
+  $$
+
+  In practice, these tests tend to have nearly-correct error rates as long as
+  the sample size is large ($n \geq 30$) and the distribution of errors is
+  symmetrical, even if it isn't normal.
+
+For all of these, the linear model assumptions of validity, representativeness,
+linearity, independence of errors, and equal variance of errors are critical.
+In general, failing to satisfy these assumptions increases testing error rates,
+which makes the discernibility level (and power estimates) inaccurate.
+
+R's built-in functions focus exclusively on classical tests, and the classical
+tests work well in most cases, so that's what we'll cover here. The `summary`
+function displays the standard score for each coefficient. Under the linear
+model assumptions, for a model trained on $n$ observations and $k$ predictors,
+each standard score comes from a t distribution with normality $n - k - 1$.
+
+The `summary` function also displays a p-value for each coefficent for a test
+with null hypothesis $H_0: \beta_i = 0$ and alternative hypothesis $H_A:
+\beta_i \neq 0$. This p-value is computed from the t distribution.
+
+As an example, let's look at the summary for the squid mass model with the
+squared dorsal mantle length term:
 
 ```{r}
-ggplot(penguins) +
-  aes(x = flipper_length_mm, y = body_mass_g, color = species) +
-  geom_point()
+summary(quad_model)
 ```
 
-<!-- Explain categorical vs numerical features -->
+In this case, at level $\alpha = 0.05$, the coefficients for both dorsal mantle
+length and squared dorsal mantle length are statistically discernable. There's
+strong evidence in the data that they should not be 0. For this model, the QQ
+plot (@fig-squid-diagnostics-quad) indicated that the residuals are not
+normally distributed, and that they're skewed rather than symmetrical, so the
+error rate of the test might be higher than chosen level 5%. Nevertheless,
+because this is a very large dataset and the relationship matches our intuition
+about the physical world, we have no reason to doubt that the coefficients
+should not be 0.
+
+The built-in R function `confint` returns classical (t distribution) confidence
+intervals for the coefficients in a linear model:
 
 ```{r}
-model_species = lm(body_mass_g ~ species + flipper_length_mm, penguins)
-summary(model_species)
+confint(quad_model)
 ```
 
-```{r}
-autoplot(model_species)
-```
+These provide more insight into the range of likely values for each coefficient
+than the p-values alone.
 
-```{r}
-penguins_tidy$pred = predict(model_species)
-penguins_tidy$resid = resid(model_species)
-
-ggplot(penguins_tidy) +
-  aes(x = pred, y = resid, color = species) +
-  geom_point()
-```
-
-
-### Interactions
-
-```{r}
-model_interact = lm(body_mass_g ~ species * flipper_length_mm, penguins)
-summary(model_interact)
-```
-
-```{r}
-autoplot(model_interact)
-```
-
-:::{.callout-note title="See Also"}
-[_Feature Engineering and Selection_][feature-engineering] [@kuhn2020]
-
-[feature-engineering]: https://feat.engineering/
-:::
-
-
-## Interpreting Models
-
-
-### Hypothesis Tests for Models {#sec-hypothesis-tests-for-models}
-
-$$
-Y_i \sim \mathcal{N}(\beta_0 + \beta_1 x_i, \sigma^2)
-$$
-
-$$
-y_i = \beta_0 + \beta_1 x_i + \epsilon_i
-\quad\textrm{where}\quad
-\epsilon_i \sim \mathcal{N}(0, \sigma^2)
-$$
+The [marginaleffects][] package and [emmeans][] package provide functions to
+test more sophisticated hypotheses. They support a variety of testing methods,
+including the bootstrap and classical tests.
 
 :::{.callout-tip title="Note: Hypothesis Tests as Models"}
 Introductory statistics courses often teach and encourage students to memorize
@@ -732,12 +1076,4 @@ textbooks were especially influential:
 
 [ims]: https://openintrostat.github.io/ims/
 [ros]: https://avehtari.github.io/ROS-Examples/
-
-For more specifically about interpreting models, we recommend [_Model to
-Meaning_][model-to-meaning] [@arel-bundock2025], which is oriented around case
-studies and serves as an introduction to the R package marginaleffects.
-
-[model-to-meaning]: https://marginaleffects.com/
 :::
-
-

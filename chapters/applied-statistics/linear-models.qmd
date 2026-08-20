@@ -436,18 +436,6 @@ the residual plot that suggest non-linearity and unequal variance,
 respectively; we'll address these problems in @sec-selecting-features by adding
 additional terms to the model.
 
-:::{.callout-note collapse="true"}
-```{r}
-resid_df = data.frame(residual = resid(model))
-resid_sd = sigma(model)
-ggplot(resid_df) +
-  aes(x = residual) +
-  geom_density() +
-  geom_function(fun = dnorm, args = list(sd = resid_sd), n = 1000, linetype =
-    "dotted")
-```
-:::
-
 :::{.callout-note title="Note: R's Built-in Diagnostic Plots" collapse="true"}
 Instead of using the ggfortify package, to make diagnostic plots for a model
 with ggplot2, it's also possible to make diagnostic plots with R's built-in
@@ -457,7 +445,6 @@ with ggplot2, it's also possible to make diagnostic plots with R's built-in
 plot(model)
 ```
 :::
-
 
 :::{.callout-note title="See Also"}
 For examples of patterns to look for in residual plots, see:
@@ -478,7 +465,9 @@ feature in a linear model is usually not a good idea. One problem is that each
 additional predictor in the model means an additional coefficient to estimate.
 When the number of observations is low relative to the number of predictors,
 there usually isn't enough information to compute accurate coefficient
-estimates.
+estimates. A large number of predictors can also lead to problems with
+**overfitting**, where the model fits the sample extremely well but fits the
+population poorly.
 
 Another problem, **multicollinearity**, is that when two predictors are highly
 correlated (@sec-correlation), they effectively contain redundant information.

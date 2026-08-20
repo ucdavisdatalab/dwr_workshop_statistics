@@ -3,11 +3,11 @@
 ::: {.callout-note title="Learning Goals" collapse="false"}
 After this lesson, you should be able to:
 
-* Explain why we use standard deviation and other measures of scale to measure
-  uncertainty
 * Explain what a sampling distribution is
 * Explain the difference between a population distribution, an empirical
   distribution, and a sampling distribution
+* Explain why we use standard deviation and other measures of scale to measure
+  uncertainty
 * Use the bootstrap to estimate the sampling distribution of an estimator
 * Explain what a confidence interval is
 * Use the bootstrap to compute a confidence interval for an estimate
@@ -407,16 +407,18 @@ bootstrap estimates as a dataset in their own right, we can analyze the
 statistics such as standard error.
 
 :::{.callout-note title="Algorithm: The Bootstrap"}
-Suppose we have a dataset $x_1, x_2, \dots, x_n$ and an estimator $G$.
+Suppose we have a sample and want to know more about a particular estimator's
+sampling distribution. To use the bootstrap algorithm:
 
-1. Construct a new bootstrap sample $x_1^*, x_2^*, \dots, x_3^*$ by sampling
-   from $x_1, x_2, \dots, x_n$ with replacement.
-2. Compute an estimate $G^* = G(x_1^*, x_2^*, \dots, x_n^*)$ on the bootstrap
-   sample. This is a bootstrap estimate.
-3. Repeat steps 1-2 until we have $b$ bootstrap estimates. Larger values of $b$
-   are better but increase computing time; choose at least $b \geq 1,000$.
+1. Construct a new sample of the same size by sampling *with* replacement. This
+   is a bootstrap resample.
+2. Compute an estimate on the bootstrap resample. This is a bootstrap estimate.
+3. Repeat steps 1-2 to compute a collection of $b$ resamples and $b$ estimates.
 4. Use the bootstrap estimates to estimate standard error or other properties
-   of the sampling distribution of $G$.
+   of the sampling distribution.
+
+Use $b \geq 10,000$ resamples. Larger values of $b$ lead to better
+approximation of the sampling distribution, but also increase computing time.
 :::
 
 A bootstrap sampling distribution is a useful but imperfect estimate of the
@@ -463,8 +465,7 @@ mean(boot)
 
 We can use R's apply functions or the purrr package's map functions to repeat
 the resampling step many times. We'll compute $b = 1,000$ resamples to keep the
-computing time manageable, but in practice $b = 10,000$ or higher is more
-appropriate:
+computing time manageable, but in practice $b \geq 10,000$ is more appropriate:
 
 ```{r}
 library("purrr")
@@ -766,15 +767,20 @@ standard normal distribution. We denote the t distribution by by $t_v$, where
 $v$ is normality. The normality parameter is also called **degrees of
 freedom**.
 
-After replacing $\sigma$ with $S$, the standard score of the sample mean has a
-t distribution with normality $n - 1$. We can write this in mathematical
-notation as:
+After replacing $\sigma$ with $S$, the distribution of the standard score of
+the sample mean is approximately a t distribution with normality $n - 1$. In
+mathematical notation:
 
 $$
-\frac{\bar{X} - \mu} {S / \sqrt{n}} \sim t_{n - 1}.
+\DeclareMathOperator{\adist}{\dot{\sim}}
 $$
 
-The symbol $\sim$ means "is distributed as."
+$$
+\frac{\bar{X} - \mu} {S / \sqrt{n}} \adist t_{n - 1}.
+$$
+
+The symbol $\adist$ means "is approximately distributed as." The distribution
+is exact if $X_1, X_2, \dots, X_n$ are normally distributed.
 
 The distribution of the sample mean (and of its standard score) matters because
 we can use it to construct a confidence interval. Specifically, because we know

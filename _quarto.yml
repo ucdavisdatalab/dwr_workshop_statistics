@@ -80,6 +80,8 @@ format:
 
 # Uncomment to use BibTeX or BibLaTeX references:
 bibliography: references.bib
+nocite: |
+  @*
 
 # Cache computations from each chapter:
 execute:

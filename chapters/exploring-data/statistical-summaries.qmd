@@ -12,11 +12,14 @@ After this lesson, you should be able to:
 :::
 
 :::{.callout-important title="Required Packages"}
-This chapter uses the following packages:
+This chapter uses the following R packages:
 
 * ggplot2
 
-@sec-packages explains how to install and load packages.
+For a refresher about how to install and load packages, see the
+[Packages][r-basics-packages] section of DataLab's R Basics workshop reader.
+
+[r-basics-packages]: https://ucdavisdatalab.github.io/dwr_workshop_r_basics/chapters/getting-started/getting-started.html#sec-packages
 :::
 
 This chapter covers a variety of ways to investigate and summarize tabular data
@@ -36,8 +39,8 @@ statistical properties. This step is important because it can help you identify
 limitations of and patterns in the data.
 
 Which statistics are appropriate for a given feature often depends on the type
-of the feature. Recall from @sec-data-types-classes that the types
-statisticians typically think about are:
+of the feature. Recall from @sec-types-of-data that the types data scientists
+typically think about are:
 
 * **Categorical**
     + **Nominal** - data separated into specific categories, with no order. For
@@ -51,8 +54,8 @@ statisticians typically think about are:
     + **Continuous** - decimal numbers. There are no specific categories, but
       there is an order. For example, height in inches is numerical.
 
-The `table` function, which was introduced in @sec-inspecting-a-data-frame, is
-great for summarizing categorical (and sometimes discrete) data. For example:
+The `table` function is great for summarizing categorical (and sometimes
+discrete) data. For example:
 
 ```{r}
 table(terns$region_3)

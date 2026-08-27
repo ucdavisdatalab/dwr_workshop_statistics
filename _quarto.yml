@@ -75,7 +75,7 @@ format:
   # pdf: default
 
 # Uncomment to use BibTeX or BibLaTeX references:
-# bibliography: references.bib
+bibliography: references.bib
 
 # Cache computations from each chapter:
 execute:

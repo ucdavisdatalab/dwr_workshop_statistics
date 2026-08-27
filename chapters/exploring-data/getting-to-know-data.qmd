@@ -428,3 +428,10 @@ workshop reader.
 
 [int-r]: https://ucdavisdatalab.github.io/dwr_workshop_intermediate_r/chapters/cleaning-reshaping/01_dates-times.html
 
+
+<!--
+## References {.unnumbered}
+
+:::{#refs}
+:::
+-->

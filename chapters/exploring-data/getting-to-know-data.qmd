@@ -1,7 +1,3 @@
-```{r, echo = FALSE}
-terns = read.csv("data/2000-2023_ca_least_tern.csv")
-```
-
 # Getting to Know the Data
 
 ::: {.callout-note title="Learning Goals" collapse="false"}
@@ -35,7 +31,7 @@ analysis. The chapter also briefly discusses fixes for common problems, with
 references to where you can learn more.
 
 
-## Be a Data Biographer
+## Be a Data Biographer {#sec-be-data-biographer}
 
 The first step in getting to know a dataset is to understand why and how it was
 collected. This will help you identify:
@@ -308,19 +304,23 @@ season.
 
 The CDFW publishes most of the data it collects to the [California Open Data
 portal][data.ca.gov]. The examples in this and subsequent chapters use a
-cleaned 2000-2023 version of the California least tern data.
+cleaned 2000-2023 version of the California least terns dataset.
 
 [data.ca.gov]: https://data.ca.gov/
 
 :::{.callout-important}
-[Click here][ca-least-tern] to view the 2000-2023 California least tern
+[Click here][ca-least-tern] to download the 2000-2023 California least terns
 dataset.
 
 [ca-least-tern]: https://ucdavis.box.com/s/m2w5l2ebp2rey2do5lnn38y1e3u31pin
+
+If you haven't already, we recommend you create a directory for this workshop.
+In your workshop directory, create a `data/` subdirectory. Download and save
+the dataset in the `data/` subdirectory.
 :::
 
 :::{.callout-note
-  title="Documentation for 2000-2023 California Least Tern Dataset"
+  title="Documentation for 2000-2023 California Least Terns Dataset"
   collapse=false
 }
 
@@ -381,11 +381,113 @@ The messy source dataset (with more years and more columns) is available
 :::
 
 
-## Structural Summaries
+### Writing a Data Biography
 
-When you start working with a dataset, examining its structure is one of the
-first things you should do. This way you can identify and correct potential
-problems, and prepare the dataset for the analyses you'd like to carry out.
+To get started with the California least terns dataset, let's try to answer the
+data biography questions from @sec-be-data-biographer. We'll go through them
+one-by-one and use the [source page][ca-least-tern-source] as reference
+documentation.
+
+> Who collected the dataset?
+
+The dataset was assembled by the CDFW. The documentation says "data is reported
+to CDFW" but doesn't say by whom. Possibly the data are collected by members of
+CDFW, members of other government agencies, or volunteers.
+
+> Why did they collect the dataset?
+
+The documentation doesn't explain why CDFW collects the dataset, but [CDFW's
+website][cdfw-endangered] says that California least terns are an endangered
+species with state and federal protections. Thus it is likely CDFW collects the
+dataset to monitor the population of the birds and advise policymakers.
+
+[cdfw-endangered]: https://wildlife.ca.gov/Conservation/Fully-Protected
+
+> What do they claim the dataset represents?
+
+According to the documentation, the dataset consists of annual census data for
+California least tern nesting sites, including estimated counts of fledglings,
+breeding pairs, and nests.
+
+> What was the collection procedure?
+
+The documentation is notably vague on this point. If you wanted to use the
+dataset for research purposes, it would be prudent to contact CDFW to request
+more information about this.
+
+> When and where did they collect the dataset?
+
+The dataset spans spans all of California and covers multiple years (the source
+page doesn't say which years, but we established earlier that the cleaned
+DataLab version covers 2000-2023).
+
+> Does the dataset consist of the entire population? If not, how were subjects
+> selected?
+
+Observations are at the year-site level. It's possible that there are some
+nesting sites for which data were not collected. The documentation doesn't
+explain how nesting sites were located and whether some might have been missed.
+Again, this is something we could contact CDFW about to get more details.
+
+> Who is impacted by use or analysis of the dataset? What are the potential
+> consequences?
+
+Results from analyzing this dataset could benefit or harm California least
+terns. For instance, they could be used to argue for policies that change the
+level of protection for the species. This could have far-reaching implications
+for the ecology of California and surrounding regions.
+
+> Are any special privacy or security precautions necessary?
+
+The CDFW masked the exact geospatial coordinates of the nesting sites because
+this is a public dataset and the birds are endangered. In other words, CDFW
+already addressed the primary concern.
+
+
+### Reading the Data
+
+Now let's use R to read the California least terns dataset. We can use the
+built-in `read.csv` function. In the following code, the path to the California
+least tern dataset is `data/2000-2023_ca_least_tern.csv`, but it might be
+different for you, depending on R's working directory and where you saved the
+file.
+
+Save the result from the `read.csv` function in a variable called `terns`.
+We'll use this variable to access the data in subsequent code.
+
+```{r}
+terns = read.csv("data/2000-2023_ca_least_tern.csv")
+```
+
+If the code ran without errors, it's a good idea to check that the dataset
+looks like what the documentation describes. When working with a new dataset,
+it usually isn't a good idea to print the whole thing (at least until you know
+how big it is). Large datasets can take a long time to print, and the output
+can be difficult to read.
+
+Instead, use the `head` function to print only the beginning, or head, of the
+dataset:
+
+```{r}
+#| eval: false
+head(terns)
+```
+
+```{r, echo = FALSE}
+knitr::kable(head(terns))
+```
+
+This shows the structure of the dataset: it's a table. In R, tabular datasets
+are represented by data frames. We'll explain more ways to inspect the
+structure of a dataset in @sec-structural-summaries.
+
+
+## Structural Summaries {#sec-structural-summaries}
+
+After reading a dataset into R (or other statistical software), examining its
+structure is one of the first things you should do. This way you can identify
+and correct potential problems, and prepare the dataset for the analyses you'd
+like to carry out.
 
 Whenever you load a dataset into R, your next step should be to investigate the
 data's structure. This step is important because it can help you identify

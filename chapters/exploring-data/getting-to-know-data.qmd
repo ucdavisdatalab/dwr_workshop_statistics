@@ -205,38 +205,24 @@ addition to selling print and eBook versions.
 
 ## Structure Matters
 
-The structure of a dataset---its shape and organization---has enormous
-influence on how difficult it will be to analyze.
+The shape and organization of a dataset, together called **structure**, govern
+how you can access and query its data. Depending on the structure, some
+analyses are easier to carry out than others. Most datasets can be stored in
+and transformed between a variety of structures, each with different advantages
+and disadvantages.
 
-Datasets can take many different forms, or **structures**, depending on what
-they represent and the information they contain. For instance, a dataset that
-represents:
+When you start working with a dataset, identify the structure and think about
+whether it's suitable for the analyses you want to carry out. If it isn't,
+transform to a more suitable structure. The focus of this reader is
+exploration, so we won't cover how to transform datasets.
 
-<!-- TODO: pictures! or links to data? e.g., night heron range -->
-<!-- Same dataset, different structures? -->
+:::{.callout-note title="See Also"}
+If you want to learn more about how to transform a dataset with R, see
+DataLab's [Intermediate R: Cleaning and Reshaping Data][int-r-clean] workshop
+reader.
 
-* People in a family, such as the Roosevelts, might be organized as a (family)
-  tree, with connections from parents to children.
-* Monthly population estimates for a fish species in the Sacramento River might
-  be a series of numbers.
-* Relationships between cats in a small town might be a graph (or network),
-  with a node for each cat and an edge (connection) between each pair of cats
-  that have met.
-* Individual consumer reviews for several different vacuums might be a table
-  with a row for each review and columns to identify the individual, vacuum
-  model, and review score.
-* Bike paths in Davis, CA might be a collection of geospatial coordinates that
-  describe points, lines, and shapes.
-
-<!-- FIXME: this is pretty abstract, can we be more concrete? -->
-Different structures have tradeoffs.
-
-Structure matters because it affects which avenues of exploration and analysis
-are appropriate and realistic. It can also affect how you access and query data
-in the dataset.
-
-Sometimes, transforming a dataset to a different structure
-makes analysis easier.
+[int-r-clean]: https://ucdavisdatalab.github.io/dwr_workshop_intermediate_r/chapters/cleaning-reshaping/01_dates-times.html
+:::
 
 A **tabular** dataset is one that's structured as a table, with rows and
 columns. This reader focuses on tabular datasets, since they're common in
@@ -249,6 +235,29 @@ tabular dataset:
 | banana | 541      | 0.79
 | pear   | 10       | 1.99
 
+: {.striped .hover}
+
+<!-- TODO: pictures! or links to data? e.g., night heron range -->
+<!-- Same dataset, different structures? -->
+
+Some other examples of datasets and structures are:
+
+* People in a family, such as the Roosevelts, might be organized as a (family)
+  tree, with connections from parents to children.
+* Monthly population estimates for a fish species in the Sacramento River might
+  be a series of numbers.
+* Relationships between cats in a small town might be a graph (or network),
+  with a node for each cat and an edge (connection) between each pair of cats
+  that have met.
+* Bike paths in Davis, CA might be a collection of geospatial coordinates that
+  describe points, lines, and shapes.
+* Individual consumer reviews for several different vacuums might be a table
+  with a row for each review and columns to identify the individual, vacuum
+  model, and review score.
+
+
+### Features and Observations
+
 Data scientists think about datasets in terms of two components:
 
 * A **feature** (also called a **covariate**) is measurement of something,
@@ -256,17 +265,16 @@ Data scientists think about datasets in terms of two components:
   heights of everyone in the class. Each person in the class is a subject, and
   the height measurement is a feature. Features don't have to be quantitative.
   If we also asked each person their favorite color, then favorite color would
-  be another feature in our dataset. Features are usually, but not always, the
-  columns in a tabular dataset.
+  be another feature in our dataset. In tabular datasets, features are usually,
+  but not always, the columns.
 
 * An **observation** is a set of features measured for a single subject or at a
   single time. So in the preceding example, the combined height and favorite
-  color measurement for one student is one observation. Observations are
-  usually, but not always, the rows in a tabular dataset.
+  color measurement for one student is one observation. In tabular datasets,
+  observations are usually, but not always, the rows.
 
 Every dataset has features and observations, regardless of whether the dataset
 is tabular.
-
 
 A **data dictionary** is documentation that describes each feature in a dataset
 in detail. For a tabular dataset, a data dictionary typically describes the
@@ -275,43 +283,7 @@ measures. The description explain the range of realistic values, regardless of
 whether the feature is quantitative or qualitative. For quantitative features,
 it should also specify the units of measurement.
 
-<!--
-## Tidy Datasets {#sec-tidy-data}
-
-In 2014, [Hadley Wickham][hadley] refined and formalized the conventions for
-tabular datasets by [introducing the concept of tidy datasets][tidy], which
-have a specific structure. A tabular dataset is **tidy** if and only if:
-
-[hadley]: https://hadley.nz/
-[tidy]: https://vita.had.co.nz/papers/tidy-data.html
-
-1. Each observation has its own row.
-2. Each feature has its own column.
-3. Each value has its own cell.
-
-These rules ensure that all of the values in a dataset are visually organized
-and are easy to access in programming languages. They're specific enough to
-make tidiness a convenient standard for commands that operate on tabular
-datasets. They also reflect the way statisticians conventionally arrange
-tabular datasets.
-
-:::{.callout-note}
-R's [Tidyverse][tidyverse] packages (see @sec-the-tidyverse) are designed from
-the ground up for working with tidy datasets. Tidy datasets have also been
-adopted as a standard in other software, including various packages for Python
-and Julia.
-
-[tidyverse]: https://www.tidyverse.org/
-:::
-
-When you first look at a dataset, think about what the observations are and
-what the features are. If the dataset comes with documentation, it may help you
-figure this out. Since this dataset is a tidy dataset, we already know each row
-is an observation and each column is a feature.
-
-@sec-reshaping-data gives examples of tidy and untidy data, as well as
-explanations of how to make untidy data tidy.
--->
+We'll see an example of a data dictionary in @sec-ca-least-terns.
 
 
 ## Dataset: CA Least Terns {#sec-ca-least-terns}

@@ -37,34 +37,43 @@ references to where you can learn more.
 
 ## Be a Data Biographer
 
-The first step in getting to know a dataset is understanding who collected it
-and why they did so.
+The first step in getting to know a dataset is to understand why and how it was
+collected. This will help you identify:
 
-* Who collected the dataset?
-* Why was the dataset collected?
+* Who or what the dataset represents;
+* What kinds of questions you can use it to answer;
+* What kinds of analysis methods might be appropriate;
+* What biases or limitations it might have.
 
-Next, think about the concrete details of how the dataset was collected. What
-was the collection procedure?
+We recommend taking some time to write a brief description of the dataset in
+your own words, called a **data biography**. Do this even if the dataset's
+documentation already includes a description or biography, to help you organize
+and clarify your understanding of the dataset.
 
-From which population is the dataset drawn? Does the dataset include the entire
-population? If the dataset is a sample of the population, how was the sample
-taken? Is it possible that subgroups within the population were undersampled or
-left out, either by coincidence, due to natural constraints, or intentionally?
+Use the documentation and related publications as you write. If the dataset
+doesn't have documentation or the documentation is incomplete, you might need
+to do some sleuthing with the dataset itself (see the remainder of this
+reader), online, or by contacting the people who created the dataset directly.
+Keep track of any unresolved questions about the dataset as you write the
+biography.
 
-Is the dataset also associated with other populations?
+A data biography serves as a reference as you analyze the dataset and
+communicate results. If you collected the dataset yourself and plan to share it
+with others, the data biography is also essential documentation for helping the
+audience make sense of the dataset. Even if you didn't collect the dataset, the
+biography and notes you write during analysis might be helpful to colleagues or
+collaborators who also want to work with the dataset.
 
-Consider whether any special privacy or security precautions are necessary for
-the dataset.
-
-Finally, think about the impact of the dataset and analyses based on it. Who
-benefits? Who, if anyone, might be harmed?
+The following subsections break down some of the kinds of questions to ask as
+you write a data biography.
 
 :::{.callout-important}
-Keep these questions in mind throughout your time working with the dataset.
-When you arrive at results you want to share, revisit these questions before
-doing so.
+Keep the biography questions in mind throughout your time working with the
+dataset. When you arrive at results you want to share, revisit the questions
+before doing so.
 :::
 
+<!--
 A **data biography** is a document that attempts to answer these kinds of
 questions and provide any other background and context relevant to a dataset.
 When collecting a dataset, providing a biography as one part of the
@@ -73,6 +82,125 @@ include a biography, try to write one yourself! Doing so will force you to
 confront the questions above, and give you a document you can use to help
 explain the results of your analyses. In some cases, sharing the data biography
 might help coworkers or colleagues who also want to work with the dataset.
+
+
+* Context and Motivation
+* Collection Strategy
+* Precautions and Impact
+-->
+
+### Context and Motivation
+
+First, think about where the dataset came from---its **provenance**. Ask:
+
+* [ ] Who collected the dataset?
+* [ ] Why did they collect the dataset?
+* [ ] What do they claim the dataset represents?
+
+These questions can help you identify potential biases or limitations of the
+dataset. Consider whether the person or group who collected the dataset has any
+conflicts of interest. While conflicts of interest are not necessarily
+indicative of a problem with a dataset, they do suggest it deserves extra
+scrutiny for biases.
+
+As an example, consider a dataset collected by a light bulb manufacturer about
+the operating characteristics of their bulbs. Most likely, their motivation is
+to convince potential customers that their bulbs are superior to competitors,
+although it might also be to assess how they can improve their bulbs. In other
+words, they have an obvious conflict of interest. As a result, they might use a
+testing process that doesn't replicate typical household conditions,
+selectively include results from their tests, or aggregate the results in a way
+that makes the bulbs appear to have especially long lifespans or low power
+consumption.
+
+When thinking about what a dataset represents, data scientists (and
+statisticians) usually think in terms of the **population** from which the data
+were drawn. The population might consist of people, but it could also consist
+of other animals, plants, inanimate objects, or something else. The members of
+the population are called **subjects** or sometimes **units of observation**.
+Some datasets represent or are associated with multiple populations.
+
+
+### Collection Strategy
+
+Next, think about how the dataset was collected. Ask:
+
+* [ ] What was the collection procedure?
+* [ ] When and where did they collect the dataset?
+* [ ] Does the dataset consist of the entire population? If not, how were
+  subjects selected?
+
+The question about population gets at whether the dataset is a **sample**: a
+subset of subjects selected from a population. When it's not possible to
+collect data about an entire population---whether due to cost, difficulty,
+ethical concerns, or something else---we might instead take a sample. The hope
+is that the sample is representative, meaning results for the sample generalize
+to the entire population.
+
+How well a sample represents a population depends on how it was collected and
+how large it is, among other things. A **simple random sample**, where subjects
+are selected from the population randomly and independently, often generalizes
+well because random sampling preserves most statistical properties of the
+population. In experiments, researchers sometimes use more sophisticated
+sampling procedures to control for various biases.
+
+As you think about the population and sample procedure, it's especially
+important to consider whether there are subgroups within the population that
+might be underrepresented or left out entirely, whether by coincidence, due to
+natural constraints, or intentionally. These can limit the generalizability of
+results from the dataset.
+
+
+### Precautions and Impact
+
+Finally, think about how using the dataset might affect other people or things.
+Ask:
+
+* [ ] Who is impacted by use or analysis of the dataset? What are the potential
+  consequences?
+* [ ] Are any special privacy or security precautions necessary?
+
+These questions are intended to help you reflect on potential ethical and legal
+concerns when working with the dataset, as well as your own responsibilities to
+the associated population(s) and sampled subjects.
+
+The **CARE Principles** [@carroll2020], which were originally developed to
+protect Indigenous peoples' rights and interests with respect to Indigenous
+data, provide a basis for reasoning about the impacts of data work on
+communities more generally. The principles are:
+
+* Collective benefit: data and analyses should provide benefit to the community
+  as a whole and reflect community values.
+* Authority to control: community members have a right to and should be
+  actively involved in the stewardship and governance of their data.
+* Responsibility: data workers have a responsibility to engage and cultivate
+  respectful relationships with community for the benefit of the community.
+* Ethics: protecting the rights and well-being of community members should be
+  the highest priority; community members must be allowed to assess benefits
+  and harms themselves.
+
+The CARE Principles have been adopted by organizations such as the [Research
+Data Alliance][rda] and the [Smithsonian Institution][smithsonian].
+
+[rda]: https://www.rd-alliance.org/
+[smithsonian]: https://www.si.edu/
+
+:::{.callout-note title="See Also"}
+_The Turing Way_ [-@turing-way], an online textbook developed by data
+scientists and other researchers from all over the world, incorporates a wide
+variety of perspectives about best practices for collecting, analying, and
+communicating results about data. [This chapter][turing-way-care] discusses the
+CARE Principles.
+
+[turing-way-care]: https://book.the-turing-way.org/reproducible-research/rdm/rdm-care/
+
+_Data Feminism_ [@dignazio2020] is a textbook that explores how to approach
+data work in an ethical and equitable way by drawing from feminist principles.
+The publisher provides [a free, online version of the book][data-feminism] in
+addition to selling print and eBook versions.
+
+[data-feminism]: https://data-feminism.mitpress.mit.edu/
+:::
 
 
 ## Structure Matters

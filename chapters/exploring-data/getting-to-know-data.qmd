@@ -272,6 +272,16 @@ Data scientists think about datasets in terms of two components:
 Every dataset has features and observations, regardless of whether the dataset
 is tabular.
 
+:::{.callout-note}
+In statistics, features are often called **variables**, because they can be
+modeled as values that vary randomly. This idea is different from variables in
+programming languages (like R), which are just names for values.
+
+For clarity, in this reader we only use the word "variable" in the programming
+language sense. We always call measurements in a dataset "features" or
+"covariates."
+:::
+
 A **data dictionary** is documentation that describes each feature in a dataset
 in detail. For a tabular dataset, a data dictionary typically describes the
 unit of observation (in other words, what a subject is) and what each column
@@ -489,89 +499,205 @@ structure is one of the first things you should do. This way you can identify
 and correct potential problems, and prepare the dataset for the analyses you'd
 like to carry out.
 
-Whenever you load a dataset into R, your next step should be to investigate the
-data's structure. This step is important because it can help you identify
-whether:
-
-* The data was loaded correctly
-* There are structural problems with the data that will make it difficult to
-  use if they aren't fixed
-
 R provides several functions for getting structural summaries of data. Some of
 these are:
 
-* `str` to get a detailed structural summary
-* `head`, `tail` to preview the data
+* `str` to print a compact structural summary
+* `head`, `tail` to get the first or last few elements
 * `nrow`, `ncol`, `dim`, `length` to get dimension information
 * `names`, `colnames`, `rownames` to get element names
-* `class`, `typeof` to get classes and types
+* `class` to get classes (R data types; see @sec-data-types)
 
-Let's try a few of these on the California Least Terns dataset
-(@sec-ca-least-terns). For instance, the `str` function shows the classes of
-the columns:
-
-```{r}
-str(terns)
-```
+We've already seen the `head` function, but let's try a few more of these on
+the California least terns dataset (@sec-ca-least-terns).
 
 :::{.callout-note title="See Also"}
-For a reminder of R's syntax and commands, see DataLab's [R Basics][r-basics]
+Need a refresher on R's syntax and commands? See DataLab's [R Basics][r-basics]
 workshop reader.
 
 [r-basics]: https://ucdavisdatalab.github.io/dwr_workshop_r_basics/
 :::
 
+The `str` function, which we consider the most generally useful, prints a
+compact summary of a dataset's structure:
 
-## Types of Data {#sec-types-of-data}
+```{r}
+str(terns)
+```
 
-Different types of data require different approaches and analysis methods. For
-example, if your data are numbers, you can summarize them by computing a sum or
-an average. On the other hand, if your data are categories, like genres of
-music (rock, pop, classical, ...), you can't use these summarization methods
-and have to do something else.
+The summary begins with the number of rows ("obs.") and columns ("variables")
+in the dataset. Despite the words "obs." and "variables," R can't actually tell
+what the observations and features are; it's up to you to think about whether
+the rows and columns actually represent observations and features. If they
+don't, it's usually a good idea to reorganize or reshape the dataset so that
+they do.
 
-Data scientists categorize data into **types** based on sets of shared
-characteristics. This makes it easier to reason about how to transform,
-analyze, and present the data. Some widely-understood data types are:
+After the dimensions, the summary lists each column's name (prefixed with a
+dollar sign `$`), data type (more about this in @sec-data-types), and first few
+values. You can use the `str` summary to quickly assess what a dataset contains
+and whether there are structural problems.
 
-* **Categorical**
-    + **Nominal** - data separated into specific categories, with no order. For
-      example, hair color (red, brown, blonde, ...) is categorical.
-    + **Ordinal** - data separated into specific categories, with an order. For
+The `dim` function gets the number of rows and columns in a dataset:
+
+```{r}
+dim(terns)
+```
+
+The `names` and `colnames` functions print the names of the columns in a
+dataset:
+
+```{r}
+names(terns)
+```
+
+These functions can be useful as a quick reminder or if you need to use these
+values programmatically.
+
+
+## Data Types {#sec-data-types}
+
+It's useful to categorize data into **types** based on characteristics they
+have in common, such as what they are and what we can do with them. For
+example, if the data are numbers, we can summarize them by computing a sum or
+an average. We can't use these summaries if the data are categories, such as
+genres of music (pop, blues, classical, etc.).
+
+In other words, types tell us about which methods are possible and potentially
+appropriate. They're a convenient way to reason about how to transform,
+analyze, and present data. That said, keep in mind that they're just a
+hint---you still need to use your own knowledge and judgement, too!
+
+Statisticans conventionally think in terms of these data types:
+
+* **Categorical**, which includes:
+    + **Nominal**: data separated into specific categories, with no order. For
+      example, hair color (red, brown, blonde, ...) is nominal.
+    + **Ordinal**: data separated into specific categories, with an order. For
       example, school level (elementary, middle, high, college) is ordinal.
-* **Numerical**
-    + **Discrete** - integers, or a finite set of decimal numbers with no
-      values in between. Sometimes discrete values can also be treated as
-      ordinal. For example, month as a number (1, 2, ..., 12) is discrete.
-    + **Continuous** - decimal numbers. There are no specific categories, but
-      there is an order. For example, height in inches is numerical.
+* **Numerical**, which includes:
+    + **Discrete**: integers or specific decimal numbers with no values in
+      between. Sometimes discrete values can also be treated as ordinal. For
+      example, month as a number (1, 2, ..., 12) is discrete.
+    + **Continuous**: decimal numbers. There are no specific categories, but
+      there is an order. For example, height in inches is continuous.
 
 <!--
 Of course, other types of data, like graphs (networks) and natural language
 (books, speech, and so on), are also possible.
 -->
-Categorizing data this way is useful for reasoning about which methods to apply
-to which data.
 
-:::{.callout-tip}
-Because a feature measures something, we often think and talk about types of
-features rather than types of individual values. For example, for a feature
-that measures temperature in degrees Celsius, all of the data values will be
-numeric (and probably continuous). So we can say the feature is numeric.
+We can and will often think and talk about types of features rather than types
+of individual values, because each feature measures one thing. For instance, a
+feature that measures temperature in degrees Celsius will have numeric (and
+probably continuous) values. So we say the feature is numeric.
 
-In a tidy dataset, each feature has its own column, so it also makes sense to
-talk about the types of the columns.
+When each feature is in its own column, it also makes sense to talk about types
+of columns. R assumes this is true in the `str` function's structural summary,
+which shows a type for each column, as well as in the output of a few other
+functions.
+
+
+### R Classes
+
+Most programming languages also categorize data into types. R actually uses two
+separate systems for categorizing data objects:
+
+1. The **class** of an R object describes what the object does or the role that
+   it plays. Some objects can do more than one thing, so objects can have more
+   than one class. The `class` function returns the classes of its argument.
+
+2. The type of an R object describes how the object is stored in computer
+   memory. Each object has exactly one type. The `typeof` function returns the
+   type of its argument.
+
+When we're exploring a dataset with R, classes are far more important than
+types. If you aren't sure what an object is, checking its classes should be the
+first thing you do.
+
+The built-in classes most relevant to exploring datasets are:
+
+| Class     | Example                      | Description
+| :----     | :------                      | :----------
+| logical   | `TRUE`, `FALSE`              | Logical (or Boolean) values
+| integer   | `-1L`, `1L`, `2L`            | Integer numbers
+| numeric   | `-2.1`, `7`, `34.2`          | Decimal (real) numbers
+| complex   | `3-2i`, `-8+0i`              | Complex numbers
+| character | `"hi"`, `"YAY"`              | Text (strings)
+| factor    | `Treatment A`, `Treatment B` | Categories
+
+: {.striped .hover tbl-colwidths="[20, 40, 40]"}
+
+These are just a few of the many classes in R.
+
+:::{.callout-important}
+Classes say what we can do with an object _in R_ rather than what we can do
+statistically.
+
+It's up to you to think about what your dataset represents, decide which
+questions you want to answer, identify the statistical data types, and decide
+which methods are appropriate. Programming languages (and even artificial
+intelligence) can't reliably do this for you.
 :::
 
+Let's use the `class` function to check the classes of a few of the columns in
+the California least terns dataset. First, we'll look at the `year` column:
 
-## Correcting Data Types
+```{r}
+class(terns$year)
+```
 
-Often when you load a new dataset, some of the columns won't have the correct
-data type (or class) for what you want to do. For instance, in the least terns
-dataset, the `site_name`, `region_3`, and `event` columns all contain
-categorical data, so they should be factors.
+The class is `integer`, which makes sense since years are integer numbers. This
+means R will allow us make comparisons, do arithmetic, and do other math with
+the `year` column. Integers are a kind of discrete data. We could also think of
+`year` as categorical: for instance, to group the observations by year. In most
+cases, R is flexible enough to let us use discrete data, like integers, as
+categorical data.
 
-You can convert these columns to factors with R's `factor` function:
+Now let's look at the `site_name` column:
+
+```{r}
+class(terns$site_name)
+```
+
+The class is `character`, because the site names are text. As we explore the
+dataset, we're more likely to use them as categories for filtering and grouping
+observations than we are to use them as text to (for instance) change the
+capitalization of or count the number of letters in the names. So we should
+convert the column to the `factor` class, both to clarify our intent and
+because it will be more convenient for some of the functions we might want to
+use.
+
+:::{.callout-important}
+CSV files don't distinguish between textual and categorical data. When you read
+one with `read.csv`, recent versions of R just assume anything that might be
+text is text. So after reading a CSV file, you should always check whether any
+of the columns need to be converted to factors.
+
+Technically, CSV files don't record data types at all. R is usually able to
+guess appropriate types for non-text data, but it's still wise to check the
+types of all of the columns.
+
+Several other file formats, like fixed width (FWF) and tab-separated value
+(TSV) files, also have this weakness.
+:::
+
+We can use the `str` function to quickly check the classes of all of the
+columns in a dataset:
+
+```{r}
+str(terns)
+```
+
+For the California least terns dataset, it looks like the `site_name`,
+`region_3`, and `event` columns all contain categories but have class
+`character`. @sec-fixing-problems explains how to convert them to factors.
+
+
+### Fixing Problems {#sec-fixing-problems}
+
+We can convert a column into a factor with R's `factor` function. Let's try it
+for the `site_name`, `region_3`, and `event` columns in the California least
+terns dataset:
 
 ```{r}
 terns$site_name = factor(terns$site_name)
@@ -605,7 +731,7 @@ If there were other columns to convert, we'd go through the same steps with the
 appropriate conversion function.
 :::
 
-R provides `as.` functions to convert to the most common data types. For
+R provides also `as.` functions to convert to the most common data types. For
 instance, `as.character` converts an object to a string:
 
 ```{r}
@@ -624,16 +750,11 @@ For instance, it's common to make these conversions when scraping data from the
 web.
 
 It's also a good idea to convert categorical columns into factors with the
-`factor` function and to convert columns of dates into dates. For more about
-the latter, see DataLab's [Intermediate R: Cleaning & Reshaping Data][int-r]
-workshop reader.
+`factor` function and to convert columns of dates into dates.
 
-[int-r]: https://ucdavisdatalab.github.io/dwr_workshop_intermediate_r/chapters/cleaning-reshaping/01_dates-times.html
+:::{.callout-note title="See Also"}
+For more about dates, see the [Dates & Times][int-r-dates] chapter of DataLab's
+Intermediate R: Cleaning & Reshaping Data workshop reader.
 
-
-<!--
-## References {.unnumbered}
-
-:::{#refs}
+[int-r-dates]: https://ucdavisdatalab.github.io/dwr_workshop_intermediate_r/chapters/cleaning-reshaping/01_dates-times.html
 :::
--->

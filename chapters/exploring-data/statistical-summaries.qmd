@@ -39,7 +39,7 @@ statistical properties. This step is important because it can help you identify
 limitations of and patterns in the data.
 
 Which statistics are appropriate for a given feature often depends on the type
-of the feature. Recall from @sec-types-of-data that the types data scientists
+of the feature. Recall from @sec-data-types that the types data scientists
 typically think about are:
 
 * **Categorical**

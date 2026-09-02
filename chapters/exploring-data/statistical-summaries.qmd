@@ -22,44 +22,232 @@ For a refresher about how to install and load packages, see the
 [r-basics-packages]: https://ucdavisdatalab.github.io/dwr_workshop_r_basics/chapters/getting-started/getting-started.html#sec-packages
 :::
 
-This chapter covers a variety of ways to investigate and summarize tabular data
-in order to understand the data better and identify potential problems. The
-lesson also describes how to fix some of the most common data problems.
-
-## What Is a Distribution?
+This chapter presents a variety of methods to summarize categorical and
+numerical data, including statistical estimates and visualizations. For each of
+these methods, we discuss how to interpret the summary and explain the method's
+advantages and disadvantages relative to others. The unifying theme of the
+chapter is summarizing, making sense of, and communicating how data are
+distributed within populations and samples.
 
 
 ## Categorical Data
-
-
-## Numerical Data
 
 After investigating the data's structure, it's a good idea to check some basic
 statistical properties. This step is important because it can help you identify
 limitations of and patterns in the data.
 
-Which statistics are appropriate for a given feature often depends on the type
-of the feature. Recall from @sec-data-types that the types data scientists
-typically think about are:
+Let's continue to explore the California least terns dataset
+(@sec-ca-least-terns). As a reminder, the structure of the dataset is:
 
-* **Categorical**
-    + **Nominal** - data separated into specific categories, with no order. For
-      example, hair color (red, brown, blonde, ...) is categorical.
-    + **Ordinal** - data separated into specific categories, with an order. For
-      example, school level (elementary, middle, high, college) is ordinal.
-* **Numerical**
-    + **Discrete** - integers, or a finite set of decimal numbers with no
-      values in between. Sometimes discrete values can also be treated as
-      ordinal. For example, month as a number (1, 2, ..., 12) is discrete.
-    + **Continuous** - decimal numbers. There are no specific categories, but
-      there is an order. For example, height in inches is numerical.
+```{r}
+str(terns)
+```
 
-The `table` function is great for summarizing categorical (and sometimes
-discrete) data. For example:
+We'll start by examining some of the categorical features, since there are only
+a few ways to summarize categorical data. As a motivating question, we'll try
+to understand which parts of California are included in the dataset and whether
+they're represented equally. To do this at a coarse scale, we can look at the
+`region_3` column, which, according to the documentation, has categories for
+three regions. The first few values are:
+
+```{r}
+head(terns$region_3)
+```
+
+The documentation claims the three regions are S.F. Bay, Central, and Southern,
+but we can already see that this isn't accurate. There's another region, Kings.
+Presumably this corresponds to sites in [Kings County][kings]. Let's check
+whether there are any other unexpected regions:
+
+[kings]: https://en.wikipedia.org/wiki/Kings_County,_California
+
+```{r}
+unique(terns$region_3)
+```
+
+The output reveals there are three undocumented regions: Kings, Sacramento, and
+Arizona. Later, in @sec-fixme, we'll try to figure out what the Arizona region
+represents, since there aren't any counties or regions of California with this
+name.
+
+We can count the number of times each region appears in the `region_3` column
+to get a sense of how many observations come from each region. The `table`
+function counts things:
 
 ```{r}
 table(terns$region_3)
 ```
+
+This reveals a few things about the `region_3` column and the dataset. First,
+the Kings, Sacramento, and Arizona regions are uncommon. Each has 15
+observations or less and is an order of magnitude smaller than the S.F. Bay,
+Central, and Southern regions. Second, at 576 observations, the Southern region
+occurs far more than any of the others, with S.F. Bay next, at 112
+observations.
+
+The disparity in counts between the three documented regions could be due to
+nesting preferences of the birds: perhaps there are more nesting sites in
+southern California. On the other hand, it could also be due to how the dataset
+is collected: perhaps the regions have different coverage over time, or CDFW
+uses geographically smaller sites in southern California. Thinking through the
+different ways a dataset might have been generated like this can help you
+identify subtle details that change or temper interpretations and lead to
+further lines of inquiry. We'll revisit the questions about `region_3` in
+@sec-fixme.
+
+Computing **frequencies** or **counts**---the number of times each category
+appears---is by far the most common, useful, and complete way to summarize
+categorical data.
+
+The `table` function is an essential tool for computing frequencies, but it
+does have one shortcoming: even small tables can be easy to misread, especially
+if the names of the categories are long or include numbers. Large tables make
+the problem worse. Sorting by frequency partially addresses the problem:
+
+```{r}
+sort(table(terns$region_3))
+```
+
+This makes it easy to see which categories are relatively small or large, but
+the categories are no longer in alphabetical order, so it's harder to find
+specific categories. For ordinal data, where there's a natural order to the
+categories, sorting by frequency can break that order and make tables
+confusing.
+
+We can use a bar plot to display frequencies visually instead of in a table.
+Here's a bar plot for the `region_3` column:
+
+```{r}
+library("ggplot2")
+
+ggplot(terns) +
+  aes(x = region_3) +
+  geom_bar()
+```
+
+The bar plot is convenient for comparing different categories, even when there
+are a lot of categories. As with a table, we can sort the categories by
+frequency in a bar plot to make the extremes more pronounced, but these are
+usually evident even without sorting.
+
+Bar plots have two disadvantages compared to tables. First, the exact count for
+a category can be difficult to read. A simple way to address this is to display
+the count on the plot:
+
+```{r}
+ggplot(terns) +
+  aes(x = region_3) +
+  geom_bar() +
+  geom_text(
+    # Use counts for the labels (geom_bar also uses stat_count).
+    stat = "count", aes(label = after_stat(count)),
+    # Set vertical justification of the labels, so they sit atop the bars.
+    vjust = -0.5
+  )
+```
+
+Second, bar plots are often less legible than tables to people with low vision.
+One way to get the best of both bar plots and tables is to simply include both.
+
+The **mode** of a feature is the category that occurs most frequently. In a bar
+plot, the mode corresponds to the category with the tallest bar. A feature can
+have multiple modes, where several values are tied for most frequent. For the
+`region_3` column, the mode is the Southern category.
+
+:::{.callout-warning}
+R's `mode` function is unrelated to the statistical mode and returns something
+different.
+
+There's no built-in function to calculate modes in R. Use the `table` function
+or a bar plot to identify modes instead.
+:::
+
+We can think of the mode of a feature as the category that's most likely if we
+were to randomly select an observation from the dataset. If the dataset is a
+random sample from a larger population, we can also think of the **sample
+mode** (computed with the dataset) as an estimate of the population's mode.
+
+
+### Discrete Data as Categorical
+
+Discrete data are unique, because they can be treated as both categories and
+numbers. Let's think about how we can apply summaries for categorical data to
+the `year` column in the California least terns dataset. As motivation, we'll
+try to understand the timespan of the dataset.
+
+We can compute frequencies of the distinct values for a discrete feature in the
+same way as for a categorical feature:
+
+```{r}
+table(terns$year)
+```
+
+Likewise, we can make a bar plot, with the same advantages and disadvantages as
+before:
+
+```{r}
+ggplot(terns) +
+  aes(x = year) +
+  geom_bar()
+```
+
+The bar plot makes it apparent that the dataset, which spans years 2000-2023,
+doesn't include any observations for the years 2001-2003. It also shows that
+there are roughly 30-40 observations for every included year. That might mean
+most sites were consistently measured over the entire time period, or it might
+be a coincidence due to mostly equal numbers of sites being added and removed
+over time. There's a distinct drop in observations in 2018, which could
+indicate a major change in which sites were being monitored. The mode is 2017.
+
+When a feature has a large number of possible values, tables and bar plots
+can become difficult to interpret. If the feature is ordered (whether ordinal
+or numerical), we're sometimes more interested in general trends in frequency
+as we move through the values in order, rather than frequencies at specific
+values.
+
+We can get a sense of general trends by **binning** the values, which means
+treating values close together as a single value. Imagine setting out a small
+number of bins and dropping a few consecutive values into each. We then compute
+frequencies (or other statistics) for the bins rather than the original values.
+Binning tends to smooth out extremes, because it combines multiple values (some
+of which will be less extreme).
+
+A **histogram** is a bar plot where the values on the x-axis are binned. We can
+use R to bin data and make a histogram automatically, although we recommend
+(and the ggplot2 documentation recommends) setting the bin width manually for
+numerical data. For instance, here's how to make a histogram for the `year`
+column with 3-year bins:
+
+```{r}
+ggplot(terns) +
+  aes(x = year) +
+  geom_histogram(binwidth = 3, color = "black")
+```
+
+In the histogram, notice that the trends from the bar plot are smoothed out.
+Key details still remain, like the low frequency for 2000-2003 and the drop in
+frequency in 2018. For intuition, think of the original bar plot as having a
+bin width of 1; wider bins produce more smoothing.
+
+We'll revisit histograms for continuous data in @sec-numerical-data.
+
+:::{.callout-tip}
+When you make histograms, try several different bin widths. Sometimes one bin
+width reveals details that are hidden in another. Choose a bin width that
+preserves the most relevant details to your questions about the data.
+
+If different bin widths lead to different interpretations of the data, include
+both in your reporting and address why they do.
+:::
+
+:::{.callout-note}
+R's functions for making histograms assume numerical data, but we could make a
+histogram for ordinal data in two steps, by first binning and then making a bar
+plot.
+:::
+
+
+## Numerical Data {#sec-numerical-data}
 
 What about numerical data?
 

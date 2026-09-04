@@ -333,6 +333,19 @@ To make sense of a feature like `total_nests`, we'll need an approach
 well-suited to numerical features. We'll learn several in
 @sec-numerical-features.
 
+
+## Numerical Features {#sec-numerical-features}
+
+Whether the features we're exploring are categorical or numerical, what we
+ultimately want to understand is the distribution: how values are distributed
+across observations (@sec-distributions). For numerical features, where all of
+the values might be unique, we have to do something more sophisticated than
+counting values. Because the values are numbers, we can also use math to
+summarize them in ways that aren't possible for categories.
+
+
+### Binning
+
 When a feature has a large number of possible values, tables and bar plots
 can become difficult to interpret. If the feature is ordered (whether ordinal
 or numerical), we're sometimes more interested in general trends in frequency
@@ -363,7 +376,7 @@ Key details still remain, like the low frequency for 2000-2003 and the drop in
 frequency in 2018. For intuition, think of the original bar plot as having a
 bin width of 1; wider bins produce more smoothing.
 
-We'll revisit histograms for continuous data in @sec-numerical-data.
+We'll revisit histograms for continuous data in @sec-numerical-features.
 
 :::{.callout-tip}
 When you make histograms, try several different bin widths. Sometimes one bin
@@ -381,26 +394,45 @@ plot.
 :::
 
 
-## Numerical Data {#sec-numerical-data}
+### Density Plots
 
-What about numerical data?
+```{r}
+ggplot(terns) +
+  aes(x = year) +
+  geom_density(adjust = 0.5)
+```
 
-Two important questions to ask about data are:
 
-1. Where is it? This is the **location** of the data.
+### Location Statistics
 
-2. How spread out is it? This is the **scale** of the data.
+Two questions that make good starting points when exploring numerical data are:
 
-Let's use the data
+1. What is the **location** of the data? For 1-dimensional data, where are most
+   observations on the number line? For 2-, 3-, or higher-dimensional data,
+   where are most of the observations in the space?
+2. What is the **scale** of the data? In other words, how much does it spread
+   out?
+
+To illustrate a few ways to approach these questions, let's use this toy data:
 
 ```{r}
 x = c(-2, -1, -1, -1, 0, 2, 6)
 ```
 
-as an example.
+```{r}
+ggplot(data.frame(x = x)) +
+  aes(x = x) +
+  geom_histogram(binwidth = 2, color = "black")
+```
 
-Location is generally summarized with a number near the middle or center of
-the data. A few options are:
+```{r}
+ggplot(data.frame(x = x)) +
+  aes(x = x) +
+  geom_bar()
+```
+
+One way to summarize location is to try to find the middle or center of the
+data. Two different statistics for this are:
 
 1.  **Mode** - the value that appears most frequently. The mode can be
     calculated for any kind of data, but doesn't work well for continuous data.
@@ -445,6 +477,9 @@ The mean is good for getting a general idea of where the center of the data
 is, while comparing it with the median reveals whether there are any
 unusually large or small values.
 
+
+### Scale Statistics
+
 Scale is generally summarized by a number that says how far the data is from
 the center (mean, median, etc...). Two options are:
 
@@ -481,6 +516,9 @@ the center (mean, median, etc...). Two options are:
     ```
 
 The IQR is more robust than the standard deviation.
+
+
+### Other Stuff
 
 Many of the functions for computing statistical summaries have a parameter
 `na.rm` to ignore missing values. Setting `na.rm = TRUE` is often useful when

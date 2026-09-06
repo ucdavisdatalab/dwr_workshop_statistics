@@ -35,7 +35,7 @@ sense of, and communicating how data are distributed within populations and
 samples.
 
 
-## Categorical Features
+## Categorical Features {#sec-categorical-features}
 
 To introduce ideas gently, we'll start by focusing on summaries for categorical
 features. Most of the time, categories are not numbers, so we won't use much
@@ -337,70 +337,220 @@ well-suited to numerical features. We'll learn several in
 ## Numerical Features {#sec-numerical-features}
 
 Whether the features we're exploring are categorical or numerical, what we
-ultimately want to understand is the distribution: how values are distributed
-across observations (@sec-distributions). For numerical features, where all of
-the values might be unique, we have to do something more sophisticated than
-counting values. Because the values are numbers, we can also use math to
-summarize them in ways that aren't possible for categories.
+ultimately want to understand is the distribution (@sec-distributions): how
+values are spread out across the range of possible values, which values are
+common, and which are rare.
+
+The values of a numerical feature are numbers, so in addition to calculating
+how frequently they occur, we can also calculate how far apart they are. In
+other words, we can use math to summarize numerical features in ways that
+aren't possible for categorical features.
 
 
 ### Binning
 
-When a feature has a large number of possible values, tables and bar plots
-can become difficult to interpret. If the feature is ordered (whether ordinal
-or numerical), we're sometimes more interested in general trends in frequency
-as we move through the values in order, rather than frequencies at specific
-values.
+If we compute frequencies for a numerical feature, we run into a problem: most
+of the frequencies are 1, because most of the values are distinct. As a
+consequence, it's hard to tell whether there are patterns in the distribution
+from the frequencies alone. @fig-total_nests_bar (and the associated frequency
+table) demonstrates this problem.
 
-We can get a sense of general trends by **binning** the values, which means
-treating values close together as a single value. Imagine setting out a small
-number of bins and dropping a few consecutive values into each. We then compute
-frequencies (or other statistics) for the bins rather than the original values.
-Binning tends to smooth out extremes, because it combines multiple values (some
-of which will be less extreme).
+One way to address the problem is by grouping values that are nearby each
+other, a process called **binning**, and then computing frequencies for the
+groups. Think of binning as slicing up the range of possible values into a few
+pieces, called **bins**. Binning turns a numerical feature into a categorical
+feature, so that we can use the methods from @sec-categorical-features.
 
-A **histogram** is a bar plot where the values on the x-axis are binned. We can
-use R to bin data and make a histogram automatically, although we recommend
-(and the ggplot2 documentation recommends) setting the bin width manually for
-numerical data. For instance, here's how to make a histogram for the `year`
-column with 3-year bins:
+When we bin a feature, we have to make choices about how many bins to use and
+where their endpoints are. Different choices can lead to different conclusions,
+so in an analysis that uses binning, it's important to investigate several
+choices and discuss how the conclusions change. To make comparisons between
+bins fair, we'll often chose bins that have equal widths, although whether this
+really leads to fair comparisons depends on the nature of the data---think it
+through carefully!
+
+A **histogram** is a bar plot where the values on the x-axis are binned. Since
+there are no gaps between the bins, in a histogram there are no gaps between
+the bars.
+
+We can use R to bin data and make a histogram automatically. We strongly
+recommend setting the bin width manually (and this is also what the ggplot2
+documentation recommends). For example, here's how to make a histogram for the
+`total_nests` column with 10-nest bins:
 
 ```{r}
+#| label: fig-total_nests_hist10
 ggplot(terns) +
-  aes(x = year) +
-  geom_histogram(binwidth = 3, color = "black")
+  aes(x = total_nests) +
+  # Set color = "black" to outline the bars, for better legibility.
+  geom_histogram(binwidth = 10, color = "black")
 ```
 
-In the histogram, notice that the trends from the bar plot are smoothed out.
-Key details still remain, like the low frequency for 2000-2003 and the drop in
-frequency in 2018. For intuition, think of the original bar plot as having a
-bin width of 1; wider bins produce more smoothing.
+This is a bit clearer than the bar plot in @fig-total_nests_bar, because now we
+can read the count for the 0 bin, whereas in the bar plot, the count for 0 was
+obscured. That said, there are still a lot of bars, so let's try a wider bin
+width:
 
-We'll revisit histograms for continuous data in @sec-numerical-features.
+```{r}
+#| label: fig-total_nests_hist100
+ggplot(terns) +
+  aes(x = total_nests) +
+  geom_histogram(binwidth = 100, color = "black")
+```
 
-:::{.callout-tip}
-When you make histograms, try several different bin widths. Sometimes one bin
-width reveals details that are hidden in another. Choose a bin width that
-preserves the most relevant details to your questions about the data.
+Notice that this histogram has fewer sudden jumps and drops than the previous
+one (@fig-total_nests_hist10). Increasing bin width has a smooting effect,
+making large-scale trends easier to see but fine details harder to see.
 
-If different bin widths lead to different interpretations of the data, include
-both in your reporting and address why they do.
+:::{.callout-important}
+When you bin a feature (whether for a histogram or some other purpose), always
+check several different binning strategies, because they might lead to
+different conclusions. Point out and explain the discrepancies when you share
+the results. This is a form of statistical due diligence.
 :::
+
+A histogram is usually more appropriate than a bar plot for visualizing
+features that represent a continuous quantity, even if they measure it in a
+discrete way, because there are no gaps between the bars. For instance, the
+`year` feature is discrete, but it measures time, which we usually think of as
+continuous. We can make a histogram without binning by setting the bin width to
+1:
+
+```{r}
+#| label: fig-year_hist1
+ggplot(terns) +
+  aes(x = year) +
+  geom_histogram(binwidth = 1, color = "black")
+```
+
+Compared to the bar plot @fig-year_bar, the histogram makes it clear that each
+bar spans an entire year.
+
+There's no need to bin the `year` feature, and in this case, the smoothing
+effect of binning actually makes it harder to interpret:
+
+```{r}
+#| label: fig-year_hist2
+ggplot(terns) +
+  aes(x = year) +
+  geom_histogram(binwidth = 2, color = "black")
+```
+
+With 2-year bins, the drop in 2018 is still visible, but it's hard to tell
+exactly which year has the drop (is it 2018 or 2019 or both?). Other details
+are also obscured.
 
 :::{.callout-note}
 R's functions for making histograms assume numerical data, but we could make a
 histogram for ordinal data in two steps, by first binning and then making a bar
 plot.
+
+R's `cut` function bins data (without making a histogram).
 :::
 
 
 ### Density Plots
 
+Binning and histograms help us understand the shape of the distribution of a
+numerical feature, but there's still a problem. For continuous features,
+histograms can overstate differences in frequency from one bin to the next,
+because the edge of the bin is a sharp dividing line. We can remedy this by
+blurring or smoothing the divisions between bins.
+
+A **density** is a function that represents the shape of a distribution. Think
+of a density as a smooth curve that traces the tops of the bars in a histogram.
+A **density plot** is a plot that shows a density. Compared to a histogram, the
+divisions between the bins are no longer visible, but the pattern of the tops
+of the bars still is.
+
+We can use R and ggplot2 to draw a density plot. Here's a density plot for the
+`total_nests` feature:
+
 ```{r}
+#| label: fig-total_nests_density
 ggplot(terns) +
-  aes(x = year) +
+  aes(x = total_nests) +
+  geom_density()
+```
+
+Notice that the trends from @fig-total_nests_hist10 are still present. The
+density is high near 0, drops off quickly, and then has a long tail with a few
+small peaks.
+
+Although the density plot has the same shape as the histogram, the quantity on
+the y-axis is not counts or frequencies. Instead, we scale the density curve
+the that total area underneath it is 1 or 100%. This is because the area under
+any part of the density is an estimate of the probability of randomly drawing
+the corresponding values on the x-axis.
+
+Mathematically, we estimate a density by putting a small, smooth "bump"
+function, called a **kernel**, at each observed value of the feature and then
+adding all of these up. How much the bump spreads out, called the
+**bandwidth**, is a bit like a bin width, with larger bandwidths leading to
+smoother densities.
+
+When we make a density plot, R uses a statistical formula to compute a default
+bandwidth. The default bandwidth often strikes a good balance between showing
+coarse trends and fine details. We can change the bandwidth through the
+`adjust` parameter, which is multiplied by the default (so `adjust = 0.5` means
+half of the default). This way the bandwidth is still estimated from and on a
+similar scale as the data. Here's the density plot for `total_nests` with a
+smaller bandwidth:
+
+```{r}
+#| label: fig-total_nests_density0.5
+ggplot(terns) +
+  aes(x = total_nests) +
   geom_density(adjust = 0.5)
 ```
+
+And here it is with a larger bandwidth:
+
+```{r}
+#| label: fig-total_nests_density2
+ggplot(terns) +
+  aes(x = total_nests) +
+  geom_density(adjust = 2)
+```
+
+Decreasing the bandwidth makes the density rougher, while increasing it makes
+it smoother. As with bin width for histograms, it's important to try different
+bandwidths for density plots, since different amounts of smoothing can lead to
+different conclusions.
+
+The lack of bin edges in density plots can make them easier to read than
+histograms, but an important limitation to keep in mind is that density plots
+are a kind of estimate, and as a consequence, they're sensitive to the number
+of observations in the dataset. For a dataset with a relatively small number of
+observations (for example, less than 30), a histogram or bar plot is a more
+faithful representation.
+
+Density plots are especially helpful for comparing how a feature is distributed
+across multiple groups, because we can display all of the densities in a single
+plot. Let's try this for the `total_nests` feature by using the regions from
+`region_3` as groups. We'll first filter out the unexpected regions Arizona,
+Kings, and Sacramento, because they have low numbers of observations. Here's
+the plot:
+
+```{r}
+#| label: fig-total_nests_region_3_density
+EXPECTED_REGION_3 = c("S.F._BAY", "CENTRAL", "SOUTHERN")
+terns_region = filter(terns, region_3 %in% EXPECTED_REGION_3)
+
+ggplot(terns_region) +
+  aes(x = total_nests, color = region_3) +
+  geom_density()
+```
+
+This reveals that the nest counts for Central tend to be low in comparison to
+S.F. Bay and Southern. Curiously, a substantial proportion of nest counts for
+S.F. Bay are between 250 and 500. This could mean that there are sites in the
+S.F. Bay region that are sufficiently well-protected that large flocks of terns
+use them every year, whereas other sites see varying numbers of birds each
+year, depending on their condition. There's certainly more we could hypothesize
+based on the plot and investigate further using other features. This is an
+example of exploring two features simultaneously, which we'll learn more about
+in @sec-relationships-between-features.
 
 
 ### Location Statistics
@@ -417,18 +567,6 @@ To illustrate a few ways to approach these questions, let's use this toy data:
 
 ```{r}
 x = c(-2, -1, -1, -1, 0, 2, 6)
-```
-
-```{r}
-ggplot(data.frame(x = x)) +
-  aes(x = x) +
-  geom_histogram(binwidth = 2, color = "black")
-```
-
-```{r}
-ggplot(data.frame(x = x)) +
-  aes(x = x) +
-  geom_bar()
 ```
 
 One way to summarize location is to try to find the middle or center of the

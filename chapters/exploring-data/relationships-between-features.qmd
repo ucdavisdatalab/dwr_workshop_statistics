@@ -1,4 +1,4 @@
-# Relationships Between Features
+# Relationships Between Features {#sec-relationships-between-features}
 
 ::: {.callout-note title="Learning Goals" collapse="false"}
 After this lesson, you should be able to:

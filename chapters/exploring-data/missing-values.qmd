@@ -2,7 +2,7 @@
 terns = read.csv("data/2000-2023_ca_least_tern.csv")
 ```
 
-# Missing Values
+# Missing Values {#sec-missing-values}
 
 ::: {.callout-note title="Learning Goals" collapse="false"}
 After this lesson, you should be able to:

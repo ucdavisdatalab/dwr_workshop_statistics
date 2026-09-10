@@ -124,7 +124,7 @@ how the categories represent what they claim to measure, and try to identify
 which details they gloss over.
 
 
-### Frequencies
+### Frequencies and Bar Plots
 
 To summarize a categorical feature, we can **count** or compute **frequencies**
 of the categories. Taking this a step further, we can visualize the counts with
@@ -347,7 +347,7 @@ other words, we can use math to summarize numerical features in ways that
 aren't possible for categorical features.
 
 
-### Binning
+### Binning and Histograms {#sec-binning-histograms}
 
 If we compute frequencies for a numerical feature, we run into a problem: most
 of the frequencies are 1, because most of the values are distinct. As a
@@ -449,7 +449,7 @@ R's `cut` function bins data (without making a histogram).
 :::
 
 
-### Density Plots
+### Density Plots {#sec-density-plots}
 
 Binning and histograms help us understand the shape of the distribution of a
 numerical feature, but there's still a problem. For continuous features,
@@ -657,11 +657,6 @@ greater than roughly 50% of the values. We can also estimate other percentiles.
 For instance, the 25th percentile is the value one-quarter of the way through
 the sorted data. **Quantile** is another word for percentile.
 
-:::{.callout-note title="Note: Quartiles"}
-**Quartile** (with an "r") specifically refers to the 25th, 50th, and 75th
-percentiles because they separate the data into four parts (hence "quart-").
-:::
-
 In R, we can compute percentiles with the `quantile` function:
 
 ```{r}
@@ -785,21 +780,32 @@ location, there are many different ways to define scale and thus many different
 statistics. We'll focus on two popular scale statistics.
 
 
-#### Interquartile Range
+#### Interquartile Range {#sec-interquartile-range}
 
-One way to think about scale is as the total distance between two values from
-each edge of the distribution. The **interquartile range** (IQR) is the
-distance between the 75th and 25th percentile. Since the percentiles are just
-numbers, we can compute the distance as a simple difference.
+One way to think about the scale of a distribution is as the distance between
+its tails. If we take a representative value from each tail, we can compute the
+distance between them by subtracting. The question is: which values should we
+choose?
 
-:::{.callout-note}
-It would be simpler to estimate scale with the difference between the maximum
-and minimum value, but doing so has several disadvantages. A single extreme
-value can make the estimate huge, even if most of the values are close
-together. Furthermore, if we take multiple samples from the same population,
-the estimates can be wildly different, because each only depends on 2 values
-from the sample.
-:::
+The minimum and maximum might seem tempting, since they're the farthest along
+each tail. But that becomes a problem if most of the data lie close to the
+center, with the minimum and maximum among just a few extreme values. By using
+them, we'd overestimate how much the data spread out. The minimum and maximum
+can also vary substantially from one sample to the next, which means our scale
+estimates could as well---they'd be unreliable for estimating the scale of the
+population.
+
+A better choice is something near the tails but less sensitive to extremes.
+@sec-median explained that the median is robust, meaning it's mostly unaffected
+by extreme values. It turns out most other percentiles are also relatively
+robust. We can use the distance between the 75th and 25th percentile as a
+robust estimator for scale. Conveniently, we can also interpret this as the
+width of the middle 50% of the data.
+
+The 25th, 50th, and 75th percentiles are called **quartiles** (with an "r")
+because they separate the data into four parts (hence "quart-"). So the
+distance between the 75th and and 25th percentile is called the **interquartile
+range** (IQR).
 
 In R, the `IQR` function computes the IQR of a feature. For the toy dataset,
 the IQR is:
@@ -823,11 +829,10 @@ quantile(toy)
 The IQR is 2 because the 25th percentile is -1 and the 75th percentile is 1.
 The middle 50% of the data is 2 units wide.
 
-Notice that like the median (@sec-median), IQR is unaffected by values in the
-tails of the distribution. If we change the largest value 6 in the toy dataset
-to 1,000,000, the IQR stays the same. The IQR has the same trade-offs as the
-median: it's a robust estimator of scale, but it's less efficient than
-estimators that use all of the data.
+As we mentioned, IQR is relatively unaffected by extreme values. If we change
+the largest value 6 in the toy dataset to 1,000,000, the IQR stays the same.
+The IQR has the same trade-offs as the median: it's a robust estimator of
+scale, but it's less efficient than estimators that use all of the data.
 
 For `total_nests`, the IQR is:
 
@@ -853,40 +858,8 @@ can't make a visualization, examine multiple statistics rather than just one. A
 lone statistic is unable to capture nuance and can even be misleading.
 :::
 
-:::{.callout-note title="Note: Box Plots" collapse="true"}
-The quartiles (and IQR) can provide a lot of insight about the shape of a
-distribution. Because of this, another popular way to visualize a distribution
-is with a **box plot**, which shows the middle 50% of the data as a box split
-by a heavy line at the median:
 
-```{r}
-#| label: fig-total_nests_box
-ggplot(terns) +
-  aes(x = total_nests) +
-  geom_boxplot()
-```
-
-The box is usually drawn with **whiskers**, lines that represent the tails of
-the data. There are several different conventions for how to draw the whiskers,
-but in R, the whiskers extend from each end of the box to the largest value
-within $1.5 \times \textrm{IQR}$. Values beyond the whiskers are treated as
-extreme values and plotted as points.
-
-We recommend density plots over box plots, because density plots show more
-detail about the shape of the entire distribution. That said, when the number
-of observations is small, we prefer box plots. Less detail becomes a safeguard
-against overinterpretation when the evidence for a detail may be just 1 or 2
-values.
-
-To learn more about the different conventions for box plots, see the [ggplot2
-documentation][ggplot-box] or the [Wikipedia article][wiki-box].
-
-[ggplot-box]: https://ggplot2.tidyverse.org/reference/geom_boxplot.html
-[wiki-box]: https://en.wikipedia.org/wiki/Box_plot
-:::
-
-
-#### Standard Deviation
+#### Standard Deviation {#sec-standard-deviation}
 
 Another way to think about scale is as the typical distance from any value to
 the center of the distribution. This interpretation raises three questions:

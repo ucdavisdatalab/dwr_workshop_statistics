@@ -2,13 +2,17 @@
 terns = read.csv("data/2000-2023_ca_least_tern.csv")
 ```
 
-# Statistical Summaries {#sec-data-forensics}
+# Numerical Features {#sec-numerical-features}
 
 ::: {.callout-note title="Learning Goals" collapse="false"}
 After this lesson, you should be able to:
 
-* Explain the location statistics mean, median, and mode
-* Explain the scale statistics range and standard deviation
+* Use binning to turn numerical features into categorical features
+* Create and interpret histograms of numerical features
+* Create and interpret density plots of numerical features
+* Describe several different ways to define location and scale
+* Explain the location statistics mode, median, and mean
+* Explain the scale statistics IQR and standard deviation
 :::
 
 :::{.callout-important title="Required Packages"}
@@ -23,323 +27,10 @@ For a refresher about how to install and load packages, see the
 [r-basics-packages]: https://ucdavisdatalab.github.io/dwr_workshop_r_basics/chapters/getting-started/getting-started.html#sec-packages
 :::
 
-After investigating (and possibly transforming) a dataset's structure, the next
-step is to examine the statistical properties of its features. This chapter
-focuses on individual features, and presents a variety of statistical
-visualizations and estimators to summarize them, whether they're categorical or
-numerical. These methods will help us identify and communicate trends,
-patterns, anomalies, and limitations. For each method, we discuss how to
-interpret the summary and explain the method's strengths and weaknesses
-relative to others. The unifying theme of the chapter is summarizing, making
-sense of, and communicating how data are distributed within populations and
-samples.
-
-
-## Categorical Features {#sec-categorical-features}
-
-To introduce ideas gently, we'll start by focusing on summaries for categorical
-features. Most of the time, categories are not numbers, so we won't use much
-math, and when we do, it will mostly be counting.
-
-As motivation and a source of examples, we'll work to understand which regions
-of California and which time periods are recorded in the California least terns
-dataset (@sec-ca-least-terns). We'll also examine whether regions and time
-periods are equally represented in the dataset.
-
-To refresh our memory, the structure of the California least terns dataset is:
-
-```{r}
-str(terns)
-```
-
-We can study regional coverage at a coarse scale by looking at the `region_3`
-or `region_4` columns. Let's focus on `region_3`. According to the
-documentation, it's categorical, with categories for three regions. The first
-few values are:
-
-```{r}
-head(terns$region_3)
-```
-
-The documentation claims the three regions are S.F. Bay, Central, and Southern,
-but we can already see that this isn't accurate. There's another region: Kings.
-
-The Kings region likely corresponds to sites in [Kings County][kings]. We can
-try to confirm this by examining the site names in the region (with R's
-[dplyr][] package):
-
-[kings]: https://en.wikipedia.org/wiki/Kings_County,_California
-[dplyr]: https://dplyr.tidyverse.org/
-
-```{r}
-#| warning: false
-library("dplyr")
-
-kings = filter(terns, region_3 == "KINGS")
-unique(kings$site_name)
-```
-
-[Kettleman City][kc] is indeed a place in Kings County, so it seems like our
-guess was correct.
-
-[kc]: https://en.wikipedia.org/wiki/Kettleman_City,_California
-
-:::{.callout-tip}
-As you explore data, make a habit of following up on patterns and details that
-seem confusing, surprising, or unusual. In some cases, as with the `region_3`
-column, it's possible to use other parts of a dataset to confirm a guess or
-make sense of what's happening. When it's not, turn to first-hand or expert
-knowledge, such as the people who collected the dataset or related literature
-and datasets.
-
-For unusual details that seem tangential to the primary analysis goals, make a
-note and revisit them later---they can turn out to be more relevant than you
-expect.
-:::
-
-
-### Categories Are Constructs
-
-When working with categorical features, keep in mind that categories are
-created by people. We often use categories to simplify and organize
-measurements that would otherwise be nuanced and messy. This process is
-double-sided: it can be clarifying, making patterns easier to see, but it can
-also be reductive, obscuring meaningful details. Poorly chosen categories can
-lead us into overlooking or misattributing effects.
-
-At a minimum, for each categorical feature, ask:
-
-* What does the feature measure?
-* Why is the feature categorical?
-* Who defined the categories?
-* Are the categories clearly defined?
-* Are there any cases that are not covered by the defined categories? In other
-  words, can you think of a case that would be difficult or impossible to
-  categorize?
-* Are there any cases that might be of interest on their own but are placed in
-  a broader category?
-
-The key is to approach categorical features skeptically. Think carefully about
-how the categories represent what they claim to measure, and try to identify
-which details they gloss over.
-
-
-### Frequencies and Bar Plots
-
-To summarize a categorical feature, we can **count** or compute **frequencies**
-of the categories. Taking this a step further, we can visualize the counts with
-a bar plot so that categories with low or high counts stand out.
-
-Let's make a bar plot of the `region_3` column. In R, the [ggplot2][] package's
-`geom_bar` function, which makes a bar plot, counts categories automatically:
-
-[ggplot2]: https://ggplot2.tidyverse.org/
-
-```{r}
-#| label: fig-region_3_bar
-library("ggplot2")
-
-ggplot(terns) +
-  aes(x = region_3) +
-  geom_bar()
-```
-
-The plot reveals two especially interesting details about `region_3`.
-
-First, there are actually three unexpected regions: Kings, Sacramento, and
-Arizona. Each has 15 observations or less and is an order of magnitude smaller
-than the S.F. Bay, Central, and Southern regions.
-
-The Sacramento region likely corresponds to [Sacramento county][sac] and
-surrounding areas. Taking the same approach as we did for the Kings region, see
-if you can confirm this.
-
-[sac]: https://en.wikipedia.org/wiki/Sacramento_County,_California
-
-<!--
-```{r}
-sac = filter(terns, region_3 == "SACRAMENTO")
-unique(sac$site_name)
-```
--->
-
-The Arizona region is a bit of a mystery---there's no Arizona county in
-California, nor are there any cities or places with Arizona in the name. Let's
-see if the site names give any clues:
-
-```{r}
-arizona = filter(terns, region_3 == "ARIZONA")
-unique(arizona$site_name)
-```
-
-Glendale is [a city in California][glendale-ca], but also [a city in
-Arizona][glendale-az]. In this case, it seems likely that the Arizona region
-corresponds to the state, and that perhaps these observations were not supposed
-to be included in the dataset.
-
-[glendale-ca]: https://en.wikipedia.org/wiki/Glendale,_California
-[glendale-az]: https://en.wikipedia.org/wiki/Glendale,_Arizona
-
-Second, the Southern region occurs 4 or 5 times more than any of the others.
-
-The disparity in counts between the three expected regions could be due to
-nesting preferences of the birds: perhaps there are more nesting sites in
-southern California. On the other hand, it could also be due to how the dataset
-is collected: perhaps the regions have different coverage over time, or CDFW
-uses geographically smaller sites in southern California.
-
-:::{.callout-tip}
-Thinking through the different ways a dataset might have been generated like
-this can help you identify subtle details that change or temper interpretations
-and lead to further lines of inquiry.
-:::
-
-
-### Distributions {#sec-distributions}
-
-Frequencies show us how the categories of a feature are distributed across the
-observations. Because of this, we say they show us the **distribution** of the
-feature. For example, @fig-region_3_bar shows us the distribution of
-`region_3`.
-
-Visualizing, estimating, summarizing, and interpreting distributions is a major
-part of any data explorer or data scientist's job. The distribution in a sample
-can give us insight into the distribution in a population, especially if the
-sample was taken randomly.
-
-We'll revisit the concept of distributions in @sec-numerical-features.
-
-
-### The Mode {#sec-mode}
-
-For a categorical feature, we call the category that occurs most frequently the
-**mode**. In the case of a tie between two or more categories, we say the
-feature has multiple modes. In a bar plot, the mode corresponds to the category
-with the tallest bar. For the `region_3` column, the mode is the Southern
-category.
-
-Think of the mode of a feature as the category that's most likely if we were to
-randomly select an observation from the dataset. If the dataset is a random
-sample from a population, we can also think of the sample mode (computed with
-the dataset) as an estimator of the population's mode.
-
-:::{.callout-warning}
-There's no built-in function to calculate the statistical mode in R. The `mode`
-function is unrelated and returns something different.
-
-Use a bar plot (or as we'll soon see, the `table` function) to identify modes.
-:::
-
-
-### Frequency Tables
-
-A table is another way to display category frequencies. In R, we can use the
-`table` function to count categories and return the counts in a table. For
-example, the counts for `region_3` are:
-
-```{r}
-table(terns$region_3)
-```
-
-Even small tables can be easy to misread, especially if the names of the
-categories are long or include numbers. Large tables make the problem worse.
-Sorting by frequency partially addresses the problem:
-
-```{r}
-sort(table(terns$region_3))
-```
-
-This makes it easy to see which categories are relatively small or large, but
-the categories are no longer in alphabetical order, so it's harder to find
-specific categories. For ordinal data, where there's a natural order to the
-categories, sorting by frequency can break that order and make tables
-confusing.
-
-We recommend bar plots rather than tables in most situations, because they work
-well for comparing category frequencies even when there are a lot of
-categories. As with a table, we can sort the categories by frequency in a bar
-plot to make the extremes more pronounced, but these are usually evident even
-without sorting.
-
-Bar plots have two disadvantages compared to tables. First, the exact count for
-a category can be difficult to read. That's certainly the case in
-@fig-region_3_bar. A simple way to address this is to display the count on the
-plot:
-
-```{r}
-ggplot(terns) +
-  aes(x = region_3) +
-  geom_bar() +
-  geom_text(
-    # Use counts for the labels (geom_bar also uses stat_count).
-    stat = "count", aes(label = after_stat(count)),
-    # Set vertical justification of the labels, so they sit atop the bars.
-    vjust = -0.5
-  )
-```
-
-Second, bar plots are often less legible than tables to people with low vision.
-One way to get the best of both bar plots and tables is to simply include both.
-
-
-### Numbers as Categories
-
-When a discrete feature only takes a few values and those values are repeated
-across many observations, we can treat it like a categorical feature. The
-categories just happen to be numbers.
-
-In the California least terns dataset, the `year` column is a good example of
-this. According to the documentation, the dataset only covers about 20 years.
-There are multiple observations each year, because there are many different
-sites. Let's make a bar plot of frequencies for `year`:
-
-```{r}
-#| label: fig-year_bar
-ggplot(terns) +
-  aes(x = year) +
-  geom_bar()
-```
-
-The bar plot shows that the dataset, which spans years 2000-2023, doesn't
-include any observations for the years 2001-2003. It also shows that there are
-roughly 30-40 observations for every included year. That might mean most sites
-were consistently measured over the entire time period, or it might be a
-coincidence due to mostly equal numbers of sites being added and removed over
-time. The mode is 2017, and there's a distinct drop in observations in 2018,
-which could indicate a major change in which sites were being monitored.
-
-The counterpoint is a discrete feature with many values that are rarely
-repeated. A good example of this is is the `total_nests` column, which is an
-estimate of the total number of nests for each site-year pair. Here's a bar
-plot of frequencies for `total_nests`:
-
-```{r}
-#| label: fig-total_nests_bar
-ggplot(terns) +
-  aes(x = total_nests) +
-  geom_bar()
-```
-
-We can see that a few values close to 0 are repeated frequently, but most of
-the other values are rare. Because of this and because there are so many
-different values, reading the bar plot is difficult. The situation is even
-worse with a table:
-
-```{r}
-table(terns$total_nests)
-```
-
-To make sense of a feature like `total_nests`, we'll need an approach
-well-suited to numerical features. We'll learn several in
-@sec-numerical-features.
-
-
-## Numerical Features {#sec-numerical-features}
-
-Whether the features we're exploring are categorical or numerical, what we
-ultimately want to understand is the distribution (@sec-distributions): how
-values are spread out across the range of possible values, which values are
-common, and which are rare.
+Whether the features we're exploring are categorical
+(@sec-categorical-features) or numerical, what we ultimately want to understand
+is the distribution (@sec-distributions): how values are spread out across the
+range of possible values, which values are common, and which are rare.
 
 The values of a numerical feature are numbers, so in addition to calculating
 how frequently they occur, we can also calculate how far apart they are. In
@@ -347,7 +38,7 @@ other words, we can use math to summarize numerical features in ways that
 aren't possible for categorical features.
 
 
-### Binning and Histograms {#sec-binning-histograms}
+## Binning and Histograms {#sec-binning-histograms}
 
 If we compute frequencies for a numerical feature, we run into a problem: most
 of the frequencies are 1, because most of the values are distinct. As a
@@ -380,6 +71,8 @@ documentation recommends). For example, here's how to make a histogram for the
 
 ```{r}
 #| label: fig-total_nests_hist10
+library("ggplot2")
+
 ggplot(terns) +
   aes(x = total_nests) +
   # Set color = "black" to outline the bars, for better legibility.
@@ -449,7 +142,7 @@ R's `cut` function bins data (without making a histogram).
 :::
 
 
-### Density Plots {#sec-density-plots}
+## Density Plots {#sec-density-plots}
 
 Binning and histograms help us understand the shape of the distribution of a
 numerical feature, but there's still a problem. For continuous features,
@@ -534,6 +227,8 @@ the plot:
 
 ```{r}
 #| label: fig-total_nests_region_3_density
+library("dplyr")
+
 EXPECTED_REGION_3 = c("S.F._BAY", "CENTRAL", "SOUTHERN")
 terns_region = filter(terns, region_3 %in% EXPECTED_REGION_3)
 
@@ -553,7 +248,7 @@ example of exploring two features simultaneously, which we'll learn more about
 in @sec-relationships-between-features.
 
 
-### Location Statistics
+## Location Statistics
 
 So far, we've only used visualizations to summarize numerical features. In some
 cases, we might also want to use quantitative summaries. We'll focus on
@@ -588,7 +283,7 @@ Where would you say the distribution is located, if you had to pick just one
 point?
 
 
-#### Mode
+### Mode
 
 First, let's think of location as the value that occurs most frequently. This
 is the mode, which we introduced for categorical features in @sec-mode. For
@@ -611,7 +306,7 @@ often than other values, and it might be far away from many other values that
 can occur. The latter is certainly the case for `total_nests`, where the mode
 is 0 but some of the values exceed 1,500.
 
-#### Median {#sec-median}
+### Median {#sec-median}
 
 Next, let's think of location as the midpoint of the values. In other words,
 we'll sort the values and find the one in the middle. This statistic is called
@@ -692,7 +387,7 @@ than the next statistic we'll learn about (@sec-mean). To see this, think about
 how we compute the median: we only use the values in the middle, but the other
 values might also contain important information.
 
-#### Mean {#sec-mean}
+### Mean {#sec-mean}
 
 Finally, let's think of location as a balancing point for the values. Imagine
 trying to balance the distribution (picture a density plot, such as
@@ -773,14 +468,14 @@ Mean for Your Data][choose-mean] from @mean-calculator.
 :::
 
 
-### Scale Statistics {#sec-scale-statistics}
+## Scale Statistics {#sec-scale-statistics}
 
 The scale of a distribution refers to how spread out its values are. As with
 location, there are many different ways to define scale and thus many different
 statistics. We'll focus on two popular scale statistics.
 
 
-#### Interquartile Range {#sec-interquartile-range}
+### Interquartile Range {#sec-interquartile-range}
 
 One way to think about the scale of a distribution is as the distance between
 its tails. If we take a representative value from each tail, we can compute the
@@ -859,7 +554,7 @@ lone statistic is unable to capture nuance and can even be misleading.
 :::
 
 
-#### Standard Deviation {#sec-standard-deviation}
+### Standard Deviation {#sec-standard-deviation}
 
 Another way to think about scale is as the typical distance from any value to
 the center of the distribution. This interpretation raises three questions:
@@ -969,4 +664,3 @@ completely incorrect conclusions.
 [anscombe]: https://en.wikipedia.org/wiki/Anscombe%27s_quartet
 [datasaurus]: https://www.research.autodesk.com/publications/same-stats-different-graphs/
 :::
-

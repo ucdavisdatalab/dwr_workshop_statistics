@@ -7,7 +7,10 @@ terns = read.csv("data/2000-2023_ca_least_tern.csv")
 ::: {.callout-note title="Learning Goals" collapse="false"}
 After this lesson, you should be able to:
 
-* TODO
+* Select appropriate visualizations for different types of features
+* Create visualizations that show relationships between two or more features
+* Explain what correlation is
+* Interpret correlations between features
 :::
 
 :::{.callout-important title="Required Packages"}

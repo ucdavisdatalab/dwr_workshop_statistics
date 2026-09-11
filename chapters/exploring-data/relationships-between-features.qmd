@@ -11,6 +11,31 @@ This chapter covers
 
 ## Visualizing Relationships
 
+The first step in data visualization is choosing an appropriate kind of plot.
+Here are some suggestions (not rules):
+
+| Feature 1   | Feature 2   | Plot
+| :---------- |:----------- |:----
+| categorical |             | bar, dot
+| categorical | categorical | bar, dot, mosaic
+| numerical   |             | box, density, histogram
+| numerical   | categorical | box, density, ridge
+| numerical   | numerical   | line, scatter, smooth scatter
+
+If you want to add a:
+
+* 3rd numerical feature, use it to change point/line sizes.
+* 3rd categorical feature, use it to change point/line styles.
+* 4th categorical feature, use side-by-side plots.
+
+:::{.callout-note title="See also"}
+Visualization design is a deep topic, and whole books have been written about
+it. One resource where you can learn more is DataLab's [Principles of Data
+Visualization Workshop Reader][dataviz].
+
+[dataviz]: https://ucdavisdatalab.github.io/workshop_data_viz_principles/
+:::
+
 
 ## Correlation
 

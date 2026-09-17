@@ -1,0 +1,484 @@
+# Quantifying Uncertainty
+
+::: {.callout-note title="Learning Goals" collapse="false"}
+After this lesson, you should be able to:
+
+* Explain why we use standard deviation and other measures of scale to measure
+  uncertainty
+* Explain what a sampling distribution is
+* Explain the difference between a population distribution, an empirical
+  distribution, and a sampling distribution
+* Use the bootstrap to estimate the sampling distribution of an estimator
+* Explain what a confidence interval is
+* Use the bootstrap to compute a confidence interval for an estimate
+* Explain what the Central Limit Theorem is and why we can use it to construct
+  confidence intervals
+:::
+
+:::{.callout-important title="Required Packages"}
+This chapter uses the following R packages:
+
+* dplyr
+* ggplot2
+* purrr
+
+For a refresher about how to install and load packages, see the
+[Packages][r-basics-packages] section of DataLab's R Basics workshop reader.
+
+[r-basics-packages]: https://ucdavisdatalab.github.io/dwr_workshop_r_basics/chapters/getting-started/getting-started.html#sec-packages
+:::
+
+Estimating things is one of the primary motivators of statistics. There are
+many different ways to estimate things, so we need to be able to assess how
+well an estimator works. In the same spirit, we need a way to decide how much
+confidence we should put in an estimate. This chapter introduces a versatile
+strategy for addressing both needs. It also briefly explains a second strategy
+that was developed before computers became widely available.
+
+
+## The Sampling Distribution {#sec-sampling-distribution}
+
+When we do data analysis, it's usually because we want to understand the
+characteristics of some population. In many cases, we can't collect data for
+the entire population because doing so would be unethical (for instance, when
+testing a new, unproven medicine) or because the cost (in time, money, etc.) is
+prohibitive. Instead, we collect a sample from the population, in hope that
+results about the sample generalize to the population. Once we have a sample,
+we can use it to compute estimates.
+
+:::{.callout-note title="See Also"}
+@sec-collection-strategy from DataLab's Exploring Data workshop reader also
+discusses sampling.
+:::
+
+As an example, suppose we want to understand height differences (in inches)
+between adult mothers and daughters. We probably can't collect height
+differences for every mother and daughter in the world, or country, or even
+local region. But we can choose some feasible number of height differences, say
+50, to collect as a sample. After collecting the sample, suppose we compute:
+
+```{r}
+#| echo: false
+#| output: false
+set.seed(1215)
+sample1 = rnorm(50)
+sample2 = rnorm(50)
+sample3 = rnorm(50)
+```
+
+```{r}
+summary(sample1)
+```
+
+So the average difference in the sample is about `r round(mean(sample1), 2)`,
+and we hope that this is also a good estimate of the average difference in the
+population.
+
+To get a better sense of how the data are distributed, we can also make a
+density plot:
+
+```{r}
+#| label: fig-sample1-density
+#| fig-cap: >
+#|     Density plot of the empirical distribution of the first sample (50
+#|     observations).
+library("ggplot2")
+
+ggplot(data.frame(x = sample1)) +
+  aes(x = x) +
+  geom_density()
+```
+
+The density plot in @fig-sample1-density shows an **empirical distribution**,
+the distribution of the observations *in a dataset*. Here the dataset is the
+sample of height differences. Like the sample mean estimates the population
+mean, the emprical distribution estimates the population distribution. The
+population distribution might have longer tails, or be more symmetrical, or
+have some other characteristic that's underrepresented in the dataset. We turn
+to the empirical distribution because it's the best we can do with the sample
+we have.
+
+Suppose our colleagues decide to collect two more samples of 50 height
+differences each, to compare the results. For sample 2, the statistics are:
+
+```{r}
+summary(sample2)
+```
+
+And for sample 3, the statistics are:
+
+```{r}
+summary(sample3)
+```
+
+The sample mean varies from one sample to the next, because each sample
+consists of different members of the population. If we continued to take
+samples, we'd end up with many different sample means, all estimates of the
+same population mean.
+
+Now let's change our perspective to thinking about the sample means themselves
+as a dataset. This dataset tells us about the characteristics of the sample
+mean as an estimator. We can use a density plot to visualize the distribution
+of the sample means. For 1,000 sample means (from 1,000 samples), it looks like
+this:
+
+```{r}
+#| echo: false
+#| label: fig-sample_mean-density
+#| fig-cap: >
+#|     Density plot of the sampling distribution of the mean, based on 1,000
+#|     estimates.
+
+n = 50  # sample size
+k = 1000  # number of samples
+x = rnorm(k * n)
+m = rowMeans(matrix(x, k, n))
+
+ggplot(data.frame(sample_mean = m)) +
+  aes(x = sample_mean) +
+  geom_density()
+```
+
+The density plot in @fig-sample_mean-density shows a **sampling distribution**,
+the distribution of an estimator across many samples. In this case, it's the
+sampling distribution for the sample mean in the height differences example. We
+can see that the sample means are centered near 0 and vary around it
+symmetrically. All are within about 0.4 inches.
+
+:::{.callout-important}
+The sampling distribution of an estimator, like the one in
+@fig-sample_mean-density, will generally be different from the population
+distribution. It will generally also be different from empirical distributions
+(of samples), like the one in @fig-sample1-density, since they estimate the
+population distribution.
+
+Comparing @fig-sample_mean-density and @fig-sample1-density, the empirical
+distribution is about 10 times more spread out.
+
+Even if we combine all 1,000 samples and make a density plot, the distribution
+is notably different from the sampling distribution of the mean in
+@fig-sample_mean-density:
+
+```{r}
+#| echo: false
+#| label: fig-1000samples-density
+#| fig-cap: >
+#|     Density plot of the empirical distribution of all 1,000 samples
+#|     combined (50,000 observations).
+ggplot(data.frame(x = x)) +
+  aes(x = x) +
+  geom_density()
+```
+:::
+
+The scale (@sec-scale-statistics) of a distribution measures uncertainty about
+what the value of an individual observation will be. When the scale is large,
+many values are possible, so uncertainty is high. When the scale is small, only
+a few values are possible, so uncertainty is low. In the extreme case, when the
+scale is as small as it can be, the distribution is no longer random: it's a
+single, constant value that we know every observation will take.
+
+By the same reasoning, the scale of a sampling distribution measures
+uncertainty about the estimates. When the scale is large, estimates will vary a
+lot from sample to sample, so we might not trust any single estimate. When the
+scale is small, the estimates tend to agree regardless of the sample, so we can
+be more certain. In other words, we can judge how confident to be about an
+estimator based on the scale of its sampling distribution.
+
+For the sample means that lead to @fig-sample_mean-density, the sample standard
+deviation is about `r round(sd(m), 2)`. The standard deviation of an estimator
+is called its **standard error**, because it helps us judge how uncertain to be
+about the estimates. In other words, it informs us about how much error there
+might be in the estimates *due to random variation between samples*. The larger
+the standard error is, the more uncertain we are about the estimate.
+
+:::{.callout-important title="Important: Bias"}
+Variation between samples is one of two major sources of estimator error. The
+other is statistical **bias**, where an estimator estimates the wrong quantity.
+Notice that this definition of bias is much narrower and more specific than the
+definition of bias in ordinary speech and writing.
+
+We say an estimator is **unbiased** if it estimates the correct quantity on
+average. This is the same as the sampling distribution being centered on the
+correct quantity.
+
+Minimizing standard error is often at odds with minimizing bias. For instance,
+we can always come up with a biased estimator with lower standard error than
+even the best unbiased estimator. We call this tension the **bias-variance
+tradeoff** (variance is the squared standard error). Whether or not it's
+appropriate to accept some bias to reduce standard error depends on the
+specific estimation problem.
+:::
+
+:::{.callout-note title="Note: Consistency"}
+Consistency is another important statistical property. We say an estimator is
+**consistent** if the estimates get closer to being correct as the sample size
+increases.
+
+An unbiased estimator is consistent if its standard error decreases as the
+sample size increases. Biased estimators can also be consistent.
+:::
+
+We can account for uncertainty about an estimate by instead presenting an
+interval of estimates. We call this a **confidence interval**. The interval
+should be narrow when we're relatively confident (small standard error) and
+wide when we're uncertain (large standard error). @ims explain confidence
+intervals with a helpful analogy: a single estimate is like fishing with a
+spear, whereas a confidence interval is like fishing with a net.
+
+There are many ways to construct confidence intervals for an estimate. A
+relatively simple way is to use percentiles of the sampling distribution. For
+the sampling distribution of means in @fig-sample_mean-density, the 2.5th
+percentile is about `r round(quantile(m, 0.025), 2)` and the 97.5th percentile
+is about `r round(quantile(m, 0.975), 2)`. So a confidence interval for the
+sample mean is:
+
+$$
+(-0.27,\ 0.27).
+$$
+
+We say this is a 95% percent confidence interval. The interval covers
+approximately 95% of the plausible estimates. For reasons that go beyond the
+scope of this reader, there's also an approximately 95% chance that it covers
+the population mean. This confidence interval happens to be centered on 0, but
+there's no reason a confidence interval has to be. We'll revisit confidence
+intervals in @sec-bootstrap-confidence-intervals.
+
+
+<!--
+:::{.callout-note}
+A **random variable** is an unrealized category or number that will be drawn
+from a specific distribution. Think of a random variable as a feature in a
+dataset *before* any measurements are taken. We'll use random variables to
+explain some concepts.
+
+Statisticians conventionally write random variables as uppercase letters, such
+as $X$ or $Y$, and concrete values they take, drawn from their distribution, as
+lowercase letters, such as $x$ and $y$. In other words, $x$ and $y$ are data.
+:::
+
+Suppose $X$
+-->
+
+
+## The Bootstrap Algorithm
+
+Most of the time, we only have one sample. And if we had more than one sample,
+we'd combine them into a single sample, since more data generally leads to
+better estimates. So if we want to evaluate an estimator, we need a way to
+estimate its sampling distribution with only one sample.
+
+The **bootstrap**, or bootstrap algorithm, is one such method. The main idea is
+to draw new samples from the dataset (which is itself a sample) rather than the
+population. Assuming the dataset is representative of the population, these new
+**bootstrap resamples** should have similar characteristics to a sample from
+the population. The bootstrap resamples must be drawn with replacement. Another
+way to think about this is that we're using the known empirical distribution as
+a substitute for the unknown population distribution.
+
+Once we have several bootstrap resamples, we can compute an estimate on each
+one. This gives us a collection of **bootstrap estimates**. By treating the
+bootstrap estimates as a dataset in their own right, we can analyze the
+**bootstrap sampling distribution** of the estimator and use it to estimate
+statistics such as standard error.
+
+:::{.callout-note title="Algorithm: The Bootstrap"}
+Suppose we have a dataset $x_1, x_2, \dots, x_n$ and an estimator $G$.
+
+1. Construct a new bootstrap sample $x_1^*, x_2^*, \dots, x_3^*$ by sampling
+   from $x_1, x_2, \dots, x_n$ with replacement.
+2. Compute an estimate $G^* = G(x_1^*, x_2^*, \dots, x_n^*)$ on the bootstrap
+   sample. This is a bootstrap estimate.
+3. Repeat steps 1-2 until we have $b$ bootstrap estimates. Larger values of $b$
+   are better but increase computing time; choose at least $b \geq 1,000$.
+4. Use the bootstrap estimates to estimate standard error or other properties
+   of the sampling distribution of $G$.
+:::
+
+A bootstrap sampling distribution is a useful but imperfect estimate of the
+sampling distribution. Unlike the sampling distribution, it's centered on the
+estimate for the original dataset. On the other hand, the scale is about the
+same as in the sampling distribution, so we can use it to estimate standard
+error.
+
+Let's apply the bootstrap to the height differences example from
+@sec-sampling-distribution. We can generate a bootstrap sample from the
+original sample with this code:
+
+```{r}
+boot = sample(sample1, replace = TRUE)
+```
+
+The density plot for the bootstrap resample is:
+
+```{r}
+#| label: fig-boot1-density
+#| fig-cap: >
+#|     Density plot of the first bootstrap resample (50 observations).
+ggplot(data.frame(x = boot)) +
+  aes(x = x) +
+  geom_density()
+```
+
+@fig-sample1-density shows the distribution the original sample, while
+@fig-boot1-density shows the distribution of the bootstrap resample. The two
+distributions are similar, but in the bootstrap resample, the mode at -1 is
+much more pronounced. The sample mean is also notably lower on the bootstrap
+resample (the original was `r round(mean(sample1), 2)`):
+
+```{r}
+mean(boot)
+```
+
+We can use R's apply functions or the purrr package's map functions to repeat
+the resampling step many times. We'll compute $b = 1,000$ resamples to keep the
+computing time manageable, but in practice $b = 10,000$ or higher is more
+appropriate:
+
+```{r}
+library("purrr")
+
+b = 1000
+boot_resamples = map(seq_len(b), \(i) {
+  sample(sample1, replace = TRUE)
+})
+```
+
+:::{.callout-note title="See Also"}
+For a review of R's apply functions and the purrr package, see the
+[Loops][r-basics-loops] section of DataLab's R Basics workshop reader.
+
+The [documentation for the purrr package][purrr] is also a useful reference.
+
+[r-basics-loops]: https://ucdavisdatalab.github.io/dwr_workshop_r_basics/chapters/organizing-code/control-flow.html#loops
+[purrr]: https://purrr.tidyverse.org/
+:::
+
+Each of the bootstrap resamples is slightly different. To demonstrate this,
+here are density plots for several, as well as the density plot for the
+original sample:
+
+```{r}
+#| label: fig-bootstrap_resamples-density
+#| fig-cap: >
+#|     Density plot of five bootstrap resamples, as well as the original
+#|     sample.
+slice = 1:5
+df = data.frame(
+  x = c(sample1, unlist(boot_resamples[slice])),
+  # Make a categorical feature to identify each resample.
+  sample = rep(
+    c("sample1", paste0("resample", slice)),
+    each = length(sample1)
+  )
+)
+
+ggplot(df) +
+  aes(x = x) +
+  geom_density() +
+  facet_wrap(vars(sample))
+```
+
+The next step is to compute an estimate, in this case the sample mean, on each
+of the bootstrap resamples. Again we can use the purrr package for this:
+
+```{r}
+boot_means = map_dbl(boot_resamples, mean)
+```
+
+With the bootstrap estimates, we can make a density plot:
+
+```{r}
+#| label: fig-bootstrap_mean-density
+#| fig-cap: >
+#|     Density plot of 1,000 bootstrap sample means. This distribution
+#|     approximates the sampling distribution of the mean.
+ggplot(data.frame(bootstrap_mean = boot_means)) +
+  aes(x = bootstrap_mean) +
+  geom_density()
+```
+
+Two details of @fig-bootstrap_mean-density are important to notice. First, the
+distribution is centered at roughly `r round(mean(sample1), 2)`, the mean of
+the original sample. This is always the case for a bootstrap sampling
+distribution, and a major difference from the actual sampling distribution,
+which will typically be centered near the population parameter.
+
+Second, notice that the spread of the bootstrap sampling distribution is about
+the same as the spread of the sampling distribution in
+@fig-sample_mean-density. In fact, the standard deviation of the bootstrap
+estimates is:
+
+```{r}
+sd(boot_means)
+```
+
+This is nearly `r round(sd(m), 2)`, the standard deviation of the sampling
+distribution. Most of the time, the scale of the bootstrap sampling
+distribution is relatively similar to the scale of the actual sampling
+distribution.
+
+The takeaway is that the bootstrap sampling distribution is useful for
+estimating standard error, even though its center (and sometimes its shape) can
+differ from the actual sampling distribution.
+
+:::{.callout-warning}
+The bootstrap is known to perform poorly in a few specific situations:
+
+* When the size $n$ of the original sample is small (say $n < 30$). In this
+  case, the methods in @sec-central-limit-theorem are usually a better choice.
+* When the original sample is a poor representative of the population. This is
+  a difficult case, because the best solution is to collect more and better
+  data.
+* When the estimator is designed to estimate an extreme value, such as the
+  population minimum or maximum. In this case, there are often sophisticated
+  methods tailored specifically to the estimator that perform better.
+:::
+
+
+## Bootstrap Confidence Intervals {#sec-bootstrap-confidence-intervals}
+
+
+```{r}
+quantile(boot_means, c(0.025, 0.975))
+```
+
+:::{.callout-tip title="Tip: Bootstrap $t$ Intervals"}
+:::
+
+
+:::{.callout-note title="See Also"}
+The [boot][] package
+
+The [infer][] package
+
+[boot]: https://doi.org/10.32614/CRAN.package.boot
+[infer]: https://infer.netlify.app/
+:::
+
+
+## The Central Limit Theorem {#sec-central-limit-theorem}
+
+```{r}
+#| echo: false
+#| label: fig-standard-normal
+#| fig-cap: >
+#|     Density plot of the standard normal distribution. The mean is 0 and the
+#|     standard deviation is 1.
+ggplot() + xlim(-5, 5) + geom_function(fun = dnorm) + ylab("density")
+```
+
+$$
+\frac{\bar{X} - \mu} {\sigma / \sqrt{n}} \longrightarrow \mathcal{N} (0, 1)
+$$
+
+```{r}
+n = length(sample1)
+std_err = sd(sample1) / sqrt(n)
+
+mean(sample1) + qnorm(0.025) * std_err
+```
+
+```{r}
+mean(sample1) + qnorm(0.975) * std_err
+```

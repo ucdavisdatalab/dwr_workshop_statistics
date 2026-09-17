@@ -29,6 +29,10 @@ book:
     - part: "Introduction to Applied Statistics"
       chapters:
         - "chapters/applied-statistics/index.qmd"
+        - "chapters/applied-statistics/quantifying-uncertainty.qmd"
+        - "chapters/applied-statistics/hypothesis-tests.qmd"
+        - "chapters/applied-statistics/linear-models.qmd"
+        - "chapters/applied-statistics/generalized-linear-models.qmd"
     - part: "Working with Temporal Data"
       chapters:
         - "chapters/temporal-data/index.qmd"

@@ -201,7 +201,7 @@ more easily than density plots.
 :::
 
 
-## Standardization
+## Standardization {#sec-standardization}
 
 The mean (@sec-mean) estimates the center of a distribution, so we can look for
 outliers among observations that are far away from the mean. A convenient way

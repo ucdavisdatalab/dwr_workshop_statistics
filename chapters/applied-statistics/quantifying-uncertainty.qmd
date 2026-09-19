@@ -219,49 +219,8 @@ An unbiased estimator is consistent if its standard error decreases as the
 sample size increases. Biased estimators can also be consistent.
 :::
 
-We can account for uncertainty about an estimate by instead presenting an
-interval of estimates. We call this a **confidence interval**. The interval
-should be narrow when we're relatively confident (small standard error) and
-wide when we're uncertain (large standard error). @ims explain confidence
-intervals with a helpful analogy: a single estimate is like fishing with a
-spear, whereas a confidence interval is like fishing with a net.
 
-There are many ways to construct confidence intervals for an estimate. A
-relatively simple way is to use percentiles of the sampling distribution. For
-the sampling distribution of means in @fig-sample_mean-density, the 2.5th
-percentile is about `r round(quantile(m, 0.025), 2)` and the 97.5th percentile
-is about `r round(quantile(m, 0.975), 2)`. So a confidence interval for the
-sample mean is:
-
-$$
-(-0.27,\ 0.27).
-$$
-
-We say this is a 95% percent confidence interval. The interval covers
-approximately 95% of the plausible estimates. For reasons that go beyond the
-scope of this reader, there's also an approximately 95% chance that it covers
-the population mean. This confidence interval happens to be centered on 0, but
-there's no reason a confidence interval has to be. We'll revisit confidence
-intervals in @sec-bootstrap-confidence-intervals.
-
-
-<!--
-:::{.callout-note}
-A **random variable** is an unrealized category or number that will be drawn
-from a specific distribution. Think of a random variable as a feature in a
-dataset *before* any measurements are taken. We'll use random variables to
-explain some concepts.
-
-Statisticians conventionally write random variables as uppercase letters, such
-as $X$ or $Y$, and concrete values they take, drawn from their distribution, as
-lowercase letters, such as $x$ and $y$. In other words, $x$ and $y$ are data.
-:::
-
-Suppose $X$
--->
-
-
-## The Bootstrap Algorithm
+## The Bootstrap Algorithm {#sec-bootstrap-algorithm}
 
 Most of the time, we only have one sample. And if we had more than one sample,
 we'd combine them into a single sample, since more data generally leads to
@@ -436,28 +395,101 @@ The bootstrap is known to perform poorly in a few specific situations:
 :::
 
 
-## Bootstrap Confidence Intervals {#sec-bootstrap-confidence-intervals}
+## Bootstrap Percentile Intervals {#sec-bootstrap-percentile-intervals}
 
+We can account for uncertainty about an estimate by instead presenting an
+interval of estimates. We call this a **confidence interval**. The interval
+should be narrow when we're relatively confident (small standard error) and
+wide when we're uncertain (large standard error). @ims explain confidence
+intervals with a helpful analogy: a single estimate is like fishing with a
+spear, whereas a confidence interval is like fishing with a net. With the
+confidence interval, we have a better chance of estimating correctly.
+
+There are many ways to construct confidence intervals for an estimate. A
+relatively simple way is to use percentiles of the bootstrap sampling
+distribution. This is called a **bootstrap percentile interval**. For example,
+if we take the 2.5th and 97.5th percentiles of the bootstrap means, we get:
 
 ```{r}
 quantile(boot_means, c(0.025, 0.975))
 ```
 
-:::{.callout-tip title="Tip: Bootstrap $t$ Intervals"}
+We estimate that the population mean is somewhere in this interval, although as
+with any estimate, this might be wrong. We call this a 95% bootstrap percentile
+interval because it covers the central 95% of the bootstrap sampling
+distribution. For reasons beyond the scope of this reader, there's also a 95%
+chance that the interval covers the population mean.
+
+<!--
+For the sampling distribution of means in @fig-sample_mean-density, the 2.5th
+percentile is about `r round(quantile(m, 0.025), 2)` and the 97.5th percentile
+is about `r round(quantile(m, 0.975), 2)`. So a confidence interval for the
+sample mean is:
+
+$$
+(-0.27,\ 0.27).
+$$
+
+We say this is a 95% percent confidence interval. The interval covers
+approximately 95% of the plausible estimates. For reasons that go beyond the
+scope of this reader, there's also an approximately 95% chance that it covers
+the population mean. This confidence interval happens to be centered on 0, but
+there's no reason a confidence interval has to be. We'll revisit confidence
+intervals in @sec-bootstrap-percentile-intervals.
+-->
+
+:::{.callout-warning}
+In situations where the bootstap performs poorly (see
+@sec-bootstrap-algorithm), the bootstrap percentile intervals will usually be
+too narrow. In other words, they tend to understate uncertainty and have less
+than a 95% chance of covering the population parameter.
 :::
 
-
 :::{.callout-note title="See Also"}
-The [boot][] package
+For another introduction to the bootstrap and confidence intervals, see the
+[Confidence intervals with bootstrapping][ims-boot] chapter, as well as
+subsequent chapters, of _Introduction to Modern Statistics_ [@ims].
 
-The [infer][] package
+[ims-boot]: https://openintrostat.github.io/ims/foundations-bootstrapping.html
+
+To learn more about the bootstrap, including other ways to bootstrap and to use
+the bootstrap to construct confidence intervals, see _Bootstrap Methods and
+Their Application_ [@davison1997].
+
+In R, the [boot][] package provides functions to carry out a bootstrap and
+compute confidence intervals.
 
 [boot]: https://doi.org/10.32614/CRAN.package.boot
+
+The [infer][] package provides functions for many methods in applied
+statistics, with an interface inspired by and compatible with the
+[Tidyverse][]. The bootstrap is among the methods the package supports.
+
 [infer]: https://infer.netlify.app/
+[Tidyverse]: https://tidyverse.org/
 :::
 
 
 ## The Central Limit Theorem {#sec-central-limit-theorem}
+
+The bootstrap is only possible because modern computers can resample a dataset
+in a few seconds, but statisticians have needed to quantify uncertainty since
+long before computers were invented. To do this, they developed mathematical
+models of distributions and formulas for computing confidence intervals. These
+methods are still widely used. Compared to the bootstrap, they have different
+strengths and weaknesses, so it's useful to be familiar with both.
+
+Before we can compute confidence intervals, we need to define some statistical
+concepts. A **random variable** is an unrealized number or category that will
+be drawn randomly from a specific distribution. Think of a random variable as
+an observation that hasn't been collected yet. We might know how the population
+is distributed, but we don't know the value of the observation. The statistical
+convention is to write random variables in uppercase, like $X$ or $Y$, and
+non-random values in lowercase, like $x$ and $y$.
+
+The **normal distribution** is the centerpiece of many classical methods. Its
+density curve is bell-shaped and extends to infinity in both the negative and
+positive directions:
 
 ```{r}
 #| echo: false
@@ -468,17 +500,210 @@ The [infer][] package
 ggplot() + xlim(-5, 5) + geom_function(fun = dnorm) + ylab("density")
 ```
 
+The normal distribution is really a family of distributions parameterized by
+their mean $\mu$ and variance $\sigma^2$. We denote these by $\mathcal{N}(\mu,
+\sigma^2)$. All of them have the characteristic bell-shaped density. We call
+the normal distribution with mean 0 and variance 1, denoted $\mathcal{N}(0,
+1)$, the **standard normal distribution**.
+
+Normal distributions are common because sums of random variables tend to be
+nearly normal, especially if the number of terms in the sum is large. The
+sample mean is an example of this. Suppose $X_1, X_2, \dots, X_n$ are
+identically distributed random variables from a population with mean $\mu$ and
+standard deviation $\sigma$. Suppose also that the value of each one is drawn
+independently of the others. Then the sample mean $\bar{X}$, which estimates
+the population mean $\mu$, is unbiased: its mean is $\mu$. Its standard error
+is:
+
 $$
-\frac{\bar{X} - \mu} {\sigma / \sqrt{n}} \longrightarrow \mathcal{N} (0, 1)
+\textrm{SE} = \frac{\sigma}{\sqrt{n}}.
 $$
+
+As the number of observations $n$ increases, the distribution of $\bar{X}$
+becomes closer and closer to a normal distribution. Specifically,
+
+$$
+\bar{X} \to \mathcal{N}\left(\mu, \frac{\sigma^2}{n}\right)
+\quad as \quad
+n \to \infty.
+$$
+
+This result is known as the **Central Limit Theorem** (CLT) and is one of the
+foundations of statistics. The CLT is important because it tells us that for
+large samples, the sampling distribution of the mean is approximately normal.
+We can use this to compute confidence intervals.
+
+We can rearrange the CLT mathematically to write it in terms of a standard
+normal distribution:
+
+$$
+\frac{\bar{X} - \mu} {\sigma / \sqrt{n}} \to \mathcal{N} (0, 1)
+\quad as \quad
+n \to \infty.
+$$
+
+Notice that the left-hand side is just the standard score
+(@sec-standardization) of the sample mean.
+
+:::{.callout-note}
+There are other versions of the CLT that remove some of the assumptions. The
+most important assumptions are that the random variables are independent and
+that their standard deviations are finite.
+:::
+
+Most of the time, we don't know the population standard deviation $\sigma$. We
+can replace it with the sample standard deviation $S$ to estimate the standard
+error of the sample mean:
+
+$$
+\textrm{SE} = \frac{\sigma}{\sqrt{n}} \approx \frac{S}{\sqrt{n}}.
+$$
+
+For large samples (say $n \geq 30$), we can also replace $\sigma$ with $s$ in
+the CLT. For small samples, $S$ tends to underestimate, so the standard score
+is larger and doesn't have a standard normal distribution. The density is still
+bell-shaped, but the tails are notably heavier. We call this **Student's t
+distribution** (or the t distribution).
+
+```{r}
+#| echo: false
+#| label: fig-t5
+#| fig-cap: >
+#|     Density plot of the standard normal distribution (solid) and Student's
+#|     t distribution with 5 degrees of freedom (dotted).
+ggplot() +
+  xlim(-5, 5) +
+  geom_function(fun = dt, args = list(df = 5), linetype = "dotted") +
+  geom_function(fun = dnorm) +
+  ylab("density")
+```
+
+Like the normal distribution, Student's t distribution is really a family of
+distributions. The t distribution has just one parameter: **normality**, a
+positive integer that controls how heavy the tails are. As normality increases,
+the tails become lighter, and the t distribution becomes more and more like a
+standard normal distribution. We denote the t distribution by by $t_v$, where
+$v$ is normality. The normality parameter is also called **degrees of
+freedom**.
+
+After replacing $\sigma$ with $S$, the standard score of the sample mean has a
+t distribution with normality $n - 1$. We can write this in mathematical
+notation as:
+
+$$
+\frac{\bar{X} - \mu} {S / \sqrt{n}} \sim t_{n - 1}.
+$$
+
+The symbol $\sim$ means "is distributed as."
+
+The distribution of the sample mean (and of its standard score) matters because
+we can use it to construct a confidence interval. Specifically, because we know
+the distribution, we can find a quantile $q$ that bounds the standard score on
+both sides with probability $1 - \alpha$. That is,
+
+$$
+-q \leq \frac{\bar{X} - \mu}{S / \sqrt{n}} \leq q.
+$$
+
+We can rearrange the inequality to isolate the population mean $\mu$, since its
+value is unknown to us:
+
+$$
+\bar{X} - q \cdot\frac{S}{\sqrt{n}}
+\leq \mu
+\leq \bar{X} + q \cdot\frac{S}{\sqrt{n}}.
+$$
+
+:::{.callout-note title="Note: Deriving the Confidence Interval" collapse="true"}
+First, we multiply by $-S / \sqrt{n}$:
+
+$$
+q \cdot\frac{S}{\sqrt{n}}
+\geq \mu - \bar{X}
+\geq -q \cdot\frac{S}{\sqrt{n}}
+$$
+
+Written from smallest to largest, this is:
+
+$$
+-q \cdot\frac{S}{\sqrt{n}}
+\leq \mu - \bar{X}
+\leq q \cdot\frac{S}{\sqrt{n}}
+$$
+
+Finally, we add $\bar{X}$:
+
+$$
+\bar{X} - q \cdot\frac{S}{\sqrt{n}}
+\leq \mu
+\leq \bar{X} + q \cdot\frac{S}{\sqrt{n}}.
+$$
+:::
+
+The endpoints of this inequality are random; the population mean $\mu$ is
+non-random. To make this $1 - \alpha$ confidence interval concrete, we replace
+the random values with their estimates:
+
+$$
+\left(
+  \bar{x} - q \cdot \frac{s}{\sqrt{n}},
+  \ \bar{x} + q \cdot \frac{s}{\sqrt{n}}
+\right).
+$$
+
+In this case, $q$ is the $1 - \alpha / 2$ quantile of $t_{n - 1}$.
+
+In R, the `qt` function computes quantiles of the t distribution. So the code
+to construct a 95% confidence interval for the height differences example is:
 
 ```{r}
 n = length(sample1)
 std_err = sd(sample1) / sqrt(n)
 
-mean(sample1) + qnorm(0.025) * std_err
+# For a 0.95 = 1 - 0.05 confidence interval.
+ci = mean(sample1) + qt(c(0.025, 0.975), n - 1) * std_err
+round(ci, 4)
 ```
 
-```{r}
-mean(sample1) + qnorm(0.975) * std_err
-```
+This t distribution confidence interval is similar to but a bit wider than the
+bootstrap percentile interval (0.0112, 0.5188).
+
+Compared to bootstrap percentile intervals, t distribution confidence intervals
+have several advantages. They're cheaper to compute since no resampling is
+needed. They also work relatively well even when the sample size is small.
+
+The main limitation of t distribution confidence intervals is that they're
+exclusively for the sample mean. The sampling distribution of a different
+statistic will not necessarily be a t distribution. There are [some
+methods][delta] to generalize the CLT to other statistics, but the bootstrap is
+more flexible overall.
+
+[delta]: https://en.wikipedia.org/wiki/Delta_method
+
+:::{.callout-tip}
+Knowing several different ways to compute confidence intervals (or any other
+estimate) is a great way to check work. Compute them both ways and check
+whether they agree. If they don't, go back and look for mistakes in the
+computations.
+:::
+
+<!--
+:::{.callout-tip title="Tip: Bootstrap t Intervals"}
+:::
+-->
+
+:::{.callout-note title="See Also"}
+[_Introduction to Modern Statistics_][ims] [@ims] introduces both the bootstrap
+and classical methods based on the CLT.
+
+[ims]: https://openintrostat.github.io/ims/
+
+[_OpenIntro Statistics_][openintro] [@openintro] is an introductory statistics
+textbook that exclusively uses classical methods based on the CLT. It provides
+a more detailed look at these methods without letting rigor get in the way of
+intuition.
+
+[openintro]: https://www.openintro.org/book/os/
+:::
+
+

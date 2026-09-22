@@ -1,0 +1,760 @@
+# Getting to Know the Data
+
+::: {.callout-note title="Learning Goals" collapse="false"}
+After this lesson, you should be able to:
+
+* Explain what it means for a dataset to be "tabular"
+* Explain what a "feature" is
+* Explain what an "observation" is
+* Explain what it means for a dataset to be "tidy"
+* Describe some widely-used data types
+* Convert columns to appropriate data types
+:::
+
+<!--
+:::{.callout-important}
+We teach this lecture with [a slide deck][slides]. This chapter does not
+necessarily cover everything covered in lecture.
+:::
+
+[slides]: https://docs.google.com/presentation/d/1e_LcUT1tU5WsUYnrTQBjTIOL6zIrcCsXBjUigTBKA6w/edit?usp=sharing
+-->
+
+This chapter explains where to start when you explore a dataset. Whether it's
+data you collected yourself or a new and unfamiliar dataset, the steps to go
+through and details to check at the beginning of an exploration are the same.
+Some of these are qualitative: now is a good time to think about how and why
+the data were collected, and whether they're appropriately representative to
+address the questions you want to answer. Others are computational, such as
+whether the dataset's structure matches expectations and is convenient for
+analysis. The chapter also briefly discusses fixes for common problems, with
+references to where you can learn more.
+
+
+## Be a Data Biographer {#sec-be-data-biographer}
+
+The first step in getting to know a dataset is to understand why and how it was
+collected. This will help you identify:
+
+* Who or what the dataset represents;
+* What kinds of questions you can use it to answer;
+* What kinds of analysis methods might be appropriate;
+* What biases or limitations it might have.
+
+We recommend taking some time to write a brief description of the dataset in
+your own words, called a **data biography**. Do this even if the dataset's
+documentation already includes a description or biography, to help you organize
+and clarify your understanding of the dataset.
+
+Use the documentation and related publications as you write. If the dataset
+doesn't have documentation or the documentation is incomplete, you might need
+to do some sleuthing with the dataset itself (see the remainder of this
+reader), online, or by contacting the people who created the dataset directly.
+Keep track of any unresolved questions about the dataset as you write the
+biography.
+
+A data biography serves as a reference as you analyze the dataset and
+communicate results. If you collected the dataset yourself and plan to share it
+with others, the data biography is also essential documentation for helping the
+audience make sense of the dataset. Even if you didn't collect the dataset, the
+biography and notes you write during analysis might be helpful to colleagues or
+collaborators who also want to work with the dataset.
+
+The following subsections break down some of the kinds of questions to ask as
+you write a data biography.
+
+:::{.callout-important}
+Keep the biography questions in mind throughout your time working with the
+dataset. When you arrive at results you want to share, revisit the questions
+before doing so.
+:::
+
+<!--
+A **data biography** is a document that attempts to answer these kinds of
+questions and provide any other background and context relevant to a dataset.
+When collecting a dataset, providing a biography as one part of the
+documentation is a best practice. If the dataset you're working with doesn't
+include a biography, try to write one yourself! Doing so will force you to
+confront the questions above, and give you a document you can use to help
+explain the results of your analyses. In some cases, sharing the data biography
+might help coworkers or colleagues who also want to work with the dataset.
+
+
+* Context and Motivation
+* Collection Strategy
+* Precautions and Impact
+-->
+
+### Context and Motivation
+
+First, think about where the dataset came from---its **provenance**. Ask:
+
+* [ ] Who collected the dataset?
+* [ ] Why did they collect the dataset?
+* [ ] What do they claim the dataset represents?
+
+These questions can help you identify potential biases or limitations of the
+dataset. Consider whether the person or group who collected the dataset has any
+conflicts of interest. While conflicts of interest are not necessarily
+indicative of a problem with a dataset, they do suggest it deserves extra
+scrutiny for biases.
+
+As an example, consider a dataset collected by a light bulb manufacturer about
+the operating characteristics of their bulbs. Most likely, their motivation is
+to convince potential customers that their bulbs are superior to competitors,
+although it might also be to assess how they can improve their bulbs. In other
+words, they have an obvious conflict of interest. As a result, they might use a
+testing process that doesn't replicate typical household conditions,
+selectively include results from their tests, or aggregate the results in a way
+that makes the bulbs appear to have especially long lifespans or low power
+consumption.
+
+When thinking about what a dataset represents, data scientists (and
+statisticians) usually think in terms of the **population** from which the data
+were drawn. The population might consist of people, but it could also consist
+of other animals, plants, inanimate objects, or something else. The members of
+the population are called **subjects** or sometimes **units of observation**.
+Some datasets represent or are associated with multiple populations.
+
+
+### Collection Strategy
+
+Next, think about how the dataset was collected. Ask:
+
+* [ ] What was the collection procedure?
+* [ ] When and where did they collect the dataset?
+* [ ] Does the dataset consist of the entire population? If not, how were
+  subjects selected?
+
+The question about population gets at whether the dataset is a **sample**: a
+subset of subjects selected from a population. When it's not possible to
+collect data about an entire population---whether due to cost, difficulty,
+ethical concerns, or something else---we might instead take a sample. The hope
+is that the sample is representative, meaning results for the sample generalize
+to the entire population.
+
+How well a sample represents a population depends on how it was collected and
+how large it is, among other things. A **simple random sample**, where subjects
+are selected from the population randomly and independently, often generalizes
+well because random sampling preserves most statistical properties of the
+population. In experiments, researchers sometimes use more sophisticated
+sampling procedures to control for various biases.
+
+As you think about the population and sample procedure, it's especially
+important to consider whether there are subgroups within the population that
+might be underrepresented or left out entirely, whether by coincidence, due to
+natural constraints, or intentionally. These can limit the generalizability of
+results from the dataset.
+
+
+### Precautions and Impact
+
+Finally, think about how using the dataset might affect other people or things.
+Ask:
+
+* [ ] Who is impacted by use or analysis of the dataset? What are the potential
+  consequences?
+* [ ] Are any special privacy or security precautions necessary?
+
+These questions are intended to help you reflect on potential ethical and legal
+concerns when working with the dataset, as well as your own responsibilities to
+the associated population(s) and sampled subjects.
+
+The **CARE Principles** [@carroll2020], which were originally developed to
+protect Indigenous peoples' rights and interests with respect to Indigenous
+data, provide a basis for reasoning about the impacts of data work on
+communities more generally. The principles are:
+
+* Collective benefit: data and analyses should provide benefit to the community
+  as a whole and reflect community values.
+* Authority to control: community members have a right to and should be
+  actively involved in the stewardship and governance of their data.
+* Responsibility: data workers have a responsibility to engage and cultivate
+  respectful relationships with community for the benefit of the community.
+* Ethics: protecting the rights and well-being of community members should be
+  the highest priority; community members must be allowed to assess benefits
+  and harms themselves.
+
+The CARE Principles have been adopted by organizations such as the [Research
+Data Alliance][rda] and the [Smithsonian Institution][smithsonian].
+
+[rda]: https://www.rd-alliance.org/
+[smithsonian]: https://www.si.edu/
+
+:::{.callout-note title="See Also"}
+_The Turing Way_ [-@turing-way], an online textbook developed by data
+scientists and other researchers from all over the world, incorporates a wide
+variety of perspectives about best practices for collecting, analying, and
+communicating results about data. [This chapter][turing-way-care] discusses the
+CARE Principles.
+
+[turing-way-care]: https://book.the-turing-way.org/reproducible-research/rdm/rdm-care/
+
+_Data Feminism_ [@dignazio2020] is a textbook that explores how to approach
+data work in an ethical and equitable way by drawing from feminist principles.
+The publisher provides [a free, online version of the book][data-feminism] in
+addition to selling print and eBook versions.
+
+[data-feminism]: https://data-feminism.mitpress.mit.edu/
+:::
+
+
+## Structure Matters
+
+The shape and organization of a dataset, together called **structure**, govern
+how you can access and query its data. Depending on the structure, some
+analyses are easier to carry out than others. Most datasets can be stored in
+and transformed between a variety of structures, each with different advantages
+and disadvantages.
+
+When you start working with a dataset, identify the structure and think about
+whether it's suitable for the analyses you want to carry out. If it isn't,
+transform to a more suitable structure. The focus of this reader is
+exploration, so we won't cover how to transform datasets.
+
+:::{.callout-note title="See Also"}
+If you want to learn more about how to transform a dataset with R, see
+DataLab's [Intermediate R: Cleaning and Reshaping Data][int-r-clean] workshop
+reader.
+
+[int-r-clean]: https://ucdavisdatalab.github.io/dwr_workshop_intermediate_r/chapters/cleaning-reshaping/01_dates-times.html
+:::
+
+A **tabular** dataset is one that's structured as a table, with rows and
+columns. This reader focuses on tabular datasets, since they're common in
+practice and present the fewest programming challenges. Here's an example of a
+tabular dataset:
+
+| Fruit  | Quantity | Price
+| :----  | -------: | ----:
+| apple  | 32       | 1.49
+| banana | 541      | 0.79
+| pear   | 10       | 1.99
+
+: {.striped .hover}
+
+<!-- TODO: pictures! or links to data? e.g., night heron range -->
+<!-- Same dataset, different structures? -->
+
+Some other examples of datasets and structures are:
+
+* People in a family, such as the Roosevelts, might be organized as a (family)
+  tree, with connections from parents to children.
+* Monthly population estimates for a fish species in the Sacramento River might
+  be a series of numbers.
+* Relationships between cats in a small town might be a graph (or network),
+  with a node for each cat and an edge (connection) between each pair of cats
+  that have met.
+* Bike paths in Davis, CA might be a collection of geospatial coordinates that
+  describe points, lines, and shapes.
+* Individual consumer reviews for several different vacuums might be a table
+  with a row for each review and columns to identify the individual, vacuum
+  model, and review score.
+
+
+### Features and Observations
+
+Data scientists think about datasets in terms of two components:
+
+* A **feature** (also called a **covariate**) is measurement of something,
+  usually across multiple subjects. For example, we might decide to measure the
+  heights of everyone in the class. Each person in the class is a subject, and
+  the height measurement is a feature. Features don't have to be quantitative.
+  If we also asked each person their favorite color, then favorite color would
+  be another feature in our dataset. In tabular datasets, features are usually,
+  but not always, the columns.
+
+* An **observation** is a set of features measured for a single subject or at a
+  single time. So in the preceding example, the combined height and favorite
+  color measurement for one student is one observation. In tabular datasets,
+  observations are usually, but not always, the rows.
+
+Every dataset has features and observations, regardless of whether the dataset
+is tabular.
+
+:::{.callout-note}
+In statistics, features are often called **variables**, because they can be
+modeled as values that vary randomly. This idea is different from variables in
+programming languages (like R), which are just names for values.
+
+For clarity, in this reader we only use the word "variable" in the programming
+language sense. We always call measurements in a dataset "features" or
+"covariates."
+:::
+
+A **data dictionary** is documentation that describes each feature in a dataset
+in detail. For a tabular dataset, a data dictionary typically describes the
+unit of observation (in other words, what a subject is) and what each column
+measures. The description explain the range of realistic values, regardless of
+whether the feature is quantitative or qualitative. For quantitative features,
+it should also specify the units of measurement.
+
+We'll see an example of a data dictionary in @sec-ca-least-terns.
+
+
+## Dataset: CA Least Terns {#sec-ca-least-terns}
+
+The California least tern is a endangered subspecies of seabird that nests
+along the coast of California and Mexico. The California Department of Fish and
+Wildlife (CDFW) monitors least tern nesting sites across the state to estimate
+breeding pairs, fledglings, and predator activity in each annual breeding
+season.
+
+![
+  A California least tern. Original photo by [Mark Pavelka, U.S. Fish &
+  Wildlife Service][pavelka] ([CC BY 2.0][]).
+](/images/exploring-data/ca_least_tern_usfws_pacificsw.jpg){
+  height=24em
+  fig-alt="A gray bird with a white belly, black head, and orange beak sitting
+  on a clutch of eggs."
+}
+
+[pavelka]: https://www.flickr.com/photos/usfws_pacificsw/5704890596/
+[CC BY 2.0]: https://creativecommons.org/licenses/by/2.0/
+
+The CDFW publishes most of the data it collects to the [California Open Data
+portal][data.ca.gov]. The examples in this and subsequent chapters use a
+cleaned 2000-2023 version of the California least terns dataset.
+
+[data.ca.gov]: https://data.ca.gov/
+
+:::{.callout-important}
+[Click here][ca-least-tern] to download the 2000-2023 California least terns
+dataset.
+
+[ca-least-tern]: https://ucdavis.box.com/s/m2w5l2ebp2rey2do5lnn38y1e3u31pin
+
+If you haven't already, we recommend you create a directory for this workshop.
+In your workshop directory, create a `data/` subdirectory. Download and save
+the dataset in the `data/` subdirectory.
+:::
+
+:::{.callout-note
+  title="Documentation for 2000-2023 California Least Terns Dataset"
+  collapse=false
+}
+
+Each row in the dataset contains measurements from one year-site combination.
+
+| Column                | Description
+| --------------------: | :----------
+| `year`                | Year of the breeding season
+| `site_name`           | Site name
+| `site_name_2013_2018` | Site name from 2013-2018
+| `site_name_1988_2001` | Site name from 1988-2001
+| `site_abbr`           | Abbreviated site name
+| `region_3`            | Region of state: S.F. Bay, Central, or Southern (includes Ventura)
+| `region_4`            | Region of state: S.F. Bay, Central, Ventura, or Southern
+| `event`               | Climate events
+| `bp_min`              | Reported minimum breeding pairs
+| `bp_max`              | Reported maximum breeding pairs
+| `fl_min`              | Reported minimum fledges
+| `fl_max`              | Reported maximum fledges
+| `total_nests`         | Total reported nests (maximum if a range was reported)
+| `nonpred_eggs`        | Total non-predator-related mortalities of eggs
+| `nonpred_chicks`      | Total non-predator-related mortalities of chicks
+| `nonpred_fl`          | Total non-predator-related mortalities of fledges
+| `nonpred_ad`          | Total non-predator-related mortalities of adults
+| `pred_control`        | Site predator control (yes/no)
+| `pred_eggs`           | Total predator-related mortalities of eggs
+| `pred_chicks`         | Total predator-related mortalities of chicks
+| `pred_fl`             | Total predator-related mortalities of fledges
+| `pred_ad`             | Total predator-related mortalities of adults
+| `pred_pefa`           | Predation by peregrine falcons (yes/no)
+| `pred_coy_fox`        | Predation by coyotes or foxes (yes/no)
+| `pred_meso`           | Predation by other mesocarnivores: dogs, cats, skunks, opossums, raccoons, weasels, etc. (yes/no)
+| `pred_owlspp`         | Predation by owls (yes/no)
+| `pred_corvid`         | Predation by corvids: ravens or crows (yes/no)
+| `pred_other_raptor`   | Predation by raptors other than peregrine falcons and owls (yes/no)
+| `pred_other_avian`    | Predation by birds other than raptors and corvids (yes/no)
+| `pred_misc`           | Predation by other animals (yes/no)
+| `total_pefa`          | Total mortalities due to peregrine falcons
+| `total_coy_fox`       | Total mortalities due to coyotes and foxes
+| `total_meso`          | Total mortalities due to other mesocarnivores
+| `total_owlspp`        | Total mortalities due to owls
+| `total_corvid`        | Total mortalities due to ravens and crows
+| `total_other_raptor`  | Total mortalities due to other raptors
+| `total_other_avian`   | Total mortalities due to other birds
+| `total_misc`          | Total mortalities due to other animals
+| `first_observed`      | Date CA least terns first observed at site
+| `last_observed`       | Date CA least terns last observed at site
+| `first_nest`          | Date first egg observed at site
+| `first_chick`         | Date first chick observed at site
+| `first_fledge`        | Date first fledge observed at site
+
+: {.striped .hover tbl-colwidths="[25, 75]"}
+
+The messy source dataset (with more years and more columns) is available
+[here][ca-least-tern-source].
+
+[ca-least-tern-source]: https://data.ca.gov/dataset/california-least-tern-monitoring-sites-generalized-cdfw-ds3146
+:::
+
+
+### Writing a Data Biography
+
+To get started with the California least terns dataset, let's try to answer the
+data biography questions from @sec-be-data-biographer. We'll go through them
+one-by-one and use the [source page][ca-least-tern-source] as reference
+documentation.
+
+> Who collected the dataset?
+
+The dataset was assembled by the CDFW. The documentation says "data is reported
+to CDFW" but doesn't say by whom. Possibly the data are collected by members of
+CDFW, members of other government agencies, or volunteers.
+
+> Why did they collect the dataset?
+
+The documentation doesn't explain why CDFW collects the dataset, but [CDFW's
+website][cdfw-endangered] says that California least terns are an endangered
+species with state and federal protections. Thus it is likely CDFW collects the
+dataset to monitor the population of the birds and advise policymakers.
+
+[cdfw-endangered]: https://wildlife.ca.gov/Conservation/Fully-Protected
+
+> What do they claim the dataset represents?
+
+According to the documentation, the dataset consists of annual census data for
+California least tern nesting sites, including estimated counts of fledglings,
+breeding pairs, and nests.
+
+> What was the collection procedure?
+
+The documentation is notably vague on this point. If you wanted to use the
+dataset for research purposes, it would be prudent to contact CDFW to request
+more information about this.
+
+> When and where did they collect the dataset?
+
+The dataset spans spans all of California and covers multiple years (the source
+page doesn't say which years, but we established earlier that the cleaned
+DataLab version covers 2000-2023).
+
+> Does the dataset consist of the entire population? If not, how were subjects
+> selected?
+
+Observations are at the year-site level. It's possible that there are some
+nesting sites for which data were not collected. The documentation doesn't
+explain how nesting sites were located and whether some might have been missed.
+Again, this is something we could contact CDFW about to get more details.
+
+> Who is impacted by use or analysis of the dataset? What are the potential
+> consequences?
+
+Results from analyzing this dataset could benefit or harm California least
+terns. For instance, they could be used to argue for policies that change the
+level of protection for the species. This could have far-reaching implications
+for the ecology of California and surrounding regions.
+
+> Are any special privacy or security precautions necessary?
+
+The CDFW masked the exact geospatial coordinates of the nesting sites because
+this is a public dataset and the birds are endangered. In other words, CDFW
+already addressed the primary concern.
+
+
+### Reading the Data
+
+Now let's use R to read the California least terns dataset. We can use the
+built-in `read.csv` function. In the following code, the path to the California
+least tern dataset is `data/2000-2023_ca_least_tern.csv`, but it might be
+different for you, depending on R's working directory and where you saved the
+file.
+
+Save the result from the `read.csv` function in a variable called `terns`.
+We'll use this variable to access the data in subsequent code.
+
+```{r}
+terns = read.csv("data/2000-2023_ca_least_tern.csv")
+```
+
+If the code ran without errors, it's a good idea to check that the dataset
+looks like what the documentation describes. When working with a new dataset,
+it usually isn't a good idea to print the whole thing (at least until you know
+how big it is). Large datasets can take a long time to print, and the output
+can be difficult to read.
+
+Instead, use the `head` function to print only the beginning, or head, of the
+dataset:
+
+```{r}
+#| eval: false
+head(terns)
+```
+
+```{r, echo = FALSE}
+knitr::kable(head(terns))
+```
+
+This shows the structure of the dataset: it's a table. In R, tabular datasets
+are represented by data frames. We'll explain more ways to inspect the
+structure of a dataset in @sec-structural-summaries.
+
+
+## Structural Summaries {#sec-structural-summaries}
+
+After reading a dataset into R (or other statistical software), examining its
+structure is one of the first things you should do. This way you can identify
+and correct potential problems, and prepare the dataset for the analyses you'd
+like to carry out.
+
+R provides several functions for getting structural summaries of data. Some of
+these are:
+
+* `str` to print a compact structural summary
+* `head`, `tail` to get the first or last few elements
+* `nrow`, `ncol`, `dim`, `length` to get dimension information
+* `names`, `colnames`, `rownames` to get element names
+* `class` to get classes (R data types; see @sec-data-types)
+
+We've already seen the `head` function, but let's try a few more of these on
+the California least terns dataset (@sec-ca-least-terns).
+
+:::{.callout-note title="See Also"}
+Need a refresher on R's syntax and commands? See DataLab's [R Basics][r-basics]
+workshop reader.
+
+[r-basics]: https://ucdavisdatalab.github.io/dwr_workshop_r_basics/
+:::
+
+The `str` function, which we consider the most generally useful, prints a
+compact summary of a dataset's structure:
+
+```{r}
+str(terns)
+```
+
+The summary begins with the number of rows ("obs.") and columns ("variables")
+in the dataset. Despite the words "obs." and "variables," R can't actually tell
+what the observations and features are; it's up to you to think about whether
+the rows and columns actually represent observations and features. If they
+don't, it's usually a good idea to reorganize or reshape the dataset so that
+they do.
+
+After the dimensions, the summary lists each column's name (prefixed with a
+dollar sign `$`), data type (more about this in @sec-data-types), and first few
+values. You can use the `str` summary to quickly assess what a dataset contains
+and whether there are structural problems.
+
+The `dim` function gets the number of rows and columns in a dataset:
+
+```{r}
+dim(terns)
+```
+
+The `names` and `colnames` functions print the names of the columns in a
+dataset:
+
+```{r}
+names(terns)
+```
+
+These functions can be useful as a quick reminder or if you need to use these
+values programmatically.
+
+
+## Data Types {#sec-data-types}
+
+It's useful to categorize data into **types** based on characteristics they
+have in common, such as what they are and what we can do with them. For
+example, if the data are numbers, we can summarize them by computing a sum or
+an average. We can't use these summaries if the data are categories, such as
+genres of music (pop, blues, classical, etc.).
+
+In other words, types tell us about which methods are possible and potentially
+appropriate. They're a convenient way to reason about how to transform,
+analyze, and present data. That said, keep in mind that they're just a
+hint---you still need to use your own knowledge and judgement, too!
+
+Statisticans conventionally think in terms of these data types:
+
+* **Categorical**, which includes:
+    + **Nominal**: data separated into specific categories, with no order. For
+      example, hair color (red, brown, blonde, ...) is nominal.
+    + **Ordinal**: data separated into specific categories, with an order. For
+      example, school level (elementary, middle, high, college) is ordinal.
+* **Numerical**, which includes:
+    + **Discrete**: integers or specific decimal numbers with no values in
+      between. Sometimes discrete values can also be treated as ordinal. For
+      example, month as a number (1, 2, ..., 12) is discrete.
+    + **Continuous**: decimal numbers. There are no specific categories, but
+      there is an order. For example, height in inches is continuous.
+
+<!--
+Of course, other types of data, like graphs (networks) and natural language
+(books, speech, and so on), are also possible.
+-->
+
+We can and will often think and talk about types of features rather than types
+of individual values, because each feature measures one thing. For instance, a
+feature that measures temperature in degrees Celsius will have numeric (and
+probably continuous) values. So we say the feature is numeric.
+
+When each feature is in its own column, it also makes sense to talk about types
+of columns. R assumes this is true in the `str` function's structural summary,
+which shows a type for each column, as well as in the output of a few other
+functions.
+
+
+### R Classes
+
+Most programming languages also categorize data into types. R actually uses two
+separate systems for categorizing data objects:
+
+1. The **class** of an R object describes what the object does or the role that
+   it plays. Some objects can do more than one thing, so objects can have more
+   than one class. The `class` function returns the classes of its argument.
+
+2. The type of an R object describes how the object is stored in computer
+   memory. Each object has exactly one type. The `typeof` function returns the
+   type of its argument.
+
+When we're exploring a dataset with R, classes are far more important than
+types. If you aren't sure what an object is, checking its classes should be the
+first thing you do.
+
+The built-in classes most relevant to exploring datasets are:
+
+| Class     | Example                      | Description
+| :----     | :------                      | :----------
+| logical   | `TRUE`, `FALSE`              | Logical (or Boolean) values
+| integer   | `-1L`, `1L`, `2L`            | Integer numbers
+| numeric   | `-2.1`, `7`, `34.2`          | Decimal (real) numbers
+| complex   | `3-2i`, `-8+0i`              | Complex numbers
+| character | `"hi"`, `"YAY"`              | Text (strings)
+| factor    | `Treatment A`, `Treatment B` | Categories
+
+: {.striped .hover tbl-colwidths="[20, 40, 40]"}
+
+These are just a few of the many classes in R.
+
+:::{.callout-important}
+Classes say what we can do with an object _in R_ rather than what we can do
+statistically.
+
+It's up to you to think about what your dataset represents, decide which
+questions you want to answer, identify the statistical data types, and decide
+which methods are appropriate. Programming languages (and even artificial
+intelligence) can't reliably do this for you.
+:::
+
+Let's use the `class` function to check the classes of a few of the columns in
+the California least terns dataset. First, we'll look at the `year` column:
+
+```{r}
+class(terns$year)
+```
+
+The class is `integer`, which makes sense since years are integer numbers. This
+means R will allow us make comparisons, do arithmetic, and do other math with
+the `year` column. Integers are a kind of discrete data. We could also think of
+`year` as categorical: for instance, to group the observations by year. In most
+cases, R is flexible enough to let us use discrete data, like integers, as
+categorical data.
+
+Now let's look at the `site_name` column:
+
+```{r}
+class(terns$site_name)
+```
+
+The class is `character`, because the site names are text. As we explore the
+dataset, we're more likely to use them as categories for filtering and grouping
+observations than we are to use them as text to (for instance) change the
+capitalization of or count the number of letters in the names. So we should
+convert the column to the `factor` class, both to clarify our intent and
+because it will be more convenient for some of the functions we might want to
+use.
+
+:::{.callout-important}
+CSV files don't distinguish between textual and categorical data. When you read
+one with `read.csv`, recent versions of R just assume anything that might be
+text is text. So after reading a CSV file, you should always check whether any
+of the columns need to be converted to factors.
+
+Technically, CSV files don't record data types at all. R is usually able to
+guess appropriate types for non-text data, but it's still wise to check the
+types of all of the columns.
+
+Several other file formats, like fixed width (FWF) and tab-separated value
+(TSV) files, also have this weakness.
+:::
+
+We can use the `str` function to quickly check the classes of all of the
+columns in a dataset:
+
+```{r}
+str(terns)
+```
+
+For the California least terns dataset, it looks like the `site_name`,
+`region_3`, and `event` columns all contain categories but have class
+`character`. @sec-fixing-problems explains how to convert them to factors.
+
+
+### Fixing Problems {#sec-fixing-problems}
+
+We can convert a column into a factor with R's `factor` function. Let's try it
+for the `site_name`, `region_3`, and `event` columns in the California least
+terns dataset:
+
+```{r}
+terns$site_name = factor(terns$site_name)
+terns$region_3 = factor(terns$region_3)
+terns$event = factor(terns$event)
+```
+
+:::{.callout-note title="See Also"}
+For more about factors, see the [Factors][r-basics-factors] section of
+DataLab's R Basics workshop reader.
+
+[r-basics-factors]: https://ucdavisdatalab.github.io/dwr_workshop_r_basics/chapters/data-types-structures/data-types-structures.html#sec-factors
+:::
+
+:::{.callout-tip}
+There's another way we could've done this that uses only two lines of code, no
+matter how many columns there are:
+
+```{r, eval = FALSE}
+cols = c("site_name", "region_3", "event")
+terns[cols] = lapply(terns[cols], factor)
+```
+
+You can learn more about the `lapply` function in the [The purrr
+Package][r-basics-purrr] section of DataLab's R Basics workshop reader.
+
+[r-basics-purrr]: https://ucdavisdatalab.github.io/dwr_workshop_r_basics/chapters/organizing-code/control-flow.html#sec-the-purrr-package
+
+You can use whichever approach is more convenient and makes more sense to you.
+If there were other columns to convert, we'd go through the same steps with the
+appropriate conversion function.
+:::
+
+R provides also `as.` functions to convert to the most common data types. For
+instance, `as.character` converts an object to a string:
+
+```{r}
+x = 3.1
+class(x)
+
+y = as.character(x)
+y
+class(y)
+```
+
+The `read.csv` function does a good job at identifying columns of numbers, so
+it's rarely necessary to convert columns of numbers manually. However, you may
+have to do this for data you got some other way (rather than loading a file).
+For instance, it's common to make these conversions when scraping data from the
+web.
+
+It's also a good idea to convert categorical columns into factors with the
+`factor` function and to convert columns of dates into dates.
+
+:::{.callout-note title="See Also"}
+For more about dates, see the [Dates & Times][int-r-dates] chapter of DataLab's
+Intermediate R: Cleaning & Reshaping Data workshop reader.
+
+[int-r-dates]: https://ucdavisdatalab.github.io/dwr_workshop_intermediate_r/chapters/cleaning-reshaping/01_dates-times.html
+:::

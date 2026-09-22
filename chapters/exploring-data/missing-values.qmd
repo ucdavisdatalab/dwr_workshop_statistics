@@ -1,0 +1,138 @@
+```{r, echo = FALSE}
+terns = read.csv("data/2000-2023_ca_least_tern.csv")
+```
+
+# Missing Values {#sec-missing-values}
+
+::: {.callout-note title="Learning Goals" collapse="false"}
+After this lesson, you should be able to:
+
+* Locate and count missing values in a dataset
+:::
+
+
+
+When a dataset contains missing values, investigate how many there are and in
+which observations and features they occur. Then think carefully about
+potential causes and whether there are any patterns to the missingness.
+
+Missing values introduce bias into an analysis when their cause is related to
+the research question(s). As an example, consider a study of incidence of
+disease in coyotes over a five year period. The coyotes in the study are
+tagged, so that they can be located and examined by a veterinarian annually.
+Occasionally, the researchers are unable to locate or catch a coyote, so they
+record missing values. If healthy coyotes are more difficult to locate and
+catch, ignoring the missing values will cause the researchers to overestimate
+incidence of disease.
+
+This chapter explains how to use the methods of prior chapters, particularly
+@sec-categorical-features and @sec-relationships-between-features, to summarize
+and look for patterns in missing values. It also briefly describes how
+statisticians think about and address missing values.
+
+
+## Searching for Patterns
+
+In order to summarize the missing values in a feature, transform the feature
+into categories that indicate the presence or absence of a missing value. Then
+we can apply any of the methods from @sec-categorical-features to summarize the
+missing values, and we can also use methods from
+@sec-relationships-between-features to search for patterns among the missing
+values.
+
+In R, we can use the `is.na` function to transform a feature into a categorical
+feature with `TRUE` at each missing value and `FALSE` at each complete value.
+The `is.na` function can also transform an entire dataset this way, going
+feature-by-feature.
+
+As an example, let's summarize the missing values in the `bp_min` feature of
+the California least terns dataset. First, we'll construct a new categorical
+feature that indicates missing values:
+
+```{r}
+bp_min_is_na = is.na(terns$bp_min)
+```
+
+@sec-categorical-features recommends using frequencies to summarize categorical
+features. Since there are only two categories, we'll use a frequency table
+rather than a bar plot:
+
+```{r}
+table(bp_min_is_na)
+```
+
+So there are only 8 missing values in the `bp_min` feature. The number of
+complete values is two orders of magnitude larger. So it's unlikely that the
+missing values in this feature will pose any major problem for analysis.
+
+From here, we could proceed to investigate whether the missing values in
+`bp_min` are related to any of the other features (or their missing values) in
+the dataset. To do so, we could use the methods described in
+@sec-relationships-between-features.
+
+:::{.callout-tip}
+R's `summary` function computes missing value frequencies for every feature in
+a dataset, so it's a convenient way to get started and identify features whose
+missing values warrant a deeper investigation.
+:::
+
+
+## Kinds of Missingness
+
+Statisticians use two different terms to describe why data is missing:
+
+* When values are **missing at random** (MAR), the cause for missingness is one
+  or more features in the dataset. For example, if a soil moisture sensor
+  overheats and doesn't work on hot days, but air temperature is recorded in
+  the dataset, values are missing at random.
+
+* When values are **missing not at random** (MNAR), the cause for missingness
+  is one or more features *not* in the dataset. Think of this as a form of
+  censorship. For example, if people in a food survey refuse to report how much
+  sugar they ate on days when they ate junk food, values are missing not at
+  random.
+
+In both cases, the missing data may bias analyses. The key difference is that
+for values MAR, we can sometimes correct the missingness
+(@sec-handling-missing-values). Unfortunately, it's not possible to fully
+determine whether values are MAR or MNAR from a dataset alone, because this
+depends on the data generation and collection processes.
+
+:::{.callout-note}
+Technically, there's a third kind of missing data: **missing completely at
+random** (MCAR). When values are missing completely at random, the cause for
+missingness is completely unrelated to the research question and features of
+interest. This kind of missing data is rare in practice and impossible to
+identify from the data alone. Values MCAR can be ignored without causing any
+bias.
+:::
+
+
+## Handling Missing Values {#sec-handling-missing-values}
+
+The default way to handle missing values in R is to ignore them. This is just a
+default, not necessarily the best or even an appropriate way to deal with them.
+We can remove missing values from a dataset by indexing:
+
+```{r}
+nonpred_eggs_no_na = terns[!is.na(terns$nonpred_eggs), ]
+
+head(nonpred_eggs_no_na)
+```
+
+The `na.omit` function is less precise than indexing, because it removes rows
+that have a missing value in _any_ column. This means lots of information gets
+lost.
+
+Another way to handle missing values is to **impute**, or fill in, the values
+with estimates based on other data in the dataset. We won't get into the
+details of how to impute missing values here, since it's a fairly deep subject.
+Generally it is safe to impute MAR values, but not MNAR values.
+
+:::{.callout-note title="See Also"}
+The [mice][] package for R provides a variety of functions for imputing values,
+as well as references to statistical literature about imputation.
+
+[mice]: https://amices.org/mice/
+:::
+

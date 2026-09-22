@@ -1,0 +1,316 @@
+```{r, echo = FALSE}
+terns = read.csv("data/2000-2023_ca_least_tern.csv")
+```
+
+# Outliers {#sec-outliers}
+
+::: {.callout-note title="Learning Goals" collapse="false"}
+After this lesson, you should be able to:
+
+* Explain what it means for a value to be an "outlier"
+* Locate and count outliers in a dataset
+:::
+
+:::{.callout-important title="Required Packages"}
+This chapter uses the following R packages:
+
+* ggplot2
+
+For a refresher about how to install and load packages, see the
+[Packages][r-basics-packages] section of DataLab's R Basics workshop reader.
+
+[r-basics-packages]: https://ucdavisdatalab.github.io/dwr_workshop_r_basics/chapters/getting-started/getting-started.html#sec-packages
+:::
+
+An **outlier** is an observation that's substantively different from most of
+the others. Outliers are unusual, and unusual observations deserve extra
+scrutiny because they might be:
+
+* Unusually informative;
+* An error caused by how data were measured, recorded, or cleaned.
+
+The definition of an outlier is broad, open to interpretation, and should be
+tailored to specific datasets and analysis goals, as is the case with many
+statistical ideas. This chapter explains a few ways to find outliers (among
+many), how to think through whether outliers are natural or erroneous, and what
+to do with erroneous outliers.
+
+
+## Searching Low-Density Regions
+
+Picture the density curve of a distribution, like the one shown in
+@fig-total_nests_density. Most observations occur where the density is high;
+that's *why* it's high. So outliers, observations that are unlike most of the
+others, must lie in regions of relatively low density.
+
+As such, visualizing the distribution of a dataset (or feature) is an effective
+way to identify outliers. We can use familiar visualizations like histograms
+(@sec-binning-histograms) and density plots (@sec-density-plots). To help us
+see where individual observations are, we can mark them on the axis. The marks
+are called a **rug**.
+
+Let's make a density plot of `total_nests` from the California least terns
+dataset one more time, now with a rug:
+
+```{r}
+library("ggplot2")
+
+ggplot(terns) +
+  aes(x = total_nests) +
+  geom_density() +
+  geom_rug()
+```
+
+Most of the observations are less than about 250 nests, and we can distinguish
+individual observations beyond about 750 nests. There's no sharp dividing line
+where observations clearly become outliers, so how do we decide? One way is to
+use external information about the nesting habits of California least terns,
+such as research literature or personal expertise.
+
+But remember why we're looking for outliers: they simply get extra scrutiny. As
+long as they seem to be valid (not errors), we'll treat them like any other
+observations and use them in our analyses. How we decide which observations are
+outliers shouldn't affect the results much as long as we examine enough to
+catch errors.
+
+:::{.callout-note title="Note: Jitter" collapse="true"}
+Rugs are difficult to read where there are lots of observations, because many
+marks get plotted on top of each another.
+
+An alternative approach is to plot the observations as points. We can make the
+points slightly transparent to make the overlapping points easier to
+distinguish. We can also add small, random offset, called **jitter**, along the
+y-axis. Then the plot becomes:
+
+```{r}
+ggplot(terns) +
+  aes(x = total_nests) +
+  geom_density() +
+  geom_jitter(aes(y = -0.0005), height = 0.0005, alpha = 0.5) +
+  labs(y = "density")
+```
+
+This takes more effort than a rug, since we have to poisition the points along
+the y-axis, but it's also easier to read. See the [documentation for
+`geom_jitter`][jitter] to learn more about how to use jitter.
+
+[jitter]: https://ggplot2.tidyverse.org/reference/geom_jitter.html
+:::
+
+
+## Box Plots {#sec-box-plots}
+
+Observations are unlikely to be very far away from the center of their
+distribution, so we can use distance from the center to identify outliers. A
+**box plot** makes this approach visual. A box plot is yet another kind of
+distribution plot, like a histogram or density plot.
+
+In a box plot, the central 50% of the data are represented by a box. The left
+edge of the box is at the 25th percentile, and the right edge of the box is at
+the 75th percentile. The box is split by a heavy line at the median.
+
+The box also has **whiskers**, lines that represent the tails of the data. The
+whiskers extend from each end of the box to the farthest observation within
+$1.5 \times \textrm{IQR}$. Observations farther away are plotted as points and
+often treated as outliers.
+
+:::{.callout-note title="Note: Whiskers"}
+There are actually many different conventions for how to draw the whiskers in a
+box plot. The $1.5 \times \textrm{IQR}$ convention is widely-used and is the
+default in R.
+
+To learn more about the other conventions for box plots, see the [ggplot2
+documentation][ggplot-box] or the [Wikipedia article][wiki-box].
+
+[ggplot-box]: https://ggplot2.tidyverse.org/reference/geom_boxplot.html
+[wiki-box]: https://en.wikipedia.org/wiki/Box_plot
+:::
+
+To demonstrate box plots, suppose we want to know whether there are any
+unusually dangerous sites where California least terns nest, where the danger
+is caused by something other than natural predators. There are several
+`nonpred_` features in the dataset we can use to investigate. Let's focus on
+`nonpred_eggs`, which the documentation describes as non-predator-related
+mortalities of eggs. Here's a box plot of the feature:
+
+```{r}
+#| label: fig-nonpred_eggs_box
+ggplot(terns) +
+  aes(x = nonpred_eggs) +
+  geom_boxplot()
+```
+
+Most observations are between 0 and about 75 mortalities. The left whisker is
+barely visible, because `nonpred_eggs` is never negative. The right whisker
+extends to about 175 mortalities. We might want to treat the observations
+beyond the whisker as outliers, and the plot shows there are a lot of them,
+with the largest around 750 mortalities.
+
+Some sites have more eggs than others, so a high count of non-predator egg
+mortalities might not mean a site is unusually dangerous. We can find dangerous
+sites by looking at non-predator egg mortalities per nest:
+
+```{r}
+#| label: fig-nonpred_eggs_total_nests_box
+ggplot(terns) +
+  aes(x = nonpred_eggs / total_nests) +
+  geom_boxplot()
+```
+
+There are now just a few observations that stand out as outliers compared to
+the others. We could continue this analaysis by examining each of these
+observations individually, to check whick sites they're from and whether they
+have any other unusual features.
+
+:::{.callout-tip}
+For most datasets, we recommend density plots over box plots, because density
+plots show more detail about the shape of the entire distribution. That said,
+when the number of observations is small, we prefer box plots. Less detail
+becomes a safeguard against overinterpretation when the evidence for a detail
+may be just 1 or 2 values.
+:::
+
+:::{.callout-warning title="Warning: Outliers at the Center" collapse="true"}
+Observations far from the center of a distribution are often outliers, but
+outliers can also occur close to the center! Remember that an outlier is just
+an unusual or unlikely observation.
+
+For example, consider this multimodal distribution with mean 0:
+
+```{r}
+#| label: fig-multimodal-density
+#| echo: false
+f = function(x) 0.5 * dnorm(x, -10) + 0.5 * dnorm(x, 10)
+ggplot() + xlim(-15, 15) + geom_function(fun = f, n = 501) + ylab("density")
+```
+
+In this case, we might say an observation at 0 is an outlier, since the density
+very low there. Also notice how a sample from the distribution looks as a box
+plot:
+
+```{r}
+#| label: fig-multimodal-box
+#| echo: false
+bimodal = data.frame(x = c(rnorm(30, -10), rnorm(30, 10)))
+ggplot(bimodal) + aes(x = x) + geom_boxplot()
+```
+
+The short whiskers are the only indication that almost all of the observations
+are close to -10 and 10 rather than 0. This shows how box plots can mislead
+more easily than density plots.
+:::
+
+
+## Standardization
+
+The mean (@sec-mean) estimates the center of a distribution, so we can look for
+outliers among observations that are far away from the mean. A convenient way
+to do this is to **standardize** each observation by subtracting the mean and
+dividing by the standard deviation. The resulting statistic is called the
+**z-score**.
+
+:::{.callout-note title="Definition: z-score"}
+Mathematically, for an observation $x$ from a distribution with mean $\mu$ and
+standard deviation $\sigma$, the z-score $z$ is defined as
+
+$$
+z
+= \frac{x - \mu}{\sigma}
+\approx \frac{x - \bar{x}}{s}
+$$
+
+When the mean and standard deviation are unknown, but we have a sample, we can
+estimate with the sample mean $\bar{x}$ and sample standard deviation $s$.
+:::
+
+The z-score is convenient because it measures distance in multiples of the
+standard deviation rather than the original units. This means we can compare
+z-scores across different features with different units. Moreover, for almost
+any distribution, at least 88% of all observations must be within 3 standard
+deviations of the mean. So to search for outliers, we can simply search for
+observations with a z-score greater than or equal to 3.
+
+:::{.callout-note title="Note: Chebyshev's Inequality"}
+The at least 88% within 3 standard deviations rule is a specific case of a
+statistical theorem called [Chebyshev's Inequality][chebyshev].
+
+[chebyshev]: https://en.wikipedia.org/wiki/Chebyshev%27s_inequality
+
+For some distributions, we can make [even stronger guarantees][68-95].
+
+[68-95]: https://en.wikipedia.org/wiki/68%E2%80%9395%E2%80%9399.7_rule
+:::
+
+In R, the `scale` function computes z-scores. Let's compute the z-scores for
+the `nonpred_eggs` feature, then find the row numbers and values of the
+observations where `nonpred_eggs` is more than 3 standard deviations from the
+mean:
+
+```{r}
+z = scale(terns$nonpred_eggs)
+head(z)
+
+rows = which(z <= -3 | 3 <= z)
+rows
+
+terns$nonpred_eggs[rows]
+```
+
+All of these observations are more than 3 standard deviations greater than the
+mean. For the most part, this is consistent with what we found by using a box
+plot in @sec-box-plots. So we might want to treat these observations as
+outliers and do a more thorough investigation.
+
+
+## Investigating Outliers {#sec-investigating-outliers}
+
+After locating outliers in a dataset, the next step is to investigate each one
+indvidually. The investigation has two goals:
+
+First, we want to determine whether the outlier is valid or erroneous. Start by
+checking all of the observation's features. Some questions to ask are:
+
+* How many features are outliers?
+* Are any of them clearly erroneous, nonsensical, or impossible?
+* Are any of the features derived from others? If so, are they consistent with
+  the feature(s) from which they're derived?
+* Does the documentation say anything about this particular kind of outlier?
+
+External sources, such as related research literature, domain expertise, and
+direct communication with the people who created the dataset, can also provide
+strong evidence as to whether an observation is valid or not.
+
+Second, we want to determine whether the outlier provides any special insight
+relevant to the purpose of the overarching analysis. How to check this depends
+on what that purpose is, but the exploration techniques described in this
+reader are often suitable.
+
+When an outlier is valid, keep it.
+
+When an outlier is erroneous, sometimes it's possible to correct it. Check
+whether any of the observation's other features suggest the correct value.
+
+If the error can't be corrected with the other features, sometimes it's
+possible to approximate the correct value by using the mean or median (or some
+other suitable statistic) of a sample of similar observations. This is called
+**imputing** the value. Whether it's statistically appropriate to impute a
+value depends on what the observation and feature represent.
+
+If neither correction nor imputation are possible, replace each of the
+observation's erroneous features with a missing value `NA`. This way the
+observation's valid features are preserved. If the entire observation is
+erroneous, remove it from the dataset.
+
+:::{.callout-important}
+Above all else, make sure to document the process you use to locate and handle
+the outliers in a dataset. The idea is to make the analysis as transparent as
+possible, so that no one is left wondering whether your conclusions are valid.
+:::
+
+:::{.callout-tip}
+If an outlier is valid but interferes with a plot you want to make, adjust the
+x and y limits of the plot rather than removing the outlier from the dataset.
+If the outlier is no longer visible, make sure to mention it in the plot's
+caption or description.
+:::
+

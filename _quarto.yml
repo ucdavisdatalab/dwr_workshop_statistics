@@ -17,6 +17,24 @@ book:
   chapters:
     - "index.qmd"
     # List your chapters in order here.
+    - part: "Exploring Data"
+      chapters:
+        - "chapters/exploring-data/index.qmd"
+        - "chapters/exploring-data/getting-to-know-data.qmd"
+        - "chapters/exploring-data/categorical-features.qmd"
+        - "chapters/exploring-data/numerical-features.qmd"
+        - "chapters/exploring-data/outliers.qmd"
+        - "chapters/exploring-data/relationships-between-features.qmd"
+        - "chapters/exploring-data/missing-values.qmd"
+    - part: "Introduction to Applied Statistics"
+      chapters:
+        - "chapters/applied-statistics/index.qmd"
+    - part: "Working with Temporal Data"
+      chapters:
+        - "chapters/temporal-data/index.qmd"
+    - part: "Working with Censored Data"
+      chapters:
+        - "chapters/censored-data/index.qmd"
   appendices:
     - "chapters/references.qmd"
     - "chapters/assessment.qmd"
@@ -58,7 +76,7 @@ format:
   # pdf: default
 
 # Uncomment to use BibTeX or BibLaTeX references:
-# bibliography: references.bib
+bibliography: references.bib
 
 # Cache computations from each chapter:
 execute:

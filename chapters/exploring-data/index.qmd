@@ -1,0 +1,40 @@
+# Overview {.unnumbered}
+
+_One 2-hour session_
+
+:::{.callout-note title="Learning Goals" collapse="false"}
+After this lesson, you should be able to:
+
+* Compute a structural summary of a dataset
+* Interpret structural summaries
+* Locate and count missing values in a dataset
+* Identify patterns in missing values
+* Explain what a probability distribution is
+* Use distribution plots (histograms, density plots, etc.) to summarize a
+  dataset
+* Interpret distribution plots
+* Compute a statistical summary of a dataset
+* Explain and compute the location statistics mode, mean, and median
+* Explain and compute percentile statistics
+* Explain and compute the scale statistics range, standard deviation, and
+  interquartile range
+* Interpret location and scale statistics
+* Explain what it means for a statistic to be "robust"
+* Explain why one should not rely on quantitative statistics alone
+* Explain what it means for a value to be an “outlier”
+* Locate and count outliers in a dataset
+:::
+
+This workshop is a gentle introduction to fundamental approaches and concepts
+for exploring data. By the end of this workshop, you’ll learn:
+
+* How to inspect a dataset with R
+* What questions to ask about how data were collected
+* What’s meant by the “distribution” of a dataset
+* How to summarize a dataset with point statistics and visualizations
+* How to interpret point statistics and visualizations
+* Relative strengths and weaknesses of various statistical summaries
+* How to identify and work with outliers
+* How to examine and work with missing values
+
+We’ll expand on some of these topics in later workshops.

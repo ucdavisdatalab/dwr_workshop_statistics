@@ -1,0 +1,1979 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.9.38">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="description" content="Reader for the DWR Statistics workshop series.">
+
+<title>1&nbsp; Getting to Know the Data – DWR Statistics Workshops</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
+
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<link href="../../chapters/exploring-data/categorical-features.html" rel="next">
+<link href="../../chapters/exploring-data/index.html" rel="prev">
+<link href="../..//images/logos/datalab-logo_square_150x150.png" rel="icon" type="image/png">
+<script src="../../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-15634bcf2e68342d4ad2dfa704d543f6.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap-4927f781319b8b164c3724fad35bda6c.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<style>
+.callout.callout-style-default .callout-body {
+  padding: 0 1.5rem 0;
+}
+.cell-output-stdout {
+  overflow-y: scroll;
+  max-height: 30rem;
+  margin-bottom: 0.75rem;
+}
+#quarto-sidebar a.text-start {
+  margin-top: 1rem;
+  font-weight: bold;
+}
+</style>
+
+
+<meta property="og:title" content="1&nbsp; Getting to Know the Data – DWR Statistics Workshops">
+<meta property="og:description" content="Reader for the DWR Statistics workshop series.">
+<meta property="og:image" content="https://ucdavisdatalab.github.io/dwr_workshop_statistics/images/exploring-data/ca_least_tern_usfws_pacificsw.jpg">
+<meta property="og:site_name" content="DWR Statistics Workshops">
+<meta property="og:image:alt" content="A gray bird with a white belly, black head, and orange beak sitting   on a clutch of eggs.">
+<meta name="twitter:title" content="1&nbsp; Getting to Know the Data – DWR Statistics Workshops">
+<meta name="twitter:description" content="Reader for the DWR Statistics workshop series.">
+<meta name="twitter:image" content="https://ucdavisdatalab.github.io/dwr_workshop_statistics/images/exploring-data/ca_least_tern_usfws_pacificsw.jpg">
+<meta name="twitter:image:alt" content="A gray bird with a white belly, black head, and orange beak sitting   on a clutch of eggs.">
+<meta name="twitter:card" content="summary_large_image">
+</head>
+
+<body class="nav-sidebar floating quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../chapters/exploring-data/index.html">Exploring Data</a></li><li class="breadcrumb-item"><a href="../../chapters/exploring-data/getting-to-know-data.html"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Getting to Know the Data</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header sidebar-header-stacked">
+      <a href="https://datalab.ucdavis.edu/" class="sidebar-logo-link">
+      <img src="../../images/logos/datalab-logo-full-color-rgb.png" alt="The logo of the UC Davis DataLab." class="sidebar-logo light-content py-0 d-lg-inline d-none">
+      <img src="../../images/logos/datalab-logo-full-color-rgb.png" alt="The logo of the UC Davis DataLab." class="sidebar-logo dark-content py-0 d-lg-inline d-none">
+      </a>
+    <div class="sidebar-title mb-0 py-0">
+      <a href="../../">DWR Statistics Workshops</a> 
+        <div class="sidebar-tools-main">
+    <a href="https://github.com/ucdavisdatalab/dwr_workshop_statistics" title="Source Code" class="quarto-navigation-tool px-1" aria-label="Source Code"><i class="bi bi-github"></i></a>
+</div>
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Overview</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text">Exploring Data</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/exploring-data/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Overview</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/exploring-data/getting-to-know-data.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Getting to Know the Data</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/exploring-data/categorical-features.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Categorical Features</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/exploring-data/numerical-features.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Numerical Features</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/exploring-data/outliers.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Outliers</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/exploring-data/relationships-between-features.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Relationships Between Features</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/exploring-data/missing-values.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Missing Values</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true">
+ <span class="menu-text">Appendices</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/references.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">References</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#sec-be-data-biographer" id="toc-sec-be-data-biographer" class="nav-link active" data-scroll-target="#sec-be-data-biographer"><span class="header-section-number">1.1</span> Be a Data Biographer</a>
+  <ul class="collapse">
+  <li><a href="#context-and-motivation" id="toc-context-and-motivation" class="nav-link" data-scroll-target="#context-and-motivation"><span class="header-section-number">1.1.1</span> Context and Motivation</a></li>
+  <li><a href="#sec-collection-strategy" id="toc-sec-collection-strategy" class="nav-link" data-scroll-target="#sec-collection-strategy"><span class="header-section-number">1.1.2</span> Collection Strategy</a></li>
+  <li><a href="#precautions-and-impact" id="toc-precautions-and-impact" class="nav-link" data-scroll-target="#precautions-and-impact"><span class="header-section-number">1.1.3</span> Precautions and Impact</a></li>
+  </ul></li>
+  <li><a href="#structure-matters" id="toc-structure-matters" class="nav-link" data-scroll-target="#structure-matters"><span class="header-section-number">1.2</span> Structure Matters</a>
+  <ul class="collapse">
+  <li><a href="#features-and-observations" id="toc-features-and-observations" class="nav-link" data-scroll-target="#features-and-observations"><span class="header-section-number">1.2.1</span> Features and Observations</a></li>
+  </ul></li>
+  <li><a href="#sec-ca-least-terns" id="toc-sec-ca-least-terns" class="nav-link" data-scroll-target="#sec-ca-least-terns"><span class="header-section-number">1.3</span> Dataset: CA Least Terns</a>
+  <ul class="collapse">
+  <li><a href="#writing-a-data-biography" id="toc-writing-a-data-biography" class="nav-link" data-scroll-target="#writing-a-data-biography"><span class="header-section-number">1.3.1</span> Writing a Data Biography</a></li>
+  <li><a href="#reading-the-data" id="toc-reading-the-data" class="nav-link" data-scroll-target="#reading-the-data"><span class="header-section-number">1.3.2</span> Reading the Data</a></li>
+  </ul></li>
+  <li><a href="#sec-structural-summaries" id="toc-sec-structural-summaries" class="nav-link" data-scroll-target="#sec-structural-summaries"><span class="header-section-number">1.4</span> Structural Summaries</a></li>
+  <li><a href="#sec-data-types" id="toc-sec-data-types" class="nav-link" data-scroll-target="#sec-data-types"><span class="header-section-number">1.5</span> Data Types</a>
+  <ul class="collapse">
+  <li><a href="#r-classes" id="toc-r-classes" class="nav-link" data-scroll-target="#r-classes"><span class="header-section-number">1.5.1</span> R Classes</a></li>
+  <li><a href="#sec-fixing-problems" id="toc-sec-fixing-problems" class="nav-link" data-scroll-target="#sec-fixing-problems"><span class="header-section-number">1.5.2</span> Fixing Problems</a></li>
+  </ul></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/ucdavisdatalab/dwr_workshop_statistics/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li><li><a href="https://github.com/ucdavisdatalab/dwr_workshop_statistics/blob/main/chapters/exploring-data/getting-to-know-data.qmd" class="toc-action"><i class="bi empty"></i>View source</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../chapters/exploring-data/index.html">Exploring Data</a></li><li class="breadcrumb-item"><a href="../../chapters/exploring-data/getting-to-know-data.html"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Getting to Know the Data</span></a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Getting to Know the Data</span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<div class="callout callout-style-default callout-note callout-titled" title="Learning Goals">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-1-contents" aria-controls="callout-1" aria-expanded="true" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Learning Goals
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-1" class="callout-1-contents callout-collapse collapse show">
+<div class="callout-body-container callout-body">
+<p>After this lesson, you should be able to:</p>
+<ul>
+<li>Explain what it means for a dataset to be “tabular”</li>
+<li>Explain what a “feature” is</li>
+<li>Explain what an “observation” is</li>
+<li>Explain what it means for a dataset to be “tidy”</li>
+<li>Describe some widely-used data types</li>
+<li>Convert columns to appropriate data types</li>
+</ul>
+</div>
+</div>
+</div>
+<!--
+:::{.callout-important}
+We teach this lecture with [a slide deck][slides]. This chapter does not
+necessarily cover everything covered in lecture.
+:::
+
+[slides]: https://docs.google.com/presentation/d/1e_LcUT1tU5WsUYnrTQBjTIOL6zIrcCsXBjUigTBKA6w/edit?usp=sharing
+-->
+<p>This chapter explains where to start when you explore a dataset. Whether it’s data you collected yourself or a new and unfamiliar dataset, the steps to go through and details to check at the beginning of an exploration are the same. Some of these are qualitative: now is a good time to think about how and why the data were collected, and whether they’re appropriately representative to address the questions you want to answer. Others are computational, such as whether the dataset’s structure matches expectations and is convenient for analysis. The chapter also briefly discusses fixes for common problems, with references to where you can learn more.</p>
+<section id="sec-be-data-biographer" class="level2" data-number="1.1">
+<h2 data-number="1.1" class="anchored" data-anchor-id="sec-be-data-biographer"><span class="header-section-number">1.1</span> Be a Data Biographer</h2>
+<p>The first step in getting to know a dataset is to understand why and how it was collected. This will help you identify:</p>
+<ul>
+<li>Who or what the dataset represents;</li>
+<li>What kinds of questions you can use it to answer;</li>
+<li>What kinds of analysis methods might be appropriate;</li>
+<li>What biases or limitations it might have.</li>
+</ul>
+<p>We recommend taking some time to write a brief description of the dataset in your own words, called a <strong>data biography</strong>. Do this even if the dataset’s documentation already includes a description or biography, to help you organize and clarify your understanding of the dataset.</p>
+<p>Use the documentation and related publications as you write. If the dataset doesn’t have documentation or the documentation is incomplete, you might need to do some sleuthing with the dataset itself (see the remainder of this reader), online, or by contacting the people who created the dataset directly. Keep track of any unresolved questions about the dataset as you write the biography.</p>
+<p>A data biography serves as a reference as you analyze the dataset and communicate results. If you collected the dataset yourself and plan to share it with others, the data biography is also essential documentation for helping the audience make sense of the dataset. Even if you didn’t collect the dataset, the biography and notes you write during analysis might be helpful to colleagues or collaborators who also want to work with the dataset.</p>
+<p>The following subsections break down some of the kinds of questions to ask as you write a data biography.</p>
+<div class="callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Important
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Keep the biography questions in mind throughout your time working with the dataset. When you arrive at results you want to share, revisit the questions before doing so.</p>
+</div>
+</div>
+<!--
+A **data biography** is a document that attempts to answer these kinds of
+questions and provide any other background and context relevant to a dataset.
+When collecting a dataset, providing a biography as one part of the
+documentation is a best practice. If the dataset you're working with doesn't
+include a biography, try to write one yourself! Doing so will force you to
+confront the questions above, and give you a document you can use to help
+explain the results of your analyses. In some cases, sharing the data biography
+might help coworkers or colleagues who also want to work with the dataset.
+
+
+* Context and Motivation
+* Collection Strategy
+* Precautions and Impact
+-->
+<section id="context-and-motivation" class="level3" data-number="1.1.1">
+<h3 data-number="1.1.1" class="anchored" data-anchor-id="context-and-motivation"><span class="header-section-number">1.1.1</span> Context and Motivation</h3>
+<p>First, think about where the dataset came from—its <strong>provenance</strong>. Ask:</p>
+<ul class="task-list">
+<li><label><input type="checkbox">Who collected the dataset?</label></li>
+<li><label><input type="checkbox">Why did they collect the dataset?</label></li>
+<li><label><input type="checkbox">What do they claim the dataset represents?</label></li>
+</ul>
+<p>These questions can help you identify potential biases or limitations of the dataset. Consider whether the person or group who collected the dataset has any conflicts of interest. While conflicts of interest are not necessarily indicative of a problem with a dataset, they do suggest it deserves extra scrutiny for biases.</p>
+<p>As an example, consider a dataset collected by a light bulb manufacturer about the operating characteristics of their bulbs. Most likely, their motivation is to convince potential customers that their bulbs are superior to competitors, although it might also be to assess how they can improve their bulbs. In other words, they have an obvious conflict of interest. As a result, they might use a testing process that doesn’t replicate typical household conditions, selectively include results from their tests, or aggregate the results in a way that makes the bulbs appear to have especially long lifespans or low power consumption.</p>
+<p>When thinking about what a dataset represents, data scientists (and statisticians) usually think in terms of the <strong>population</strong> from which the data were drawn. The population might consist of people, but it could also consist of other animals, plants, inanimate objects, or something else. The members of the population are called <strong>subjects</strong> or sometimes <strong>units of observation</strong>. Some datasets represent or are associated with multiple populations.</p>
+</section>
+<section id="sec-collection-strategy" class="level3" data-number="1.1.2">
+<h3 data-number="1.1.2" class="anchored" data-anchor-id="sec-collection-strategy"><span class="header-section-number">1.1.2</span> Collection Strategy</h3>
+<p>Next, think about how the dataset was collected. Ask:</p>
+<ul class="task-list">
+<li><label><input type="checkbox">What was the collection procedure?</label></li>
+<li><label><input type="checkbox">When and where did they collect the dataset?</label></li>
+<li><label><input type="checkbox">Does the dataset consist of the entire population? If not, how were subjects selected?</label></li>
+</ul>
+<p>The question about population gets at whether the dataset is a <strong>sample</strong>: a subset of subjects selected from a population. When it’s not possible to collect data about an entire population—whether due to cost, difficulty, ethical concerns, or something else—we might instead take a sample. The hope is that the sample is representative, meaning results for the sample generalize to the entire population.</p>
+<p>How well a sample represents a population depends on how it was collected and how large it is, among other things. A <strong>simple random sample</strong>, where subjects are selected from the population randomly and independently, often generalizes well because random sampling preserves most statistical properties of the population. In experiments, researchers sometimes use more sophisticated sampling procedures to control for various biases.</p>
+<p>As you think about the population and sample procedure, it’s especially important to consider whether there are subgroups within the population that might be underrepresented or left out entirely, whether by coincidence, due to natural constraints, or intentionally. These can limit the generalizability of results from the dataset.</p>
+</section>
+<section id="precautions-and-impact" class="level3" data-number="1.1.3">
+<h3 data-number="1.1.3" class="anchored" data-anchor-id="precautions-and-impact"><span class="header-section-number">1.1.3</span> Precautions and Impact</h3>
+<p>Finally, think about how using the dataset might affect other people or things. Ask:</p>
+<ul class="task-list">
+<li><label><input type="checkbox">Who is impacted by use or analysis of the dataset? What are the potential consequences?</label></li>
+<li><label><input type="checkbox">Are any special privacy or security precautions necessary?</label></li>
+</ul>
+<p>These questions are intended to help you reflect on potential ethical and legal concerns when working with the dataset, as well as your own responsibilities to the associated population(s) and sampled subjects.</p>
+<p>The <strong>CARE Principles</strong> <span class="citation" data-cites="carroll2020">(<a href="../references.html#ref-carroll2020" role="doc-biblioref">Carroll et al. 2020</a>)</span>, which were originally developed to protect Indigenous peoples’ rights and interests with respect to Indigenous data, provide a basis for reasoning about the impacts of data work on communities more generally. The principles are:</p>
+<ul>
+<li>Collective benefit: data and analyses should provide benefit to the community as a whole and reflect community values.</li>
+<li>Authority to control: community members have a right to and should be actively involved in the stewardship and governance of their data.</li>
+<li>Responsibility: data workers have a responsibility to engage and cultivate respectful relationships with community for the benefit of the community.</li>
+<li>Ethics: protecting the rights and well-being of community members should be the highest priority; community members must be allowed to assess benefits and harms themselves.</li>
+</ul>
+<p>The CARE Principles have been adopted by organizations such as the <a href="https://www.rd-alliance.org/">Research Data Alliance</a> and the <a href="https://www.si.edu/">Smithsonian Institution</a>.</p>
+<div class="callout callout-style-default callout-note callout-titled" title="See Also">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>See Also
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><em>The Turing Way</em> <span class="citation" data-cites="turing-way">(<a href="../references.html#ref-turing-way" role="doc-biblioref">2025</a>)</span>, an online textbook developed by data scientists and other researchers from all over the world, incorporates a wide variety of perspectives about best practices for collecting, analying, and communicating results about data. <a href="https://book.the-turing-way.org/reproducible-research/rdm/rdm-care/">This chapter</a> discusses the CARE Principles.</p>
+<p><em>Data Feminism</em> <span class="citation" data-cites="dignazio2020">(<a href="../references.html#ref-dignazio2020" role="doc-biblioref">D’Ignazio and Klein 2020</a>)</span> is a textbook that explores how to approach data work in an ethical and equitable way by drawing from feminist principles. The publisher provides <a href="https://data-feminism.mitpress.mit.edu/">a free, online version of the book</a> in addition to selling print and eBook versions.</p>
+</div>
+</div>
+</section>
+</section>
+<section id="structure-matters" class="level2" data-number="1.2">
+<h2 data-number="1.2" class="anchored" data-anchor-id="structure-matters"><span class="header-section-number">1.2</span> Structure Matters</h2>
+<p>The shape and organization of a dataset, together called <strong>structure</strong>, govern how you can access and query its data. Depending on the structure, some analyses are easier to carry out than others. Most datasets can be stored in and transformed between a variety of structures, each with different advantages and disadvantages.</p>
+<p>When you start working with a dataset, identify the structure and think about whether it’s suitable for the analyses you want to carry out. If it isn’t, transform to a more suitable structure. The focus of this reader is exploration, so we won’t cover how to transform datasets.</p>
+<div class="callout callout-style-default callout-note callout-titled" title="See Also">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>See Also
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>If you want to learn more about how to transform a dataset with R, see DataLab’s <a href="https://ucdavisdatalab.github.io/dwr_workshop_intermediate_r/chapters/cleaning-reshaping/01_dates-times.html">Intermediate R: Cleaning and Reshaping Data</a> workshop reader.</p>
+</div>
+</div>
+<p>A <strong>tabular</strong> dataset is one that’s structured as a table, with rows and columns. This reader focuses on tabular datasets, since they’re common in practice and present the fewest programming challenges. Here’s an example of a tabular dataset:</p>
+<table class="table-striped table-hover caption-top table">
+<thead>
+<tr class="header">
+<th style="text-align: left;">Fruit</th>
+<th style="text-align: right;">Quantity</th>
+<th style="text-align: right;">Price</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">apple</td>
+<td style="text-align: right;">32</td>
+<td style="text-align: right;">1.49</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">banana</td>
+<td style="text-align: right;">541</td>
+<td style="text-align: right;">0.79</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">pear</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">1.99</td>
+</tr>
+</tbody>
+</table>
+<!-- TODO: pictures! or links to data? e.g., night heron range -->
+<!-- Same dataset, different structures? -->
+<p>Some other examples of datasets and structures are:</p>
+<ul>
+<li>People in a family, such as the Roosevelts, might be organized as a (family) tree, with connections from parents to children.</li>
+<li>Monthly population estimates for a fish species in the Sacramento River might be a series of numbers.</li>
+<li>Relationships between cats in a small town might be a graph (or network), with a node for each cat and an edge (connection) between each pair of cats that have met.</li>
+<li>Bike paths in Davis, CA might be a collection of geospatial coordinates that describe points, lines, and shapes.</li>
+<li>Individual consumer reviews for several different vacuums might be a table with a row for each review and columns to identify the individual, vacuum model, and review score.</li>
+</ul>
+<section id="features-and-observations" class="level3" data-number="1.2.1">
+<h3 data-number="1.2.1" class="anchored" data-anchor-id="features-and-observations"><span class="header-section-number">1.2.1</span> Features and Observations</h3>
+<p>Data scientists think about datasets in terms of two components:</p>
+<ul>
+<li><p>A <strong>feature</strong> (also called a <strong>covariate</strong>) is measurement of something, usually across multiple subjects. For example, we might decide to measure the heights of everyone in the class. Each person in the class is a subject, and the height measurement is a feature. Features don’t have to be quantitative. If we also asked each person their favorite color, then favorite color would be another feature in our dataset. In tabular datasets, features are usually, but not always, the columns.</p></li>
+<li><p>An <strong>observation</strong> is a set of features measured for a single subject or at a single time. So in the preceding example, the combined height and favorite color measurement for one student is one observation. In tabular datasets, observations are usually, but not always, the rows.</p></li>
+</ul>
+<p>Every dataset has features and observations, regardless of whether the dataset is tabular.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>In statistics, features are often called <strong>variables</strong>, because they can be modeled as values that vary randomly. This idea is different from variables in programming languages (like R), which are just names for values.</p>
+<p>For clarity, in this reader we only use the word “variable” in the programming language sense. We always call measurements in a dataset “features” or “covariates.”</p>
+</div>
+</div>
+<p>A <strong>data dictionary</strong> is documentation that describes each feature in a dataset in detail. For a tabular dataset, a data dictionary typically describes the unit of observation (in other words, what a subject is) and what each column measures. The description explain the range of realistic values, regardless of whether the feature is quantitative or qualitative. For quantitative features, it should also specify the units of measurement.</p>
+<p>We’ll see an example of a data dictionary in <a href="#sec-ca-least-terns" class="quarto-xref"><span>Section 1.3</span></a>.</p>
+</section>
+</section>
+<section id="sec-ca-least-terns" class="level2" data-number="1.3">
+<h2 data-number="1.3" class="anchored" data-anchor-id="sec-ca-least-terns"><span class="header-section-number">1.3</span> Dataset: CA Least Terns</h2>
+<p>The California least tern is a endangered subspecies of seabird that nests along the coast of California and Mexico. The California Department of Fish and Wildlife (CDFW) monitors least tern nesting sites across the state to estimate breeding pairs, fledglings, and predator activity in each annual breeding season.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="../../images/exploring-data/ca_least_tern_usfws_pacificsw.jpg" style="height:24em" alt="A gray bird with a white belly, black head, and orange beak sitting   on a clutch of eggs." class="figure-img"></p>
+<figcaption>A California least tern. Original photo by <a href="https://www.flickr.com/photos/usfws_pacificsw/5704890596/">Mark Pavelka, U.S. Fish &amp; Wildlife Service</a> (<a href="https://creativecommons.org/licenses/by/2.0/">CC BY 2.0</a>).</figcaption>
+</figure>
+</div>
+<p>The CDFW publishes most of the data it collects to the <a href="https://data.ca.gov/">California Open Data portal</a>. The examples in this and subsequent chapters use a cleaned 2000-2023 version of the California least terns dataset.</p>
+<div class="callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Important
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><a href="https://ucdavis.box.com/s/m2w5l2ebp2rey2do5lnn38y1e3u31pin">Click here</a> to download the 2000-2023 California least terns dataset.</p>
+<p>If you haven’t already, we recommend you create a directory for this workshop. In your workshop directory, create a <code>data/</code> subdirectory. Download and save the dataset in the <code>data/</code> subdirectory.</p>
+</div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled" title="Documentation for 2000-2023 California Least Terns Dataset">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-7-contents" aria-controls="callout-7" aria-expanded="true" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Documentation for 2000-2023 California Least Terns Dataset
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-7" class="callout-7-contents callout-collapse collapse show">
+<div class="callout-body-container callout-body">
+<p>Each row in the dataset contains measurements from one year-site combination.</p>
+<table class="table-striped table-hover caption-top table">
+<colgroup>
+<col style="width: 25%">
+<col style="width: 75%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: right;">Column</th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;"><code>year</code></td>
+<td style="text-align: left;">Year of the breeding season</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;"><code>site_name</code></td>
+<td style="text-align: left;">Site name</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;"><code>site_name_2013_2018</code></td>
+<td style="text-align: left;">Site name from 2013-2018</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;"><code>site_name_1988_2001</code></td>
+<td style="text-align: left;">Site name from 1988-2001</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;"><code>site_abbr</code></td>
+<td style="text-align: left;">Abbreviated site name</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;"><code>region_3</code></td>
+<td style="text-align: left;">Region of state: S.F. Bay, Central, or Southern (includes Ventura)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;"><code>region_4</code></td>
+<td style="text-align: left;">Region of state: S.F. Bay, Central, Ventura, or Southern</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;"><code>event</code></td>
+<td style="text-align: left;">Climate events</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;"><code>bp_min</code></td>
+<td style="text-align: left;">Reported minimum breeding pairs</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;"><code>bp_max</code></td>
+<td style="text-align: left;">Reported maximum breeding pairs</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;"><code>fl_min</code></td>
+<td style="text-align: left;">Reported minimum fledges</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;"><code>fl_max</code></td>
+<td style="text-align: left;">Reported maximum fledges</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;"><code>total_nests</code></td>
+<td style="text-align: left;">Total reported nests (maximum if a range was reported)</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;"><code>nonpred_eggs</code></td>
+<td style="text-align: left;">Total non-predator-related mortalities of eggs</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;"><code>nonpred_chicks</code></td>
+<td style="text-align: left;">Total non-predator-related mortalities of chicks</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;"><code>nonpred_fl</code></td>
+<td style="text-align: left;">Total non-predator-related mortalities of fledges</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;"><code>nonpred_ad</code></td>
+<td style="text-align: left;">Total non-predator-related mortalities of adults</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;"><code>pred_control</code></td>
+<td style="text-align: left;">Site predator control (yes/no)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;"><code>pred_eggs</code></td>
+<td style="text-align: left;">Total predator-related mortalities of eggs</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;"><code>pred_chicks</code></td>
+<td style="text-align: left;">Total predator-related mortalities of chicks</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;"><code>pred_fl</code></td>
+<td style="text-align: left;">Total predator-related mortalities of fledges</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;"><code>pred_ad</code></td>
+<td style="text-align: left;">Total predator-related mortalities of adults</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;"><code>pred_pefa</code></td>
+<td style="text-align: left;">Predation by peregrine falcons (yes/no)</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;"><code>pred_coy_fox</code></td>
+<td style="text-align: left;">Predation by coyotes or foxes (yes/no)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;"><code>pred_meso</code></td>
+<td style="text-align: left;">Predation by other mesocarnivores: dogs, cats, skunks, opossums, raccoons, weasels, etc. (yes/no)</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;"><code>pred_owlspp</code></td>
+<td style="text-align: left;">Predation by owls (yes/no)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;"><code>pred_corvid</code></td>
+<td style="text-align: left;">Predation by corvids: ravens or crows (yes/no)</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;"><code>pred_other_raptor</code></td>
+<td style="text-align: left;">Predation by raptors other than peregrine falcons and owls (yes/no)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;"><code>pred_other_avian</code></td>
+<td style="text-align: left;">Predation by birds other than raptors and corvids (yes/no)</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;"><code>pred_misc</code></td>
+<td style="text-align: left;">Predation by other animals (yes/no)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;"><code>total_pefa</code></td>
+<td style="text-align: left;">Total mortalities due to peregrine falcons</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;"><code>total_coy_fox</code></td>
+<td style="text-align: left;">Total mortalities due to coyotes and foxes</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;"><code>total_meso</code></td>
+<td style="text-align: left;">Total mortalities due to other mesocarnivores</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;"><code>total_owlspp</code></td>
+<td style="text-align: left;">Total mortalities due to owls</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;"><code>total_corvid</code></td>
+<td style="text-align: left;">Total mortalities due to ravens and crows</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;"><code>total_other_raptor</code></td>
+<td style="text-align: left;">Total mortalities due to other raptors</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;"><code>total_other_avian</code></td>
+<td style="text-align: left;">Total mortalities due to other birds</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;"><code>total_misc</code></td>
+<td style="text-align: left;">Total mortalities due to other animals</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;"><code>first_observed</code></td>
+<td style="text-align: left;">Date CA least terns first observed at site</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;"><code>last_observed</code></td>
+<td style="text-align: left;">Date CA least terns last observed at site</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;"><code>first_nest</code></td>
+<td style="text-align: left;">Date first egg observed at site</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;"><code>first_chick</code></td>
+<td style="text-align: left;">Date first chick observed at site</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;"><code>first_fledge</code></td>
+<td style="text-align: left;">Date first fledge observed at site</td>
+</tr>
+</tbody>
+</table>
+<p>The messy source dataset (with more years and more columns) is available <a href="https://data.ca.gov/dataset/california-least-tern-monitoring-sites-generalized-cdfw-ds3146">here</a>.</p>
+</div>
+</div>
+</div>
+<section id="writing-a-data-biography" class="level3" data-number="1.3.1">
+<h3 data-number="1.3.1" class="anchored" data-anchor-id="writing-a-data-biography"><span class="header-section-number">1.3.1</span> Writing a Data Biography</h3>
+<p>To get started with the California least terns dataset, let’s try to answer the data biography questions from <a href="#sec-be-data-biographer" class="quarto-xref"><span>Section 1.1</span></a>. We’ll go through them one-by-one and use the <a href="https://data.ca.gov/dataset/california-least-tern-monitoring-sites-generalized-cdfw-ds3146">source page</a> as reference documentation.</p>
+<blockquote class="blockquote">
+<p>Who collected the dataset?</p>
+</blockquote>
+<p>The dataset was assembled by the CDFW. The documentation says “data is reported to CDFW” but doesn’t say by whom. Possibly the data are collected by members of CDFW, members of other government agencies, or volunteers.</p>
+<blockquote class="blockquote">
+<p>Why did they collect the dataset?</p>
+</blockquote>
+<p>The documentation doesn’t explain why CDFW collects the dataset, but <a href="https://wildlife.ca.gov/Conservation/Fully-Protected">CDFW’s website</a> says that California least terns are an endangered species with state and federal protections. Thus it is likely CDFW collects the dataset to monitor the population of the birds and advise policymakers.</p>
+<blockquote class="blockquote">
+<p>What do they claim the dataset represents?</p>
+</blockquote>
+<p>According to the documentation, the dataset consists of annual census data for California least tern nesting sites, including estimated counts of fledglings, breeding pairs, and nests.</p>
+<blockquote class="blockquote">
+<p>What was the collection procedure?</p>
+</blockquote>
+<p>The documentation is notably vague on this point. If you wanted to use the dataset for research purposes, it would be prudent to contact CDFW to request more information about this.</p>
+<blockquote class="blockquote">
+<p>When and where did they collect the dataset?</p>
+</blockquote>
+<p>The dataset spans spans all of California and covers multiple years (the source page doesn’t say which years, but we established earlier that the cleaned DataLab version covers 2000-2023).</p>
+<blockquote class="blockquote">
+<p>Does the dataset consist of the entire population? If not, how were subjects selected?</p>
+</blockquote>
+<p>Observations are at the year-site level. It’s possible that there are some nesting sites for which data were not collected. The documentation doesn’t explain how nesting sites were located and whether some might have been missed. Again, this is something we could contact CDFW about to get more details.</p>
+<blockquote class="blockquote">
+<p>Who is impacted by use or analysis of the dataset? What are the potential consequences?</p>
+</blockquote>
+<p>Results from analyzing this dataset could benefit or harm California least terns. For instance, they could be used to argue for policies that change the level of protection for the species. This could have far-reaching implications for the ecology of California and surrounding regions.</p>
+<blockquote class="blockquote">
+<p>Are any special privacy or security precautions necessary?</p>
+</blockquote>
+<p>The CDFW masked the exact geospatial coordinates of the nesting sites because this is a public dataset and the birds are endangered. In other words, CDFW already addressed the primary concern.</p>
+</section>
+<section id="reading-the-data" class="level3" data-number="1.3.2">
+<h3 data-number="1.3.2" class="anchored" data-anchor-id="reading-the-data"><span class="header-section-number">1.3.2</span> Reading the Data</h3>
+<p>Now let’s use R to read the California least terns dataset. We can use the built-in <code>read.csv</code> function. In the following code, the path to the California least tern dataset is <code>data/2000-2023_ca_least_tern.csv</code>, but it might be different for you, depending on R’s working directory and where you saved the file.</p>
+<p>Save the result from the <code>read.csv</code> function in a variable called <code>terns</code>. We’ll use this variable to access the data in subsequent code.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>terns <span class="ot">=</span> <span class="fu">read.csv</span>(<span class="st">"data/2000-2023_ca_least_tern.csv"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>If the code ran without errors, it’s a good idea to check that the dataset looks like what the documentation describes. When working with a new dataset, it usually isn’t a good idea to print the whole thing (at least until you know how big it is). Large datasets can take a long time to print, and the output can be difficult to read.</p>
+<p>Instead, use the <code>head</code> function to print only the beginning, or head, of the dataset:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(terns)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<colgroup>
+<col style="width: 0%">
+<col style="width: 7%">
+<col style="width: 7%">
+<col style="width: 3%">
+<col style="width: 2%">
+<col style="width: 1%">
+<col style="width: 1%">
+<col style="width: 1%">
+<col style="width: 1%">
+<col style="width: 1%">
+<col style="width: 1%">
+<col style="width: 1%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 1%">
+<col style="width: 1%">
+<col style="width: 2%">
+<col style="width: 1%">
+<col style="width: 2%">
+<col style="width: 1%">
+<col style="width: 1%">
+<col style="width: 1%">
+<col style="width: 2%">
+<col style="width: 1%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 3%">
+<col style="width: 2%">
+<col style="width: 1%">
+<col style="width: 1%">
+<col style="width: 2%">
+<col style="width: 1%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 3%">
+<col style="width: 3%">
+<col style="width: 1%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 1%">
+<col style="width: 2%">
+<col style="width: 2%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: right;">year</th>
+<th style="text-align: left;">site_name</th>
+<th style="text-align: left;">site_name_2013_2018</th>
+<th style="text-align: left;">site_name_1988_2001</th>
+<th style="text-align: left;">site_abbr</th>
+<th style="text-align: left;">region_3</th>
+<th style="text-align: left;">region_4</th>
+<th style="text-align: left;">event</th>
+<th style="text-align: right;">bp_min</th>
+<th style="text-align: right;">bp_max</th>
+<th style="text-align: right;">fl_min</th>
+<th style="text-align: right;">fl_max</th>
+<th style="text-align: right;">total_nests</th>
+<th style="text-align: right;">nonpred_eggs</th>
+<th style="text-align: right;">nonpred_chicks</th>
+<th style="text-align: right;">nonpred_fl</th>
+<th style="text-align: right;">nonpred_ad</th>
+<th style="text-align: left;">pred_control</th>
+<th style="text-align: right;">pred_eggs</th>
+<th style="text-align: right;">pred_chicks</th>
+<th style="text-align: right;">pred_fl</th>
+<th style="text-align: right;">pred_ad</th>
+<th style="text-align: left;">pred_pefa</th>
+<th style="text-align: left;">pred_coy_fox</th>
+<th style="text-align: left;">pred_meso</th>
+<th style="text-align: left;">pred_owlspp</th>
+<th style="text-align: left;">pred_corvid</th>
+<th style="text-align: left;">pred_other_raptor</th>
+<th style="text-align: left;">pred_other_avian</th>
+<th style="text-align: left;">pred_misc</th>
+<th style="text-align: right;">total_pefa</th>
+<th style="text-align: right;">total_coy_fox</th>
+<th style="text-align: right;">total_meso</th>
+<th style="text-align: right;">total_owlspp</th>
+<th style="text-align: right;">total_corvid</th>
+<th style="text-align: right;">total_other_raptor</th>
+<th style="text-align: right;">total_other_avian</th>
+<th style="text-align: right;">total_misc</th>
+<th style="text-align: left;">first_observed</th>
+<th style="text-align: left;">last_observed</th>
+<th style="text-align: left;">first_nest</th>
+<th style="text-align: left;">first_chick</th>
+<th style="text-align: left;">first_fledge</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">2000</td>
+<td style="text-align: left;">PITTSBURG POWER PLANT</td>
+<td style="text-align: left;">Pittsburg Power Plant</td>
+<td style="text-align: left;">NA_2013_2018 POLYGON</td>
+<td style="text-align: left;">PITT_POWER</td>
+<td style="text-align: left;">S.F._BAY</td>
+<td style="text-align: left;">S.F._BAY</td>
+<td style="text-align: left;">LA_NINA</td>
+<td style="text-align: right;">15</td>
+<td style="text-align: right;">15</td>
+<td style="text-align: right;">16</td>
+<td style="text-align: right;">18</td>
+<td style="text-align: right;">15</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: left;"></td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: left;">N</td>
+<td style="text-align: left;">N</td>
+<td style="text-align: left;">N</td>
+<td style="text-align: left;">N</td>
+<td style="text-align: left;">Y</td>
+<td style="text-align: left;">Y</td>
+<td style="text-align: left;">N</td>
+<td style="text-align: left;">N</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: left;">2000-05-11</td>
+<td style="text-align: left;">2000-08-05</td>
+<td style="text-align: left;">2000-05-26</td>
+<td style="text-align: left;">2000-06-18</td>
+<td style="text-align: left;">2000-07-08</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">2000</td>
+<td style="text-align: left;">ALBANY CENTRAL AVE</td>
+<td style="text-align: left;">NA_NO POLYGON</td>
+<td style="text-align: left;">Albany Central Avenue</td>
+<td style="text-align: left;">AL_CENTAVE</td>
+<td style="text-align: left;">S.F._BAY</td>
+<td style="text-align: left;">S.F._BAY</td>
+<td style="text-align: left;">LA_NINA</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">12</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">20</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: left;"></td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">2000</td>
+<td style="text-align: left;">ALAMEDA POINT</td>
+<td style="text-align: left;">Alameda Point</td>
+<td style="text-align: left;">NA_2013_2018 POLYGON</td>
+<td style="text-align: left;">ALAM_PT</td>
+<td style="text-align: left;">S.F._BAY</td>
+<td style="text-align: left;">S.F._BAY</td>
+<td style="text-align: left;">LA_NINA</td>
+<td style="text-align: right;">282</td>
+<td style="text-align: right;">301</td>
+<td style="text-align: right;">200</td>
+<td style="text-align: right;">230</td>
+<td style="text-align: right;">312</td>
+<td style="text-align: right;">124</td>
+<td style="text-align: right;">81</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: left;"></td>
+<td style="text-align: right;">17</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: left;">N</td>
+<td style="text-align: left;">N</td>
+<td style="text-align: left;">N</td>
+<td style="text-align: left;">N</td>
+<td style="text-align: left;">N</td>
+<td style="text-align: left;">Y</td>
+<td style="text-align: left;">Y</td>
+<td style="text-align: left;">N</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">11</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: left;">2000-05-01</td>
+<td style="text-align: left;">2000-08-19</td>
+<td style="text-align: left;">2000-05-16</td>
+<td style="text-align: left;">2000-06-07</td>
+<td style="text-align: left;">2000-06-30</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">2000</td>
+<td style="text-align: left;">KETTLEMAN CITY</td>
+<td style="text-align: left;">Kettleman</td>
+<td style="text-align: left;">NA_2013_2018 POLYGON</td>
+<td style="text-align: left;">KET_CTY</td>
+<td style="text-align: left;">KINGS</td>
+<td style="text-align: left;">KINGS</td>
+<td style="text-align: left;">LA_NINA</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: left;"></td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: left;">2000-06-10</td>
+<td style="text-align: left;">2000-09-24</td>
+<td style="text-align: left;">2000-06-17</td>
+<td style="text-align: left;">2000-07-22</td>
+<td style="text-align: left;">2000-08-06</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">2000</td>
+<td style="text-align: left;">OCEANO DUNES STATE VEHICULAR RECREATION AREA</td>
+<td style="text-align: left;">Oceano Dunes State Vehicular Recreation Area</td>
+<td style="text-align: left;">NA_2013_2018 POLYGON</td>
+<td style="text-align: left;">OCEANO_DUNES</td>
+<td style="text-align: left;">CENTRAL</td>
+<td style="text-align: left;">CENTRAL</td>
+<td style="text-align: left;">LA_NINA</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: left;"></td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: left;">N</td>
+<td style="text-align: left;">N</td>
+<td style="text-align: left;">N</td>
+<td style="text-align: left;">N</td>
+<td style="text-align: left;">N</td>
+<td style="text-align: left;">N</td>
+<td style="text-align: left;">Y</td>
+<td style="text-align: left;">N</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: left;">2000-05-04</td>
+<td style="text-align: left;">2000-08-30</td>
+<td style="text-align: left;">2000-05-28</td>
+<td style="text-align: left;">2000-06-20</td>
+<td style="text-align: left;">2000-07-13</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">2000</td>
+<td style="text-align: left;">RANCHO GUADALUPE DUNES PRESERVE</td>
+<td style="text-align: left;">Rancho Guadalupe Dunes Preserve</td>
+<td style="text-align: left;">NA_2013_2018 POLYGON</td>
+<td style="text-align: left;">RGDP</td>
+<td style="text-align: left;">CENTRAL</td>
+<td style="text-align: left;">CENTRAL</td>
+<td style="text-align: left;">LA_NINA</td>
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">17</td>
+<td style="text-align: right;">17</td>
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: left;"></td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: left;">2000-05-07</td>
+<td style="text-align: left;">2000-08-13</td>
+<td style="text-align: left;">2000-05-31</td>
+<td style="text-align: left;">2000-06-22</td>
+<td style="text-align: left;">2000-07-20</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>This shows the structure of the dataset: it’s a table. In R, tabular datasets are represented by data frames. We’ll explain more ways to inspect the structure of a dataset in <a href="#sec-structural-summaries" class="quarto-xref"><span>Section 1.4</span></a>.</p>
+</section>
+</section>
+<section id="sec-structural-summaries" class="level2" data-number="1.4">
+<h2 data-number="1.4" class="anchored" data-anchor-id="sec-structural-summaries"><span class="header-section-number">1.4</span> Structural Summaries</h2>
+<p>After reading a dataset into R (or other statistical software), examining its structure is one of the first things you should do. This way you can identify and correct potential problems, and prepare the dataset for the analyses you’d like to carry out.</p>
+<p>R provides several functions for getting structural summaries of data. Some of these are:</p>
+<ul>
+<li><code>str</code> to print a compact structural summary</li>
+<li><code>head</code>, <code>tail</code> to get the first or last few elements</li>
+<li><code>nrow</code>, <code>ncol</code>, <code>dim</code>, <code>length</code> to get dimension information</li>
+<li><code>names</code>, <code>colnames</code>, <code>rownames</code> to get element names</li>
+<li><code>class</code> to get classes (R data types; see <a href="#sec-data-types" class="quarto-xref"><span>Section 1.5</span></a>)</li>
+</ul>
+<p>We’ve already seen the <code>head</code> function, but let’s try a few more of these on the California least terns dataset (<a href="#sec-ca-least-terns" class="quarto-xref"><span>Section 1.3</span></a>).</p>
+<div class="callout callout-style-default callout-note callout-titled" title="See Also">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>See Also
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Need a refresher on R’s syntax and commands? See DataLab’s <a href="https://ucdavisdatalab.github.io/dwr_workshop_r_basics/">R Basics</a> workshop reader.</p>
+</div>
+</div>
+<p>The <code>str</code> function, which we consider the most generally useful, prints a compact summary of a dataset’s structure:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(terns)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>'data.frame':   791 obs. of  43 variables:
+ $ year               : int  2000 2000 2000 2000 2000 2000 2000 2000 2000 2000 ...
+ $ site_name          : chr  "PITTSBURG POWER PLANT" "ALBANY CENTRAL AVE" "ALAMEDA POINT" "KETTLEMAN CITY" ...
+ $ site_name_2013_2018: chr  "Pittsburg Power Plant" "NA_NO POLYGON" "Alameda Point" "Kettleman" ...
+ $ site_name_1988_2001: chr  "NA_2013_2018 POLYGON" "Albany Central Avenue" "NA_2013_2018 POLYGON" "NA_2013_2018 POLYGON" ...
+ $ site_abbr          : chr  "PITT_POWER" "AL_CENTAVE" "ALAM_PT" "KET_CTY" ...
+ $ region_3           : chr  "S.F._BAY" "S.F._BAY" "S.F._BAY" "KINGS" ...
+ $ region_4           : chr  "S.F._BAY" "S.F._BAY" "S.F._BAY" "KINGS" ...
+ $ event              : chr  "LA_NINA" "LA_NINA" "LA_NINA" "LA_NINA" ...
+ $ bp_min             : num  15 6 282 2 4 9 30 21 73 166 ...
+ $ bp_max             : num  15 12 301 3 5 9 32 21 73 167 ...
+ $ fl_min             : int  16 1 200 1 4 17 11 9 60 64 ...
+ $ fl_max             : int  18 1 230 2 4 17 11 9 65 64 ...
+ $ total_nests        : int  15 20 312 3 5 9 32 22 73 252 ...
+ $ nonpred_eggs       : int  3 NA 124 NA 2 0 NA 4 2 NA ...
+ $ nonpred_chicks     : int  0 NA 81 3 0 1 27 3 0 NA ...
+ $ nonpred_fl         : int  0 NA 2 1 0 0 0 NA 0 NA ...
+ $ nonpred_ad         : int  0 NA 1 6 0 0 0 NA 0 NA ...
+ $ pred_control       : chr  "" "" "" "" ...
+ $ pred_eggs          : int  4 NA 17 NA 0 NA 0 NA NA NA ...
+ $ pred_chicks        : int  2 NA 0 NA 4 NA 3 NA NA NA ...
+ $ pred_fl            : int  0 NA 0 NA 0 NA 0 NA NA NA ...
+ $ pred_ad            : int  0 NA 0 NA 0 NA 0 NA NA NA ...
+ $ pred_pefa          : chr  "N" "" "N" "" ...
+ $ pred_coy_fox       : chr  "N" "" "N" "" ...
+ $ pred_meso          : chr  "N" "" "N" "" ...
+ $ pred_owlspp        : chr  "N" "" "N" "" ...
+ $ pred_corvid        : chr  "Y" "" "N" "" ...
+ $ pred_other_raptor  : chr  "Y" "" "Y" "" ...
+ $ pred_other_avian   : chr  "N" "" "Y" "" ...
+ $ pred_misc          : chr  "N" "" "N" "" ...
+ $ total_pefa         : int  0 NA 0 NA 0 NA 0 NA NA NA ...
+ $ total_coy_fox      : int  0 NA 0 NA 0 NA 0 NA NA NA ...
+ $ total_meso         : int  0 NA 0 NA 0 NA 0 NA NA NA ...
+ $ total_owlspp       : int  0 NA 0 NA 0 NA 0 NA NA NA ...
+ $ total_corvid       : int  4 NA 0 NA 0 NA 0 NA NA NA ...
+ $ total_other_raptor : int  2 NA 6 NA 0 NA 3 NA NA NA ...
+ $ total_other_avian  : int  0 NA 11 NA 4 NA 0 NA NA NA ...
+ $ total_misc         : int  0 NA 0 NA 0 NA 0 NA NA NA ...
+ $ first_observed     : chr  "2000-05-11" "" "2000-05-01" "2000-06-10" ...
+ $ last_observed      : chr  "2000-08-05" "" "2000-08-19" "2000-09-24" ...
+ $ first_nest         : chr  "2000-05-26" "" "2000-05-16" "2000-06-17" ...
+ $ first_chick        : chr  "2000-06-18" "" "2000-06-07" "2000-07-22" ...
+ $ first_fledge       : chr  "2000-07-08" "" "2000-06-30" "2000-08-06" ...</code></pre>
+</div>
+</div>
+<p>The summary begins with the number of rows (“obs.”) and columns (“variables”) in the dataset. Despite the words “obs.” and “variables,” R can’t actually tell what the observations and features are; it’s up to you to think about whether the rows and columns actually represent observations and features. If they don’t, it’s usually a good idea to reorganize or reshape the dataset so that they do.</p>
+<p>After the dimensions, the summary lists each column’s name (prefixed with a dollar sign <code>$</code>), data type (more about this in <a href="#sec-data-types" class="quarto-xref"><span>Section 1.5</span></a>), and first few values. You can use the <code>str</code> summary to quickly assess what a dataset contains and whether there are structural problems.</p>
+<p>The <code>dim</code> function gets the number of rows and columns in a dataset:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">dim</span>(terns)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 791  43</code></pre>
+</div>
+</div>
+<p>The <code>names</code> and <code>colnames</code> functions print the names of the columns in a dataset:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(terns)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> [1] "year"                "site_name"           "site_name_2013_2018"
+ [4] "site_name_1988_2001" "site_abbr"           "region_3"           
+ [7] "region_4"            "event"               "bp_min"             
+[10] "bp_max"              "fl_min"              "fl_max"             
+[13] "total_nests"         "nonpred_eggs"        "nonpred_chicks"     
+[16] "nonpred_fl"          "nonpred_ad"          "pred_control"       
+[19] "pred_eggs"           "pred_chicks"         "pred_fl"            
+[22] "pred_ad"             "pred_pefa"           "pred_coy_fox"       
+[25] "pred_meso"           "pred_owlspp"         "pred_corvid"        
+[28] "pred_other_raptor"   "pred_other_avian"    "pred_misc"          
+[31] "total_pefa"          "total_coy_fox"       "total_meso"         
+[34] "total_owlspp"        "total_corvid"        "total_other_raptor" 
+[37] "total_other_avian"   "total_misc"          "first_observed"     
+[40] "last_observed"       "first_nest"          "first_chick"        
+[43] "first_fledge"       </code></pre>
+</div>
+</div>
+<p>These functions can be useful as a quick reminder or if you need to use these values programmatically.</p>
+</section>
+<section id="sec-data-types" class="level2" data-number="1.5">
+<h2 data-number="1.5" class="anchored" data-anchor-id="sec-data-types"><span class="header-section-number">1.5</span> Data Types</h2>
+<p>It’s useful to categorize data into <strong>types</strong> based on characteristics they have in common, such as what they are and what we can do with them. For example, if the data are numbers, we can summarize them by computing a sum or an average. We can’t use these summaries if the data are categories, such as genres of music (pop, blues, classical, etc.).</p>
+<p>In other words, types tell us about which methods are possible and potentially appropriate. They’re a convenient way to reason about how to transform, analyze, and present data. That said, keep in mind that they’re just a hint—you still need to use your own knowledge and judgement, too!</p>
+<p>Statisticans conventionally think in terms of these data types:</p>
+<ul>
+<li><strong>Categorical</strong>, which includes:
+<ul>
+<li><strong>Nominal</strong>: data separated into specific categories, with no order. For example, hair color (red, brown, blonde, …) is nominal.</li>
+<li><strong>Ordinal</strong>: data separated into specific categories, with an order. For example, school level (elementary, middle, high, college) is ordinal.</li>
+</ul></li>
+<li><strong>Numerical</strong>, which includes:
+<ul>
+<li><strong>Discrete</strong>: integers or specific decimal numbers with no values in between. Sometimes discrete values can also be treated as ordinal. For example, month as a number (1, 2, …, 12) is discrete.</li>
+<li><strong>Continuous</strong>: decimal numbers. There are no specific categories, but there is an order. For example, height in inches is continuous.</li>
+</ul></li>
+</ul>
+<!--
+Of course, other types of data, like graphs (networks) and natural language
+(books, speech, and so on), are also possible.
+-->
+<p>We can and will often think and talk about types of features rather than types of individual values, because each feature measures one thing. For instance, a feature that measures temperature in degrees Celsius will have numeric (and probably continuous) values. So we say the feature is numeric.</p>
+<p>When each feature is in its own column, it also makes sense to talk about types of columns. R assumes this is true in the <code>str</code> function’s structural summary, which shows a type for each column, as well as in the output of a few other functions.</p>
+<section id="r-classes" class="level3" data-number="1.5.1">
+<h3 data-number="1.5.1" class="anchored" data-anchor-id="r-classes"><span class="header-section-number">1.5.1</span> R Classes</h3>
+<p>Most programming languages also categorize data into types. R actually uses two separate systems for categorizing data objects:</p>
+<ol type="1">
+<li><p>The <strong>class</strong> of an R object describes what the object does or the role that it plays. Some objects can do more than one thing, so objects can have more than one class. The <code>class</code> function returns the classes of its argument.</p></li>
+<li><p>The type of an R object describes how the object is stored in computer memory. Each object has exactly one type. The <code>typeof</code> function returns the type of its argument.</p></li>
+</ol>
+<p>When we’re exploring a dataset with R, classes are far more important than types. If you aren’t sure what an object is, checking its classes should be the first thing you do.</p>
+<p>The built-in classes most relevant to exploring datasets are:</p>
+<table class="table-striped table-hover caption-top table">
+<colgroup>
+<col style="width: 20%">
+<col style="width: 40%">
+<col style="width: 40%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Class</th>
+<th style="text-align: left;">Example</th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">logical</td>
+<td style="text-align: left;"><code>TRUE</code>, <code>FALSE</code></td>
+<td style="text-align: left;">Logical (or Boolean) values</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">integer</td>
+<td style="text-align: left;"><code>-1L</code>, <code>1L</code>, <code>2L</code></td>
+<td style="text-align: left;">Integer numbers</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">numeric</td>
+<td style="text-align: left;"><code>-2.1</code>, <code>7</code>, <code>34.2</code></td>
+<td style="text-align: left;">Decimal (real) numbers</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">complex</td>
+<td style="text-align: left;"><code>3-2i</code>, <code>-8+0i</code></td>
+<td style="text-align: left;">Complex numbers</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">character</td>
+<td style="text-align: left;"><code>"hi"</code>, <code>"YAY"</code></td>
+<td style="text-align: left;">Text (strings)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">factor</td>
+<td style="text-align: left;"><code>Treatment A</code>, <code>Treatment B</code></td>
+<td style="text-align: left;">Categories</td>
+</tr>
+</tbody>
+</table>
+<p>These are just a few of the many classes in R.</p>
+<div class="callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Important
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Classes say what we can do with an object <em>in R</em> rather than what we can do statistically.</p>
+<p>It’s up to you to think about what your dataset represents, decide which questions you want to answer, identify the statistical data types, and decide which methods are appropriate. Programming languages (and even artificial intelligence) can’t reliably do this for you.</p>
+</div>
+</div>
+<p>Let’s use the <code>class</code> function to check the classes of a few of the columns in the California least terns dataset. First, we’ll look at the <code>year</code> column:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">class</span>(terns<span class="sc">$</span>year)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "integer"</code></pre>
+</div>
+</div>
+<p>The class is <code>integer</code>, which makes sense since years are integer numbers. This means R will allow us make comparisons, do arithmetic, and do other math with the <code>year</code> column. Integers are a kind of discrete data. We could also think of <code>year</code> as categorical: for instance, to group the observations by year. In most cases, R is flexible enough to let us use discrete data, like integers, as categorical data.</p>
+<p>Now let’s look at the <code>site_name</code> column:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">class</span>(terns<span class="sc">$</span>site_name)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "character"</code></pre>
+</div>
+</div>
+<p>The class is <code>character</code>, because the site names are text. As we explore the dataset, we’re more likely to use them as categories for filtering and grouping observations than we are to use them as text to (for instance) change the capitalization of or count the number of letters in the names. So we should convert the column to the <code>factor</code> class, both to clarify our intent and because it will be more convenient for some of the functions we might want to use.</p>
+<div class="callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Important
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>CSV files don’t distinguish between textual and categorical data. When you read one with <code>read.csv</code>, recent versions of R just assume anything that might be text is text. So after reading a CSV file, you should always check whether any of the columns need to be converted to factors.</p>
+<p>Technically, CSV files don’t record data types at all. R is usually able to guess appropriate types for non-text data, but it’s still wise to check the types of all of the columns.</p>
+<p>Several other file formats, like fixed width (FWF) and tab-separated value (TSV) files, also have this weakness.</p>
+</div>
+</div>
+<p>We can use the <code>str</code> function to quickly check the classes of all of the columns in a dataset:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(terns)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>'data.frame':   791 obs. of  43 variables:
+ $ year               : int  2000 2000 2000 2000 2000 2000 2000 2000 2000 2000 ...
+ $ site_name          : chr  "PITTSBURG POWER PLANT" "ALBANY CENTRAL AVE" "ALAMEDA POINT" "KETTLEMAN CITY" ...
+ $ site_name_2013_2018: chr  "Pittsburg Power Plant" "NA_NO POLYGON" "Alameda Point" "Kettleman" ...
+ $ site_name_1988_2001: chr  "NA_2013_2018 POLYGON" "Albany Central Avenue" "NA_2013_2018 POLYGON" "NA_2013_2018 POLYGON" ...
+ $ site_abbr          : chr  "PITT_POWER" "AL_CENTAVE" "ALAM_PT" "KET_CTY" ...
+ $ region_3           : chr  "S.F._BAY" "S.F._BAY" "S.F._BAY" "KINGS" ...
+ $ region_4           : chr  "S.F._BAY" "S.F._BAY" "S.F._BAY" "KINGS" ...
+ $ event              : chr  "LA_NINA" "LA_NINA" "LA_NINA" "LA_NINA" ...
+ $ bp_min             : num  15 6 282 2 4 9 30 21 73 166 ...
+ $ bp_max             : num  15 12 301 3 5 9 32 21 73 167 ...
+ $ fl_min             : int  16 1 200 1 4 17 11 9 60 64 ...
+ $ fl_max             : int  18 1 230 2 4 17 11 9 65 64 ...
+ $ total_nests        : int  15 20 312 3 5 9 32 22 73 252 ...
+ $ nonpred_eggs       : int  3 NA 124 NA 2 0 NA 4 2 NA ...
+ $ nonpred_chicks     : int  0 NA 81 3 0 1 27 3 0 NA ...
+ $ nonpred_fl         : int  0 NA 2 1 0 0 0 NA 0 NA ...
+ $ nonpred_ad         : int  0 NA 1 6 0 0 0 NA 0 NA ...
+ $ pred_control       : chr  "" "" "" "" ...
+ $ pred_eggs          : int  4 NA 17 NA 0 NA 0 NA NA NA ...
+ $ pred_chicks        : int  2 NA 0 NA 4 NA 3 NA NA NA ...
+ $ pred_fl            : int  0 NA 0 NA 0 NA 0 NA NA NA ...
+ $ pred_ad            : int  0 NA 0 NA 0 NA 0 NA NA NA ...
+ $ pred_pefa          : chr  "N" "" "N" "" ...
+ $ pred_coy_fox       : chr  "N" "" "N" "" ...
+ $ pred_meso          : chr  "N" "" "N" "" ...
+ $ pred_owlspp        : chr  "N" "" "N" "" ...
+ $ pred_corvid        : chr  "Y" "" "N" "" ...
+ $ pred_other_raptor  : chr  "Y" "" "Y" "" ...
+ $ pred_other_avian   : chr  "N" "" "Y" "" ...
+ $ pred_misc          : chr  "N" "" "N" "" ...
+ $ total_pefa         : int  0 NA 0 NA 0 NA 0 NA NA NA ...
+ $ total_coy_fox      : int  0 NA 0 NA 0 NA 0 NA NA NA ...
+ $ total_meso         : int  0 NA 0 NA 0 NA 0 NA NA NA ...
+ $ total_owlspp       : int  0 NA 0 NA 0 NA 0 NA NA NA ...
+ $ total_corvid       : int  4 NA 0 NA 0 NA 0 NA NA NA ...
+ $ total_other_raptor : int  2 NA 6 NA 0 NA 3 NA NA NA ...
+ $ total_other_avian  : int  0 NA 11 NA 4 NA 0 NA NA NA ...
+ $ total_misc         : int  0 NA 0 NA 0 NA 0 NA NA NA ...
+ $ first_observed     : chr  "2000-05-11" "" "2000-05-01" "2000-06-10" ...
+ $ last_observed      : chr  "2000-08-05" "" "2000-08-19" "2000-09-24" ...
+ $ first_nest         : chr  "2000-05-26" "" "2000-05-16" "2000-06-17" ...
+ $ first_chick        : chr  "2000-06-18" "" "2000-06-07" "2000-07-22" ...
+ $ first_fledge       : chr  "2000-07-08" "" "2000-06-30" "2000-08-06" ...</code></pre>
+</div>
+</div>
+<p>For the California least terns dataset, it looks like the <code>site_name</code>, <code>region_3</code>, and <code>event</code> columns all contain categories but have class <code>character</code>. <a href="#sec-fixing-problems" class="quarto-xref"><span>Section 1.5.2</span></a> explains how to convert them to factors.</p>
+</section>
+<section id="sec-fixing-problems" class="level3" data-number="1.5.2">
+<h3 data-number="1.5.2" class="anchored" data-anchor-id="sec-fixing-problems"><span class="header-section-number">1.5.2</span> Fixing Problems</h3>
+<p>We can convert a column into a factor with R’s <code>factor</code> function. Let’s try it for the <code>site_name</code>, <code>region_3</code>, and <code>event</code> columns in the California least terns dataset:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>terns<span class="sc">$</span>site_name <span class="ot">=</span> <span class="fu">factor</span>(terns<span class="sc">$</span>site_name)</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>terns<span class="sc">$</span>region_3 <span class="ot">=</span> <span class="fu">factor</span>(terns<span class="sc">$</span>region_3)</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>terns<span class="sc">$</span>event <span class="ot">=</span> <span class="fu">factor</span>(terns<span class="sc">$</span>event)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled" title="See Also">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>See Also
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>For more about factors, see the <a href="https://ucdavisdatalab.github.io/dwr_workshop_r_basics/chapters/data-types-structures/data-types-structures.html#sec-factors">Factors</a> section of DataLab’s R Basics workshop reader.</p>
+</div>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tip
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>There’s another way we could’ve done this that uses only two lines of code, no matter how many columns there are:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>cols <span class="ot">=</span> <span class="fu">c</span>(<span class="st">"site_name"</span>, <span class="st">"region_3"</span>, <span class="st">"event"</span>)</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>terns[cols] <span class="ot">=</span> <span class="fu">lapply</span>(terns[cols], factor)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>You can learn more about the <code>lapply</code> function in the <a href="https://ucdavisdatalab.github.io/dwr_workshop_r_basics/chapters/organizing-code/control-flow.html#sec-the-purrr-package">The purrr Package</a> section of DataLab’s R Basics workshop reader.</p>
+<p>You can use whichever approach is more convenient and makes more sense to you. If there were other columns to convert, we’d go through the same steps with the appropriate conversion function.</p>
+</div>
+</div>
+<p>R provides also <code>as.</code> functions to convert to the most common data types. For instance, <code>as.character</code> converts an object to a string:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>x <span class="ot">=</span> <span class="fl">3.1</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="fu">class</span>(x)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "numeric"</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>y <span class="ot">=</span> <span class="fu">as.character</span>(x)</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>y</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "3.1"</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="fu">class</span>(y)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "character"</code></pre>
+</div>
+</div>
+<p>The <code>read.csv</code> function does a good job at identifying columns of numbers, so it’s rarely necessary to convert columns of numbers manually. However, you may have to do this for data you got some other way (rather than loading a file). For instance, it’s common to make these conversions when scraping data from the web.</p>
+<p>It’s also a good idea to convert categorical columns into factors with the <code>factor</code> function and to convert columns of dates into dates.</p>
+<div class="callout callout-style-default callout-note callout-titled" title="See Also">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>See Also
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>For more about dates, see the <a href="https://ucdavisdatalab.github.io/dwr_workshop_intermediate_r/chapters/cleaning-reshaping/01_dates-times.html">Dates &amp; Times</a> chapter of DataLab’s Intermediate R: Cleaning &amp; Reshaping Data workshop reader.</p>
+</div>
+</div>
+
+
+<div id="refs" class="references csl-bib-body hanging-indent" role="list" style="display: none">
+<div id="ref-carroll2020" class="csl-entry" role="listitem">
+Carroll, Stephanie Russo, Ibrahim Garba, Oscar L. Figueroa-Rodríguez, et al. 2020. <span>“The <span>CARE</span> Principles for Indigenous Data Governance.”</span> <em>Data Science Journal</em> 19 (1). <a href="https://doi.org/10.5334/dsj-2020-043">https://doi.org/10.5334/dsj-2020-043</a>.
+</div>
+<div id="ref-dignazio2020" class="csl-entry" role="listitem">
+D’Ignazio, Catherine, and Lauren F. Klein. 2020. <em>Data Feminism</em>. The <span>MIT</span> Press. <a href="https://doi.org/10.7551/mitpress/11805.001.0001">https://doi.org/10.7551/mitpress/11805.001.0001</a>.
+</div>
+<div id="ref-turing-way" class="csl-entry" role="listitem">
+The Turing Way Community. 2025. <em>The Turing Way: A Handbook for Reproducible, Ethical and Collaborative Research</em>. V. 1.2.3. Zenodo, released April. <a href="https://doi.org/10.5281/zenodo.15213042">https://doi.org/10.5281/zenodo.15213042</a>.
+</div>
+</div>
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/ucdavisdatalab\.github\.io\/dwr_workshop_statistics");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="../../chapters/exploring-data/index.html" class="pagination-link" aria-label="Overview">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Overview</span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="../../chapters/exploring-data/categorical-features.html" class="pagination-link" aria-label="Categorical Features">
+        <span class="nav-page-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Categorical Features</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+
+<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/ucdavisdatalab/dwr_workshop_statistics/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li><li><a href="https://github.com/ucdavisdatalab/dwr_workshop_statistics/blob/main/chapters/exploring-data/getting-to-know-data.qmd" class="toc-action"><i class="bi empty"></i>View source</a></li></ul></div></div></div></footer></body></html>

@@ -1,9 +1,29 @@
 # Overview {.unnumbered}
 
-:::{.callout-note title="Learning Goals" collapse="false"}
-After this lesson, you should be able to:
+This collection of workshops provides an introduction to a variety of
+statistical concepts. The workshops are:
 
-* YOUR LEARNING GOALS
-:::
+* Exploring Data (one 2-hour session)
+* Introduction to Applied Statistics (two 2-hour sessions)
+* Working with Temporal Data (one 2-hour session)
+* Working with Censored Data (one 2-hour session)
 
-YOUR DESCRIPTION, PREREQUISITES, ETC
+Participants should be comfortable with K12 mathematics concepts such as
+unknown variables, areas, averages, functions, exponents, and logarithms.
+Familiarity with calculus is NOT necessary.
+
+We will use R to carry out computations and make visualizations. Participants
+should be comfortable with basic R syntax including changing working
+directories, reading in files, computing simple data summaries, performing
+indexing and grouping tasks, and generating simple plots. Thus, we won't cover
+introductory R questions during this session. If you're new to R, or want to
+brush up, we suggest you start with our [R Basics][r-basics] workshop
+curriculum.
+
+[r-basics]: https://ucdavisdatalab.github.io/dwr_workshop_r_basics/
+
+All participants will need to bring a computer with internet access on which
+they have permissions to install software. Learners should update their
+software to the latest versions of R and RStudio prior to the workshop. Remote
+learners will need the latest version of Zoom.
+

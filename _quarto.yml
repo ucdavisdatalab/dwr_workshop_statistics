@@ -10,8 +10,8 @@ book:
   # Metadata (fill this in):
   author:
     - "Nick Ulle"
-  title: "Statistics"
-  description: "Reader for the Statistics workshop series."
+  title: "DWR Statistics Workshops"
+  description: "Reader for the DWR Statistics workshop series."
   repo-url: "https://github.com/ucdavisdatalab/dwr_workshop_statistics"
   site-url: "https://ucdavisdatalab.github.io/dwr_workshop_statistics"
   chapters:

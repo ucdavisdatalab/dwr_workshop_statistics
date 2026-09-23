@@ -207,11 +207,11 @@ The mean (@sec-mean) estimates the center of a distribution, so we can look for
 outliers among observations that are far away from the mean. A convenient way
 to do this is to **standardize** each observation by subtracting the mean and
 dividing by the standard deviation. The resulting statistic is called the
-**z-score**.
+**standard score** or the **z-score**.
 
-:::{.callout-note title="Definition: z-score"}
+:::{.callout-note title="Definition: Standard Score"}
 Mathematically, for an observation $x$ from a distribution with mean $\mu$ and
-standard deviation $\sigma$, the z-score $z$ is defined as
+standard deviation $\sigma$, the standard score $z$ is defined as
 
 $$
 z
@@ -223,12 +223,13 @@ When the mean and standard deviation are unknown, but we have a sample, we can
 estimate with the sample mean $\bar{x}$ and sample standard deviation $s$.
 :::
 
-The z-score is convenient because it measures distance in multiples of the
-standard deviation rather than the original units. This means we can compare
-z-scores across different features with different units. Moreover, for almost
-any distribution, at least 88% of all observations must be within 3 standard
-deviations of the mean. So to search for outliers, we can simply search for
-observations with a z-score greater than or equal to 3.
+The standard score is convenient because it measures distance in multiples of
+the standard deviation rather than the original units. This means we can
+compare standard scores across different features with different units.
+Moreover, for almost any distribution, at least 88% of all observations must be
+within 3 standard deviations of the mean. So to search for outliers, we can
+simply search for observations with a standard score greater than or equal
+to 3.
 
 :::{.callout-note title="Note: Chebyshev's Inequality"}
 The at least 88% within 3 standard deviations rule is a specific case of a
@@ -241,10 +242,10 @@ For some distributions, we can make [even stronger guarantees][68-95].
 [68-95]: https://en.wikipedia.org/wiki/68%E2%80%9395%E2%80%9399.7_rule
 :::
 
-In R, the `scale` function computes z-scores. Let's compute the z-scores for
-the `nonpred_eggs` feature, then find the row numbers and values of the
-observations where `nonpred_eggs` is more than 3 standard deviations from the
-mean:
+In R, the `scale` function computes standard scores. Let's compute the standard
+scores for the `nonpred_eggs` feature, then find the row numbers and values of
+the observations where `nonpred_eggs` is more than 3 standard deviations from
+the mean:
 
 ```{r}
 z = scale(terns$nonpred_eggs)

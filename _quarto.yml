@@ -37,7 +37,6 @@ book:
         - "chapters/censored-data/index.qmd"
   appendices:
     - "chapters/references.qmd"
-    - "chapters/assessment.qmd"
 
   # Formatting (be careful about changing these):
   date: now

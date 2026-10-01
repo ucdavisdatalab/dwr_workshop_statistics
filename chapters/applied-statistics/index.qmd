@@ -5,7 +5,18 @@ _Two 2-hour sessions_
 :::{.callout-note title="Learning Goals" collapse="false"}
 After this lesson, you should be able to:
 
-* YOUR LEARNING GOALS
+* Describe sources of estimator error
+* Use the bootstrap algorithm to approximate sampling distributions
+* Construct a bootstrap percentile interval for an estimate
+* Construct a t distribution interval for an estimate
+* Explain what hypothesis tests are and why they're used
+* Use a permutation test to test a hypothesis
+* Explain what linear models are and why they're used
+* Fit a linear model to some data
+* Explain the assumptions of a linear model
+* Use diagnostics to evaluate how well a linear model fits
+* Interpret the estimates from a linear model
+* Explain what a generalized linear model is
 :::
 
 This workshop is an introduction to the foundations of applied statistics. By

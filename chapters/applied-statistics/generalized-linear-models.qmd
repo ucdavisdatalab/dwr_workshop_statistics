@@ -1,0 +1,19 @@
+# Generalized Linear Models
+
+::: {.callout-note title="Learning Goals" collapse="false"}
+After this lesson, you should be able to:
+
+* TODO
+:::
+
+:::{.callout-important title="Required Packages"}
+This chapter uses the following R packages:
+
+* dplyr
+* ggplot2
+
+For a refresher about how to install and load packages, see the
+[Packages][r-basics-packages] section of DataLab's R Basics workshop reader.
+
+[r-basics-packages]: https://ucdavisdatalab.github.io/dwr_workshop_r_basics/chapters/getting-started/getting-started.html#sec-packages
+:::

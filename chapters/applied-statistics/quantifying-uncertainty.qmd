@@ -1,0 +1,896 @@
+# Quantifying Uncertainty
+
+::: {.callout-note title="Learning Goals" collapse="false"}
+After this lesson, you should be able to:
+
+* Explain what a sampling distribution is
+* Explain the difference between a population distribution, an empirical
+  distribution, and a sampling distribution
+* Explain why we use standard deviation and other measures of scale to measure
+  uncertainty
+* Use the bootstrap to estimate the sampling distribution of an estimator
+* Explain what a confidence interval is
+* Use the bootstrap to compute a confidence interval for an estimate
+* Explain what the Central Limit Theorem is and why we can use it to construct
+  confidence intervals
+:::
+
+:::{.callout-important title="Required Packages"}
+This chapter uses the following R packages:
+
+* dplyr
+* ggplot2
+* purrr
+
+For a refresher about how to install and load packages, see the
+[Packages][r-basics-packages] section of DataLab's R Basics workshop reader.
+
+[r-basics-packages]: https://ucdavisdatalab.github.io/dwr_workshop_r_basics/chapters/getting-started/getting-started.html#sec-packages
+:::
+
+@sec-numerical-features introduced three estimators for the location or center
+of a distribution: the mode, median, and mean. These aren't the only
+estimators. In fact, for any estimation problem we face, we can invent as many
+estimators as we want. Most of the time, we can rule out a lot of estimators
+that obviously won't work well (such as estimating location with the number 8,
+regardless of the data). For the remaining estimators, we need a way to decide
+how well they work and how much confidence to place in their estimates. Even if
+we know which estimator we want to use, these details are critical to how we
+should interpret and communicate the estimates.
+
+This chapter introduces a versatile strategy for evaluating estimators (whether
+they estimate location or something else). It also briefly explains a second
+strategy that was developed before computers became widely available, which is
+still the most-used strategy today.
+
+
+## Dataset: CA Market Squid {#sec-ca-market-squid}
+
+The [market squid][] is a small squid that lives along the west coast of North
+America. In California, there are multiple fisheries for market squid. From
+1989 to 1994, the California Department of Fish and Wildlife (CDFW) collected
+mass, length, sex, and maturity measurements for samples of caught squid in
+order to study the effects of fishing on squid size and reproduction.
+
+[market squid]: https://en.wikipedia.org/wiki/Doryteuthis_opalescens
+
+![
+  An illustration of a market squid from the [CDFW Marine Species
+  Portal][cdfw-portal-market-squid].
+](/images/applied-statistics/market_squid.jpg){
+  height=24em
+  fig-alt="A illustration of a squid in profile. The squid has a long body,
+  large blue eye, and tentacles. Its body is white with many brown and orange
+  speckles, as well as a few green and black speckles."
+}
+
+[cdfw-portal-market-squid]: https://marinespecies.wildlife.ca.gov/market-squid/
+
+The CDFW publishes most of the data it collects to the [California Open Data
+Portal][data.ca.gov]. The examples in this and subsequent chapters use a
+cleaned 1989-1994 version of the California market squid dataset.
+
+[data.ca.gov]: https://data.ca.gov/
+
+:::{.callout-important}
+[Click here][ca-market-squid] to download the 1989-1994 California market squid
+dataset.
+
+[ca-market-squid]: https://ucdavis.box.com/s/ru6rpxgt5ohbtbvqlas9cnpua61h0bb2
+
+If you haven't already, we recommend you create a directory for this workshop.
+In your workshop directory, create a `data/` subdirectory. Download and save
+the dataset in the `data/` subdirectory.
+:::
+
+:::{.callout-note
+  title="Documentation for 1989-1994 California Market Squid Dataset"
+  collapse=false
+}
+
+Each row in the dataset contains measurements from one squid.
+
+| Column                    | Description
+| ------------------------: | :----------
+| `sample_id`               | Identifier for the sample
+| `date`                    | When sample was taken
+| `gear`                    | Fishing gear used to catch the squid
+| `location`                | Description of where sample was taken
+| `cdfw_block`              | CDFW fishing block number
+| `port`                    | Nearest port city (always Monterey)
+| `sets`                    | Identifier for the school of squid
+| `squid_number`            | Identifier for the squid (within each sample)
+| `mass_g`                  | Mass in grams (to nearest 0.1 g)
+| `dorsal_mantle_length_mm` | Dorsal mantle length in millimeters
+| `sex`                     | Sex
+| `maturity`                | Maturity category (immature, mature, or spent)
+
+: {.striped .hover tbl-colwidths="[25, 75]"}
+
+The messy source dataset is available [here][ca-market-squid-source]. It
+includes a CDFW report by Robert Leos which explains the sampling procedure and
+analyzes the dataset.
+
+[ca-market-squid-source]: https://data.ca.gov/dataset/market-squid-fishery-historic-biological-samples-1989-1994-california
+:::
+
+The dataset is in RDS format, so we can load it into R with the `readRDS`
+function:
+
+```{r}
+squid = readRDS("data/1989-1994_ca_market_squid.rds")
+
+str(squid)
+```
+
+It includes measurements for 6,202 squid. We can use the `summary` function to
+get a brief statistical summary of the columns:
+
+```{r}
+summary(squid)
+```
+
+The `mass_g` column contains at least one outlier, the maximum value 6,509. The
+density plot reveals that there are several:
+
+```{r}
+#| label: fig-squid-mass_g-density-extreme
+#| fig-cap: >
+#|    A density plot of mass in grams for the California market squid dataset.
+library("ggplot2")
+
+ggplot(squid) +
+  aes(x = mass_g) +
+  geom_density() +
+  geom_rug()
+```
+
+Market squid typically have body masses around 40 grams. A market squid with
+body mass over ten times that (400 grams) would be extremely unusual. These
+observations are probably erroneous. We could contact CDFW to try to learn
+more, but for now we'll just exclude them from the dataset. We'll also exclude
+observations where mass is missing:
+
+```{r}
+#| warning: false
+library("dplyr")
+
+squid = filter_out(squid, mass_g >= 400 | is.na(mass_g))
+nrow(squid)
+```
+
+After removing the outliers and missing values, we're left with 6,197 squid.
+There are still a few unusually large squid, but most of them are around 40
+grams:
+
+```{r}
+#| label: fig-squid-mass_g-density
+#| fig-cap: >
+#|    A density plot of mass in grams for the California market squid dataset,
+#|    after removing outliers.
+ggplot(squid) +
+  aes(x = mass_g) +
+  geom_density() +
+  geom_rug()
+```
+
+The sample mean is:
+
+```{r}
+mean(squid$mass_g)
+```
+
+This makes sense given the typical mass of a market squid.
+
+```{r}
+#| echo: false
+#| output: false
+pop_mean = round(mean(squid$mass_g), 2)
+```
+
+
+## Sampling Variation
+
+We conduct data analysis to learn or answer questions about some population of
+interest. In many cases, we can't collect data for the entire population
+because doing so would be unethical (for instance, when testing a new, unproven
+medicine) or because the cost (in time, money, etc.) is prohibitive. Instead,
+we collect a sample from the population (@sec-collection-strategy), compute
+estimates to answer our questions, and hope that the results for the sample
+generalize to the population.
+
+**Sampling variation** is one of two sources of estimator error. When a sample
+is collected randomly, it might be missing important parts of the population,
+which makes estimates worse. Even samples that represent the population well
+will yield different estimates from one to the next.
+
+To get a better understanding of sampling variation, let's pretend that the CA
+market squid dataset is the entire population we want to study. In reality, the
+dataset is just a sample of squid caught along the west coast, but we'll ignore
+this for the moment.
+
+<!--
+For example, suppose we want to understand height differences (in inches)
+between adult mothers and eldest daughters. We probably can't collect height
+differences for every mother and daughter in the world, or country, or even
+local region. But we can choose some feasible number of height differences, say
+50, to collect as a sample.
+-->
+
+Suppose we take a sample of 50 squid from the population. We can do this in R
+with the built-in `sample` function or dplyr's `slice_sample` function. The
+code to collect the sample is:
+
+```{r}
+set.seed(1215)
+
+sample1 = slice_sample(squid, n = 50)
+```
+
+Let's examine the distribution of the sample. First, we'll look at a summary:
+
+```{r}
+summary(sample1$mass_g)
+```
+
+Notice that the sample mean is different from the population mean
+(`r pop_mean`). To get a better sense of how the data are distributed, we can
+also make a density plot:
+
+```{r}
+#| label: fig-sample1-density
+#| fig-cap: >
+#|     Density plot of the empirical distribution of the first sample (50
+#|     observations).
+ggplot(sample1) +
+  aes(x = mass_g) +
+  geom_density()
+```
+
+Remember that we're pretending the California market squid dataset is our
+entire population of interest. We collected the sample randomly from that
+population. So the distribution in @fig-sample1-density is an estimate of the
+population distribution in @fig-squid-mass_g-density. We call this estimate an
+**empirical distribution** because it's based on our empirical knowledge (a
+sample).
+
+For this sample, the empirical distribution is quite a bit different from the
+population distribution. Like a sample mean estimates a population mean, an
+emprical distribution estimates a population distribution. The population
+distribution might have longer tails, or be more symmetrical, or have some
+other characteristic that's underrepresented in the dataset. We turn to the
+empirical distribution because it's the best we can do with the sample we have.
+
+Now suppose our colleagues decide to collect two more samples of 50 squid
+each, to compare the results:
+
+```{r}
+sample2 = slice_sample(squid, n = 50)
+sample3 = slice_sample(squid, n = 50)
+```
+
+For sample 2, the statistics are:
+
+```{r}
+summary(sample2$mass_g)
+```
+
+And for sample 3, the statistics are:
+
+```{r}
+summary(sample3$mass_g)
+```
+
+The sample mean varies from one sample to the next, because each sample
+consists of different members of the population. If we continued to take
+samples, we'd end up with many different sample means, all estimates of the
+same population mean.
+
+
+### The Sampling Distribution {#sec-sampling-distribution}
+
+Now let's change our perspective to thinking about the sample means themselves
+as a dataset. This dataset tells us about the characteristics and distribution
+of the sample mean as an estimator. We call the distribution of an estimator a
+**sampling distribution**, because it describes how the estimates are
+distributed across samples.
+
+We can use a density plot to visualize the distribution of the sample means.
+For 1,000 sample means from 1,000 samples, it looks like this:
+
+```{r}
+#| echo: false
+#| label: fig-sample_mean-density
+#| fig-cap: >
+#|     Density plot of the sampling distribution of the mean, based on 1,000
+#|     estimates.
+library("purrr")
+
+n = 50  # sample size
+k = 1000  # number of samples
+
+m = map_dbl(seq_len(k), \(i) {
+  mass = sample(squid$mass_g, n, replace = TRUE)
+  mean(mass)
+})
+
+ggplot(data.frame(sample_mean = m)) +
+  aes(x = sample_mean) +
+  geom_density()
+```
+
+Notice that the sampling distribution in @fig-sample_mean-density is different
+from the population distribution (@fig-squid-mass_g-density). It's still
+centered on the population mean (`r pop_mean`), but it's less spread out (every
+sample mean is within about 6 grams of the population mean) and it's more
+symmetrical.
+
+The sampling distribution is also different from any given empirical
+distribution (such as @fig-sample1-density) since they estimate the population
+distribution.
+
+:::{.callout-important}
+An estimator's sampling distribution will usually be different from the
+population distribution (and any empirical distributions).
+:::
+
+The scale (@sec-scale-statistics) of a distribution measures uncertainty about
+what the value of an individual observation will be. When the scale is large,
+many values are possible, so uncertainty is high. When the scale is small, only
+a few values are possible, so uncertainty is low. In the extreme case, when the
+scale is as small as it can be, the distribution is no longer random: it's a
+single, constant value that we know every observation will take.
+
+By the same reasoning, the scale of a sampling distribution measures
+uncertainty about the estimates. When the scale is large, estimates will vary a
+lot from sample to sample, so we might not trust any single estimate. When the
+scale is small, the estimates tend to agree regardless of the sample, so we can
+be more certain. In other words, we can judge how confident to be about an
+estimator based on the scale of its sampling distribution.
+
+For the sample means summarized by @fig-sample_mean-density, the sample
+standard deviation is about `r round(sd(m), 2)`. The standard deviation of an
+estimator is called its **standard error**, because it helps us judge how
+uncertain to be about the estimates. In other words, it informs us about how
+much error there might be in the estimates *due to random variation between
+samples*. The larger the standard error is, the more uncertain we are about the
+estimate.
+
+
+## Bias
+
+Sampling variation is only one of the two sources of estimator error. The other
+is statistical **bias**, where an estimator estimates the wrong quantity.
+Notice that this definition of bias is much narrower and more specific than the
+definition of bias in ordinary speech and writing.
+
+We say an estimator is **unbiased** if it estimates the correct quantity on
+average. This is the same as the sampling distribution being centered on the
+correct quantity.
+
+Minimizing standard error is often at odds with minimizing bias. For instance,
+we can always come up with a biased estimator with lower standard error than
+even the best unbiased estimator. We call this tension the **bias-variance
+tradeoff** (variance is the squared standard error). Whether or not it's
+appropriate to accept some bias to reduce standard error depends on the
+specific estimation problem.
+
+:::{.callout-note title="Note: Consistency"}
+Consistency is another important statistical property. We say an estimator is
+**consistent** if the estimates get closer to being correct as the sample size
+increases.
+
+An unbiased estimator is consistent if its standard error decreases as the
+sample size increases. Biased estimators can also be consistent.
+:::
+
+
+## The Bootstrap Algorithm {#sec-bootstrap-algorithm}
+
+Most of the time, we only have one sample. And if we had more than one sample,
+we'd combine them into a single sample, since more observations generally lead
+to more accurate estimates. So if we want to evaluate an estimator, we need a
+way to estimate its sampling distribution with only one sample.
+
+The **bootstrap**, or bootstrap algorithm, is one such method. The main idea is
+to draw new samples from the dataset (which is itself a sample) rather than the
+population. Assuming the dataset is representative of the population, these new
+**bootstrap resamples** should have similar characteristics to a sample from
+the population. The bootstrap resamples must be drawn with replacement. Another
+way to think about this is that we're using the known empirical distribution as
+a substitute for the unknown population distribution.
+
+Once we have several bootstrap resamples, we can compute an estimate on each
+one. This gives us a collection of **bootstrap estimates**. By treating the
+bootstrap estimates as a dataset in their own right, we can analyze the
+**bootstrap sampling distribution** of the estimator and use it to estimate
+statistics such as standard error.
+
+:::{.callout-note title="Algorithm: The Bootstrap"}
+Suppose we have a sample and want to know more about a particular estimator's
+sampling distribution. To use the bootstrap algorithm:
+
+1. Construct a new sample of the same size by sampling *with* replacement. This
+   is a bootstrap resample.
+2. Compute an estimate on the bootstrap resample. This is a bootstrap estimate.
+3. Repeat steps 1-2 to compute a collection of $b$ resamples and $b$ estimates.
+4. Use the bootstrap estimates to estimate standard error or other properties
+   of the sampling distribution.
+
+Use $b \geq 10,000$ resamples. Larger values of $b$ lead to better
+approximation of the sampling distribution, but also increase computing time.
+:::
+
+A bootstrap sampling distribution is a useful but imperfect estimate of the
+sampling distribution. Unlike the sampling distribution, it's centered on the
+estimate for the original dataset. On the other hand, the scale is about the
+same as in the sampling distribution, so we can use it to estimate standard
+error.
+
+Let's apply the bootstrap to the California market squid dataset. We'll stop
+pretending that the dataset is the population. Instead, we'll treat the dataset
+as a sample (because it is), and we'll try to estimate the distribution of the
+sample mean.
+
+To make resampling easier, we'll extract the `mass_g` column as a variable.
+Then we can use R's `sample` function to generate a bootstrap resample. We need
+to set `replace = TRUE` to make the function sample with replacement. The
+function samples the same number of observations by default:
+
+```{r}
+mass_g = squid$mass_g
+boot = sample(mass_g, replace = TRUE)
+```
+
+The density plot for the bootstrap resample is:
+
+```{r}
+#| label: fig-boot1-density
+#| fig-cap: >
+#|     Density plot of the first bootstrap resample.
+ggplot(data.frame(x = boot)) +
+  aes(x = x) +
+  geom_density()
+```
+
+@fig-squid-mass_g-density shows the distribution of the original dataset, while
+@fig-boot1-density shows the distribution of the bootstrap resample. The two
+distributions are nearly identical, which is typical for large samples.
+Nevertheless, the sample mean is slightly different from the population mean
+(`r pop_mean`):
+
+```{r}
+mean(boot)
+```
+
+We can use R's apply functions or the purrr package's map functions to repeat
+the resampling step many times. We'll compute $b = 1,000$ resamples to keep the
+computing time manageable, but in practice $b \geq 10,000$ is more appropriate:
+
+```{r}
+library("purrr")
+
+b = 1000
+boot_resamples = map(1:b, \(i) {
+  sample(mass_g, replace = TRUE)
+})
+```
+
+:::{.callout-note title="See Also"}
+For a review of R's apply functions and the purrr package, see the
+[Loops][r-basics-loops] section of DataLab's R Basics workshop reader.
+
+The [documentation for the purrr package][purrr] is also a useful reference.
+
+[r-basics-loops]: https://ucdavisdatalab.github.io/dwr_workshop_r_basics/chapters/organizing-code/control-flow.html#loops
+[purrr]: https://purrr.tidyverse.org/
+:::
+
+Each of the bootstrap resamples is slightly different. To demonstrate this,
+here are density plots for several, as well as the density plot for the
+original sample:
+
+```{r}
+#| label: fig-bootstrap_resamples-density
+#| fig-cap: >
+#|     Density plot of five bootstrap resamples, as well as the original
+#|     sample.
+slice = 1:5
+df = data.frame(
+  x = c(mass_g, unlist(boot_resamples[slice])),
+  # Make a categorical feature to identify each resample.
+  sample = rep(
+    c("original", paste0("resample", slice)),
+    each = length(mass_g)
+  )
+)
+
+ggplot(df) +
+  aes(x = x) +
+  geom_density() +
+  facet_wrap(vars(sample))
+```
+
+The next step is to compute an estimate, in this case the sample mean, on each
+of the bootstrap resamples. Again we can use the purrr package for this:
+
+```{r}
+boot_means = map_dbl(boot_resamples, mean)
+```
+
+With the bootstrap estimates, we can make a density plot:
+
+```{r}
+#| label: fig-bootstrap_mean-density
+#| fig-cap: >
+#|     Density plot of 1,000 bootstrap sample means. This distribution
+#|     approximates the sampling distribution of the mean.
+ggplot(data.frame(bootstrap_mean = boot_means)) +
+  aes(x = bootstrap_mean) +
+  geom_density()
+```
+
+Two details of @fig-bootstrap_mean-density are important to notice. First, the
+distribution is centered at roughly `r pop_mean`, the mean of the original
+sample. For an unbiased estimator, the bootstrap sampling distribution is
+always centered on the original estimate.
+
+:::{.callout-warning}
+Remember that the bootstrap sampling distribution is itself an estimate and
+its center is usually different from the actual sampling distribution.
+
+Fortunately, the scale of the bootstrap sampling distribution tends to be
+similar to the actual sampling distribution. So we can still use it to estimate
+standard error.
+:::
+
+Second, notice that the spread of the bootstrap sampling distribution is much
+smaller than the spread of the sampling distribution in
+@fig-sample_mean-density. In fact, the standard deviation of the bootstrap
+estimates is:
+
+```{r}
+sd(boot_means)
+```
+
+This is about 1/10th of the standard error (`r round(sd(m), 2)`) we found in
+@sec-sampling-distribution. The reason for this difference is that now each
+sample has `r nrow(squid)` observations instead of 50 observations, so the
+estimates of the mean are much more accurate.
+
+The takeaway is that the bootstrap sampling distribution is useful for
+estimating standard error, even though its center (and sometimes its shape) can
+differ from the actual sampling distribution.
+
+:::{.callout-warning}
+The bootstrap is known to perform poorly in a few specific situations:
+
+* When the size $n$ of the original sample is small (say $n < 30$). In this
+  case, the methods in @sec-central-limit-theorem are usually a better choice.
+* When the original sample is a poor representative of the population. This is
+  a difficult case, because the best solution is to collect more and better
+  data.
+* When the estimator is designed to estimate an extreme value, such as the
+  population minimum or maximum. In this case, there are often sophisticated
+  methods tailored specifically to the estimator that perform better.
+:::
+
+
+## Bootstrap Percentile Intervals {#sec-bootstrap-percentile-intervals}
+
+We can account for uncertainty about an estimate by instead presenting an
+interval of estimates. We call this a **confidence interval**. The interval
+should be narrow when we're relatively confident (small standard error) and
+wide when we're uncertain (large standard error). @ims explain confidence
+intervals with a helpful analogy: a single estimate is like fishing with a
+spear, whereas a confidence interval is like fishing with a net. With the
+confidence interval, we have a better chance of estimating correctly.
+
+There are many ways to construct confidence intervals for an estimate. A
+relatively simple way is to use percentiles of the bootstrap sampling
+distribution. This is called a **bootstrap percentile interval**. For example,
+if we take the 2.5th and 97.5th percentiles of the bootstrap means, we get:
+
+```{r}
+quantile(boot_means, c(0.025, 0.975))
+```
+
+We estimate that the population mean is somewhere in this interval, although as
+with any estimate, this might be wrong. We call this a 95% bootstrap percentile
+interval because it covers the central 95% of the bootstrap sampling
+distribution. For reasons beyond the scope of this reader, there's also a 95%
+chance that the interval covers the population mean.
+
+<!--
+For the sampling distribution of means in @fig-sample_mean-density, the 2.5th
+percentile is about `r round(quantile(m, 0.025), 2)` and the 97.5th percentile
+is about `r round(quantile(m, 0.975), 2)`. So a confidence interval for the
+sample mean is:
+
+$$
+(-0.27,\ 0.27).
+$$
+
+We say this is a 95% percent confidence interval. The interval covers
+approximately 95% of the plausible estimates. For reasons that go beyond the
+scope of this reader, there's also an approximately 95% chance that it covers
+the population mean. This confidence interval happens to be centered on 0, but
+there's no reason a confidence interval has to be. We'll revisit confidence
+intervals in @sec-bootstrap-percentile-intervals.
+-->
+
+:::{.callout-warning}
+In situations where the bootstap performs poorly (see
+@sec-bootstrap-algorithm), the bootstrap percentile intervals will usually be
+too narrow. In other words, they tend to understate uncertainty and have less
+than a 95% chance of covering the population parameter.
+:::
+
+:::{.callout-note title="See Also"}
+For another introduction to the bootstrap and confidence intervals, see the
+[Confidence intervals with bootstrapping][ims-boot] chapter, as well as
+subsequent chapters, of _Introduction to Modern Statistics_ [@ims].
+
+[ims-boot]: https://openintrostat.github.io/ims/foundations-bootstrapping.html
+
+To learn more about the bootstrap, including other ways to bootstrap and to use
+the bootstrap to construct confidence intervals, see _Bootstrap Methods and
+Their Application_ [@davison1997].
+
+In R, the [boot][] package provides functions to carry out a bootstrap and
+compute confidence intervals.
+
+[boot]: https://doi.org/10.32614/CRAN.package.boot
+
+The [infer][] package provides functions for many methods in applied
+statistics, with an interface inspired by and compatible with the
+[Tidyverse][]. The bootstrap is among the methods the package supports.
+
+[infer]: https://infer.netlify.app/
+[Tidyverse]: https://tidyverse.org/
+:::
+
+
+## The Central Limit Theorem {#sec-central-limit-theorem}
+
+The bootstrap is only possible because modern computers can resample a dataset
+in a few seconds, but statisticians have needed to quantify uncertainty since
+long before computers were invented. To do this, they developed mathematical
+models of distributions and formulas for computing confidence intervals. These
+methods are still widely used. Compared to the bootstrap, they have different
+strengths and weaknesses, so it's useful to be familiar with both.
+
+Before we can compute confidence intervals, we need to define some statistical
+concepts. A **random variable** is an unrealized number or category that will
+be drawn randomly from a specific distribution. Think of a random variable as
+an observation that hasn't been collected yet. We might know how the population
+is distributed, but we don't know the value of the observation. The statistical
+convention is to write random variables in uppercase, like $X$ or $Y$, and
+non-random values in lowercase, like $x$ and $y$.
+
+The **normal distribution** is the centerpiece of many classical methods. Its
+density curve is bell-shaped and extends to infinity in both the negative and
+positive directions:
+
+```{r}
+#| echo: false
+#| label: fig-standard-normal
+#| fig-cap: >
+#|     Density plot of the standard normal distribution. The mean is 0 and the
+#|     standard deviation is 1.
+ggplot() + xlim(-5, 5) + geom_function(fun = dnorm) + ylab("density")
+```
+
+The normal distribution is really a family of distributions parameterized by
+their mean $\mu$ and variance $\sigma^2$. We denote these by $\mathcal{N}(\mu,
+\sigma^2)$. All of them have the characteristic bell-shaped density. We call
+the normal distribution with mean 0 and variance 1, denoted $\mathcal{N}(0,
+1)$, the **standard normal distribution**.
+
+Normal distributions are common because sums of random variables tend to be
+nearly normal, especially if the number of terms in the sum is large. The
+sample mean is an example of this. Suppose $X_1, X_2, \dots, X_n$ are
+identically distributed random variables from a population with mean $\mu$ and
+standard deviation $\sigma$. Suppose also that the value of each one is drawn
+independently of the others. Then the sample mean $\bar{X}$, which estimates
+the population mean $\mu$, is unbiased: its mean is $\mu$. Its standard error
+is:
+
+$$
+\textrm{SE} = \frac{\sigma}{\sqrt{n}}.
+$$
+
+As the number of observations $n$ increases, the distribution of $\bar{X}$
+becomes closer and closer to a normal distribution. Specifically,
+
+$$
+\bar{X} \to \mathcal{N}\left(\mu, \frac{\sigma^2}{n}\right)
+\quad as \quad
+n \to \infty.
+$$
+
+This result is known as the **Central Limit Theorem** (CLT) and is one of the
+foundations of statistics. The CLT is important because it tells us that for
+large samples, the sampling distribution of the mean is approximately normal.
+We can use this to compute confidence intervals.
+
+We can rearrange the CLT mathematically to write it in terms of a standard
+normal distribution:
+
+$$
+\frac{\bar{X} - \mu} {\sigma / \sqrt{n}} \to \mathcal{N} (0, 1)
+\quad as \quad
+n \to \infty.
+$$
+
+Notice that the left-hand side is just the standard score
+(@sec-standardization) of the sample mean.
+
+:::{.callout-note}
+There are other versions of the CLT that remove some of the assumptions. The
+most important assumptions are that the random variables are independent and
+that their standard deviations are finite.
+:::
+
+Most of the time, we don't know the population standard deviation $\sigma$. We
+can replace it with the sample standard deviation $S$ to estimate the standard
+error of the sample mean:
+
+$$
+\textrm{SE} = \frac{\sigma}{\sqrt{n}} \approx \frac{S}{\sqrt{n}}.
+$$
+
+For large samples (say $n \geq 30$), we can also replace $\sigma$ with $S$ in
+the CLT. For small samples, $S$ tends to underestimate, so the standard score
+is larger and doesn't have a standard normal distribution. The density is still
+bell-shaped, but the tails are notably heavier. We call this **Student's t
+distribution** (or the t distribution).
+
+```{r}
+#| echo: false
+#| label: fig-t5
+#| fig-cap: >
+#|     Density plot of the standard normal distribution (solid) and Student's
+#|     t distribution with 5 degrees of freedom (dotted).
+ggplot() +
+  xlim(-5, 5) +
+  geom_function(fun = dt, args = list(df = 5), linetype = "dotted") +
+  geom_function(fun = dnorm) +
+  ylab("density")
+```
+
+Like the normal distribution, Student's t distribution is really a family of
+distributions. The t distribution has just one parameter: **normality**, a
+positive integer that controls how heavy the tails are. As normality increases,
+the tails become lighter, and the t distribution becomes more and more like a
+standard normal distribution. We denote the t distribution by by $t_v$, where
+$v$ is normality. The normality parameter is also called **degrees of
+freedom**.
+
+After replacing $\sigma$ with $S$, the distribution of the standard score of
+the sample mean is approximately a t distribution with normality $n - 1$. In
+mathematical notation:
+
+$$
+\DeclareMathOperator{\adist}{\dot{\sim}}
+$$
+
+$$
+\frac{\bar{X} - \mu} {S / \sqrt{n}} \adist t_{n - 1}.
+$$
+
+The symbol $\adist$ means "is approximately distributed as." The distribution
+is exact if $X_1, X_2, \dots, X_n$ are normally distributed.
+
+The distribution of the sample mean (and of its standard score) matters because
+we can use it to construct a confidence interval. Specifically, because we know
+the distribution, we can find a quantile $q$ that bounds the standard score on
+both sides with probability $1 - \alpha$. That is,
+
+$$
+-q \leq \frac{\bar{X} - \mu}{S / \sqrt{n}} \leq q.
+$$
+
+We can rearrange the inequality to isolate the population mean $\mu$, since its
+value is unknown to us:
+
+$$
+\bar{X} - q \cdot\frac{S}{\sqrt{n}}
+\leq \mu
+\leq \bar{X} + q \cdot\frac{S}{\sqrt{n}}.
+$$
+
+:::{.callout-note title="Note: Deriving the Confidence Interval" collapse="true"}
+First, we multiply by $-S / \sqrt{n}$:
+
+$$
+q \cdot\frac{S}{\sqrt{n}}
+\geq \mu - \bar{X}
+\geq -q \cdot\frac{S}{\sqrt{n}}
+$$
+
+Written from smallest to largest, this is:
+
+$$
+-q \cdot\frac{S}{\sqrt{n}}
+\leq \mu - \bar{X}
+\leq q \cdot\frac{S}{\sqrt{n}}
+$$
+
+Finally, we add $\bar{X}$:
+
+$$
+\bar{X} - q \cdot\frac{S}{\sqrt{n}}
+\leq \mu
+\leq \bar{X} + q \cdot\frac{S}{\sqrt{n}}.
+$$
+:::
+
+The endpoints of this inequality are random; the population mean $\mu$ is
+non-random. To make this $1 - \alpha$ confidence interval concrete, we replace
+the random values with their estimates:
+
+$$
+\left(
+  \bar{x} - q \cdot \frac{s}{\sqrt{n}},
+  \ \bar{x} + q \cdot \frac{s}{\sqrt{n}}
+\right).
+$$
+
+In this case, $q$ is the $1 - \alpha / 2$ quantile of $t_{n - 1}$.
+
+In R, the `qt` function computes quantiles of the t distribution. So the code
+to construct a 95% confidence interval for mass in the California market squid
+example is:
+
+```{r}
+n = length(squid$mass_g)
+std_err = sd(squid$mass_g) / sqrt(n)
+
+# For a 0.95 = 1 - 0.05 confidence interval.
+ci = mean(squid$mass_g) + qt(c(0.025, 0.975), n - 1) * std_err
+round(ci, 2)
+```
+
+This t distribution confidence interval almost identical to the bootstrap
+percentile interval (39.87, 40.63).
+
+Compared to bootstrap percentile intervals, t distribution confidence intervals
+have several advantages. They're cheaper to compute since no resampling is
+needed. They also work relatively well even when the sample size is small.
+
+The main limitation of t distribution confidence intervals is that they're
+exclusively for the sample mean. The sampling distribution of a different
+statistic will not necessarily be a t distribution. There are [some
+methods][delta] to generalize the CLT to other statistics, but the bootstrap is
+more flexible overall.
+
+[delta]: https://en.wikipedia.org/wiki/Delta_method
+
+:::{.callout-tip}
+Knowing several different ways to compute confidence intervals (or any other
+estimate) is a great way to check work. Compute them both ways and check
+whether they agree. If they don't, go back and look for mistakes in the
+computations.
+:::
+
+<!--
+:::{.callout-tip title="Tip: Bootstrap t Intervals"}
+:::
+-->
+
+:::{.callout-note title="See Also"}
+[_Introduction to Modern Statistics_][ims] [@ims] introduces both the bootstrap
+and classical methods based on the CLT.
+
+[ims]: https://openintrostat.github.io/ims/
+
+[_OpenIntro Statistics_][openintro] [@openintro] is an introductory statistics
+textbook that exclusively uses classical methods based on the CLT. It provides
+a more detailed look at these methods without letting rigor get in the way of
+intuition.
+
+[openintro]: https://www.openintro.org/book/os/
+:::
+
+

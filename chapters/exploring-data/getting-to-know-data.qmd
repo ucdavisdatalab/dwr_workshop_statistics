@@ -117,7 +117,7 @@ the population are called **subjects** or sometimes **units of observation**.
 Some datasets represent or are associated with multiple populations.
 
 
-### Collection Strategy
+### Collection Strategy {#sec-collection-strategy}
 
 Next, think about how the dataset was collected. Ask:
 

@@ -526,8 +526,8 @@ The middle 50% of the data is 2 units wide.
 
 As we mentioned, IQR is relatively unaffected by extreme values. If we change
 the largest value 6 in the toy dataset to 1,000,000, the IQR stays the same.
-The IQR has the same trade-offs as the median: it's a robust estimator of
-scale, but it's less efficient than estimators that use all of the data.
+The IQR has the same tradeoffs as the median: it's a robust estimator of scale,
+but it's less efficient than estimators that use all of the data.
 
 For `total_nests`, the IQR is:
 

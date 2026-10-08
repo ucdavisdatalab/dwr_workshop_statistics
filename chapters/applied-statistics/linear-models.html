@@ -1,0 +1,1830 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.9.38">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="description" content="Reader for the DWR Statistics workshop series.">
+
+<title>9&nbsp; Linear Models – DWR Statistics Workshops</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
+
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<link href="../../chapters/temporal-data/index.html" rel="next">
+<link href="../../chapters/applied-statistics/hypothesis-tests.html" rel="prev">
+<link href="../..//images/logos/datalab-logo_square_150x150.png" rel="icon" type="image/png">
+<script src="../../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-15634bcf2e68342d4ad2dfa704d543f6.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap-4927f781319b8b164c3724fad35bda6c.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<style>
+.callout.callout-style-default .callout-body {
+  padding: 0 1.5rem 0;
+}
+.cell-output-stdout {
+  overflow-y: scroll;
+  max-height: 30rem;
+  margin-bottom: 0.75rem;
+}
+#quarto-sidebar a.text-start {
+  margin-top: 1rem;
+  font-weight: bold;
+}
+</style>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<meta property="og:title" content="9&nbsp; Linear Models – DWR Statistics Workshops">
+<meta property="og:description" content="Reader for the DWR Statistics workshop series.">
+<meta property="og:image" content="https://ucdavisdatalab.github.io/dwr_workshop_statistics/chapters/applied-statistics/linear-models_files/figure-html/fig-squid-scatter-1.png">
+<meta property="og:site_name" content="DWR Statistics Workshops">
+<meta property="og:image:height" content="960">
+<meta property="og:image:width" content="1344">
+<meta name="twitter:title" content="9&nbsp; Linear Models – DWR Statistics Workshops">
+<meta name="twitter:description" content="Reader for the DWR Statistics workshop series.">
+<meta name="twitter:image" content="https://ucdavisdatalab.github.io/dwr_workshop_statistics/chapters/applied-statistics/linear-models_files/figure-html/fig-squid-scatter-1.png">
+<meta name="twitter:image-height" content="960">
+<meta name="twitter:image-width" content="1344">
+<meta name="twitter:card" content="summary_large_image">
+</head>
+
+<body class="nav-sidebar floating quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../chapters/applied-statistics/index.html">Introduction to Applied Statistics</a></li><li class="breadcrumb-item"><a href="../../chapters/applied-statistics/linear-models.html"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Linear Models</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header sidebar-header-stacked">
+      <a href="https://datalab.ucdavis.edu/" class="sidebar-logo-link">
+      <img src="../../images/logos/datalab-logo-full-color-rgb.png" alt="The logo of the UC Davis DataLab." class="sidebar-logo light-content py-0 d-lg-inline d-none">
+      <img src="../../images/logos/datalab-logo-full-color-rgb.png" alt="The logo of the UC Davis DataLab." class="sidebar-logo dark-content py-0 d-lg-inline d-none">
+      </a>
+    <div class="sidebar-title mb-0 py-0">
+      <a href="../../">DWR Statistics Workshops</a> 
+        <div class="sidebar-tools-main">
+    <a href="https://github.com/ucdavisdatalab/dwr_workshop_statistics" title="Source Code" class="quarto-navigation-tool px-1" aria-label="Source Code"><i class="bi bi-github"></i></a>
+</div>
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Overview</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text">Exploring Data</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/exploring-data/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Overview</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/exploring-data/getting-to-know-data.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Getting to Know the Data</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/exploring-data/categorical-features.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Categorical Features</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/exploring-data/numerical-features.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Numerical Features</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/exploring-data/outliers.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Outliers</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/exploring-data/relationships-between-features.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Relationships Between Features</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/exploring-data/missing-values.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Missing Values</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true">
+ <span class="menu-text">Introduction to Applied Statistics</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/applied-statistics/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Overview</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/applied-statistics/quantifying-uncertainty.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Quantifying Uncertainty</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/applied-statistics/hypothesis-tests.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Hypothesis Tests</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/applied-statistics/linear-models.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Linear Models</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true">
+ <span class="menu-text">Working with Temporal Data</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/temporal-data/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Overview</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true">
+ <span class="menu-text">Working with Censored Data</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/censored-data/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Overview</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="true">
+ <span class="menu-text">Appendices</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/references.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">References</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#fitting-a-model" id="toc-fitting-a-model" class="nav-link active" data-scroll-target="#fitting-a-model"><span class="header-section-number">9.1</span> Fitting a Model</a>
+  <ul class="collapse">
+  <li><a href="#least-squares" id="toc-least-squares" class="nav-link" data-scroll-target="#least-squares"><span class="header-section-number">9.1.1</span> Least Squares</a></li>
+  </ul></li>
+  <li><a href="#sec-model-assumptions" id="toc-sec-model-assumptions" class="nav-link" data-scroll-target="#sec-model-assumptions"><span class="header-section-number">9.2</span> Model Assumptions</a></li>
+  <li><a href="#sec-model-diagnostics" id="toc-sec-model-diagnostics" class="nav-link" data-scroll-target="#sec-model-diagnostics"><span class="header-section-number">9.3</span> Model Diagnostics</a></li>
+  <li><a href="#sec-selecting-features" id="toc-sec-selecting-features" class="nav-link" data-scroll-target="#sec-selecting-features"><span class="header-section-number">9.4</span> Selecting Features</a>
+  <ul class="collapse">
+  <li><a href="#categorical-predictors" id="toc-categorical-predictors" class="nav-link" data-scroll-target="#categorical-predictors"><span class="header-section-number">9.4.1</span> Categorical Predictors</a></li>
+  <li><a href="#interactions" id="toc-interactions" class="nav-link" data-scroll-target="#interactions"><span class="header-section-number">9.4.2</span> Interactions</a></li>
+  <li><a href="#transformations" id="toc-transformations" class="nav-link" data-scroll-target="#transformations"><span class="header-section-number">9.4.3</span> Transformations</a></li>
+  </ul></li>
+  <li><a href="#sec-interpreting-models" id="toc-sec-interpreting-models" class="nav-link" data-scroll-target="#sec-interpreting-models"><span class="header-section-number">9.5</span> Interpreting Models</a>
+  <ul class="collapse">
+  <li><a href="#model-summary" id="toc-model-summary" class="nav-link" data-scroll-target="#model-summary"><span class="header-section-number">9.5.1</span> Model Summary</a></li>
+  <li><a href="#predictions-and-marginal-means" id="toc-predictions-and-marginal-means" class="nav-link" data-scroll-target="#predictions-and-marginal-means"><span class="header-section-number">9.5.2</span> Predictions and Marginal Means</a></li>
+  </ul></li>
+  <li><a href="#sec-hypothesis-tests-for-models" id="toc-sec-hypothesis-tests-for-models" class="nav-link" data-scroll-target="#sec-hypothesis-tests-for-models"><span class="header-section-number">9.6</span> Testing Models</a></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/ucdavisdatalab/dwr_workshop_statistics/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li><li><a href="https://github.com/ucdavisdatalab/dwr_workshop_statistics/blob/main/chapters/applied-statistics/linear-models.qmd" class="toc-action"><i class="bi empty"></i>View source</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../chapters/applied-statistics/index.html">Introduction to Applied Statistics</a></li><li class="breadcrumb-item"><a href="../../chapters/applied-statistics/linear-models.html"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Linear Models</span></a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title"><span id="sec-linear-models" class="quarto-section-identifier"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Linear Models</span></span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<div class="callout callout-style-default callout-note callout-titled" title="Learning Goals">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-1-contents" aria-controls="callout-1" aria-expanded="true" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Learning Goals
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-1" class="callout-1-contents callout-collapse collapse show">
+<div class="callout-body-container callout-body">
+<p>After this lesson, you should be able to:</p>
+<ul>
+<li>Explain what a linear model is</li>
+<li>Specify a linear model in terms of an outcome and predictors</li>
+<li>Fit a linear model on a dataset</li>
+<li>Describe the assumptions of a linear model</li>
+<li>Create diagnotic plots for a linear model</li>
+<li>Interpret diagnotic plots to decide whether the linear model assumptions are satisfied</li>
+<li>Explain some strategies for selecting features to use as predictors</li>
+<li>Interpret linear models and their estimates</li>
+<li>Conduct and interpret hypothesis tests for linear model coefficients</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="callout callout-style-default callout-important callout-titled" title="Required Packages">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Important</span>Required Packages
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>This chapter uses the following R packages:</p>
+<ul>
+<li>dplyr</li>
+<li>ggfortify</li>
+<li>ggplot2</li>
+</ul>
+<p>For a refresher about how to install and load packages, see the <a href="https://ucdavisdatalab.github.io/dwr_workshop_r_basics/chapters/getting-started/getting-started.html#sec-packages">Packages</a> section of DataLab’s R Basics workshop reader.</p>
+</div>
+</div>
+<p>A common application of statistics is to study relationships between features. <a href="../exploring-data/relationships-between-features.html" class="quarto-xref"><span>Chapter 5</span></a> introduced visualizations and the correlation statistic for this purpose. When the relationship between two or more features roughly follows a line, we can fit a <strong>linear model</strong> (or linear regression) that estimates the line’s intercept and slope. Linear models are suprisingly flexible: by transforming features, we can use linear models to summarize many kinds of lines and curves. This chapter introduces the fundamentals of linear models.</p>
+<!--
+Any straight line we draw is a linear model: a line that approximates the
+relationship between features.
+-->
+<section id="fitting-a-model" class="level2" data-number="9.1">
+<h2 data-number="9.1" class="anchored" data-anchor-id="fitting-a-model"><span class="header-section-number">9.1</span> Fitting a Model</h2>
+<p>To demonstrate how to fit, inspect, and interpret a linear model, we’ll once again turn to the California market squid dataset (<a href="quantifying-uncertainty.html#sec-dataset-ca-market-squid" class="quarto-xref"><span>Section 7.1</span></a>). As a reminder, the structure is:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(squid)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>tibble [6,197 × 12] (S3: tbl_df/tbl/data.frame)
+ $ sample_id              : chr [1:6197] "Mry1" "Mry1" "Mry1" "Mry1" ...
+ $ date                   : Date[1:6197], format: "1989-04-17" "1989-04-17" ...
+ $ gear                   : Factor w/ 3 levels "Drum Seine","Lampara",..: 3 3 3 3 3 3 3 3 3 3 ...
+ $ location               : chr [1:6197] "West of Holiday Inn" "West of Holiday Inn" "West of Holiday Inn" "West of Holiday Inn" ...
+ $ cdfw_block             : num [1:6197] 526 526 526 526 526 526 526 526 526 526 ...
+ $ port                   : Factor w/ 1 level "Monterey": 1 1 1 1 1 1 1 1 1 1 ...
+ $ sets                   : num [1:6197] 3 3 3 3 3 3 3 3 3 3 ...
+ $ squid_number           : num [1:6197] 21 2 3 4 5 8 10 11 12 15 ...
+ $ mass_g                 : num [1:6197] 14.6 72 47.6 37.7 60 62.2 52.9 32.3 46.9 56.7 ...
+ $ dorsal_mantle_length_mm: num [1:6197] 93 145 138 131 149 148 140 128 149 147 ...
+ $ sex                    : Factor w/ 2 levels "Female","Male": 2 2 2 2 2 2 2 2 2 2 ...
+ $ maturity               : Factor w/ 3 levels "Immature","Mature",..: 1 2 2 2 2 2 2 2 2 2 ...</code></pre>
+</div>
+</div>
+<p>Suppose we want to understand the relationship between the mass and dorsal mantle length of squid. We can start investigating by making a scatter plot of the two relevant features:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(<span class="st">"ggplot2"</span>)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(squid) <span class="sc">+</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">aes</span>(<span class="at">x =</span> dorsal_mantle_length_mm, <span class="at">y =</span> mass_g) <span class="sc">+</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">alpha =</span> <span class="fl">0.5</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div id="fig-squid-scatter" class="quarto-float quarto-figure quarto-figure-center anchored" width="672">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-squid-scatter-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="linear-models_files/figure-html/fig-squid-scatter-1.png" id="fig-squid-scatter" class="img-fluid figure-img" width="672">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig quarto-uncaptioned" id="fig-squid-scatter-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;9.1
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>Most of the squid are in a dense cloud of points with dorsal mantle length less than 200 millimeters and mass less than 150 grams. Even though we removed some outliers earlier (<a href="quantifying-uncertainty.html#sec-dataset-ca-market-squid" class="quarto-xref"><span>Section 7.1</span></a>), there are still three squid with unusual measurements. We’ll leave these in the dataset for now, but they do warrant further investigation.</p>
+<p>The cloud of points is triangular or slightly curved, not a perfect straight line. We can get a better view of it by temporarily removing the outliers:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(<span class="st">"dplyr"</span>)</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>squid_cloud <span class="ot">=</span> <span class="fu">filter</span>(squid, dorsal_mantle_length_mm <span class="sc">&lt;=</span> <span class="dv">200</span>, mass_g <span class="sc">&lt;=</span> <span class="dv">150</span>)</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(squid_cloud) <span class="sc">+</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">aes</span>(<span class="at">x =</span> dorsal_mantle_length_mm, <span class="at">y =</span> mass_g) <span class="sc">+</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">alpha =</span> <span class="fl">0.5</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div id="fig-squid-scatter-clean" class="quarto-float quarto-figure quarto-figure-center anchored" width="672">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-squid-scatter-clean-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="linear-models_files/figure-html/fig-squid-scatter-clean-1.png" id="fig-squid-scatter-clean" class="img-fluid figure-img" width="672">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig quarto-uncaptioned" id="fig-squid-scatter-clean-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;9.2
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>In <a href="#fig-squid-scatter-clean" class="quarto-xref">Figure&nbsp;<span>9.2</span></a>, the relationship looks like it might be quadratic or exponential. Nonetheless, we’ll start by modeling the relationship with a straight line and adjust later based on model diagnostics.</p>
+<p>Setting the nature of the relationship aside, a single line or curve can’t pass through every point because of individual variation among the squid. The best we can hope for is that it captures the general trend or pattern in the points.</p>
+<p>We can make the linear model concrete by writing the equation for the line. A line has an intercept, which we’ll denote by <span class="math inline">\(\beta_0\)</span>, and slope, which we’ll denote by <span class="math inline">\(\beta_1\)</span>. In order to account for individual variation, we’ll also include a <strong>residual</strong> term in the equation, which we’ll denote by <span class="math inline">\(\epsilon\)</span>. The residual is a reminder that this is just a model; when we plot the model or use it to make predictions, we’ll omit the residual. So the equation for the line is:</p>
+<p><span class="math display">\[
+\texttt{mass\_g}
+= \beta_0 + \beta_1\cdot\texttt{dorsal\_mantle\_length\_mm} + \epsilon
+\]</span></p>
+<p>One way to interpret this equation is that the feature on the left-hand side is an <strong>outcome</strong> predicted by the features on the right-hand side, which we call <strong>predictors</strong>. In our model, mass is the outcome and flipper length is the only predictor.</p>
+<div class="callout callout-style-default callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Warning
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Despite the outcome-predictor interpretation, a linear model alone can’t tell us whether a relationship between features is causal. To conclude that dorsal mantle length <em>causes</em> mass (or vice-versa), we’d have to make additional assumptions.</p>
+<p>For an introduction to causal inference, see “Part 5: Causal Inference” of <a href="https://avehtari.github.io/ROS-Examples/"><em>Regression and Other Stories</em></a> <span class="citation" data-cites="gelman2020">(<a href="../references.html#ref-gelman2020" role="doc-biblioref">Gelman et al. 2020</a>)</span>.</p>
+</div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled" title="Note: Alternative Terminology">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-4-contents" aria-controls="callout-4" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Note: Alternative Terminology
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-4" class="callout-4-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>We use the names “outcome” and “predictor” for features in a linear model, but these concepts go by many names, which are often discipline-specific. Also keep in mind that features are called “variables” in most disciplines.</p>
+<p>Other names for outcome include response, dependent feature, and endogenous feature.</p>
+<p>Other names for predictor include covariate, independent feature, and exogenous feature.</p>
+</div>
+</div>
+</div>
+<p>Writing the linear model in terms of mathematical variables rather than feature names makes it more concise and more general (because the variables could refer to any features from any dataset). To do so, let <span class="math inline">\((x_i, y_i)\)</span> denote observations (with two features) and <span class="math inline">\(\epsilon_i\)</span> denote residuals, for <span class="math inline">\(i = 1,
+2, \dots, n\)</span>. Then the equation becomes:</p>
+<p><span class="math display">\[
+y_i = \beta_0 + \beta_1 x_i + \epsilon_i
+\]</span></p>
+<p>This notation is standard in most disciplines.</p>
+<div class="callout callout-style-default callout-note callout-titled" title="Note: Hat Notation">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-5-contents" aria-controls="callout-5" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Note: Hat Notation
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-5" class="callout-5-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>In statistics, another convention is to write a “hat” above variables that are estimators or estimates (including predictions). So we can write the model’s prediction for <span class="math inline">\(y_i\)</span> as</p>
+<p><span class="math display">\[
+\hat{y}_i = \beta_0 + \beta_1 x_i
+\]</span></p>
+<p>We can also use this notation for parameter estimates. For instance, <span class="math inline">\(\hat{\mu}\)</span> denotes an estimate for a distribution parameter <span class="math inline">\(\mu\)</span>.</p>
+</div>
+</div>
+</div>
+<section id="least-squares" class="level3" data-number="9.1.1">
+<h3 data-number="9.1.1" class="anchored" data-anchor-id="least-squares"><span class="header-section-number">9.1.1</span> Least Squares</h3>
+<p>Another way to think about the residuals in a linear model is as the <strong>errors</strong> in the model’s predictions. We can reorganize the equation for the line to emphasize this:</p>
+<p><span class="math display">\[
+\epsilon_i = y_i - (\beta_0 + \beta_1 x_i)
+\]</span></p>
+<p>Thinking about the residuals as errors is a hint that we might want to choose the coefficients <span class="math inline">\(\beta_0\)</span> and <span class="math inline">\(\beta_1\)</span> to minimize error. There are many different ways to do this, but the most widely-used approach, called <strong>ordinary least squares</strong>, is to minimize the <strong>residual sum of squares</strong> <span class="math inline">\(SS_\epsilon\)</span>, defined as</p>
+<p><span class="math display">\[
+\textrm{SS}_\epsilon
+= \sum_{i=1}^n \epsilon_i^2
+= \sum_{i=1}^n \left[ y_i - (\beta_0 + \beta_1 x_i) \right]^2
+= \sum_{i=1}^n (y_i - \hat{y}_i)^2
+\]</span></p>
+<p>Squaring the residuals puts extra emphasis on errors that are very large (whether positive or negative). This is desirable if large errors are more costly than small errors. Squaring the residuals also leads to a variety of convenient mathematical properties, such as making it straightforward to find the minimum.</p>
+<div class="callout callout-style-default callout-note callout-titled" title="Note: Maximum Likelihood Estimation">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-6-contents" aria-controls="callout-6" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Note: Maximum Likelihood Estimation
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-6" class="callout-6-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>A different approach, called <strong>maximum likelihood estimation</strong>, treats the outcome as a random variable <span class="math inline">\(Y_i\)</span> with an assumed distribution. We can use the distribution to choose estimates for the coefficients <span class="math inline">\(\beta_0\)</span> and <span class="math inline">\(\beta_1\)</span> which maximize the probability of the data.</p>
+<p>Ordinary least squares is equivalent to maximum likelihood estimation where we assume that the <span class="math inline">\(Y_i\)</span> are normally distributed with means <span class="math inline">\(\beta_0 + \beta_1
+x_i\)</span>.</p>
+<p>Maximum likelihood estimates have many useful statistical properties, including an analogue of the Central Limit Theorem (<a href="quantifying-uncertainty.html#sec-central-limit-theorem" class="quarto-xref"><span>Section 7.6</span></a>), which we can use to make confidence intervals and for hypothesis tests.</p>
+</div>
+</div>
+</div>
+<p>In R, we can use the <code>lm</code> function to fit a linear model by least squares. The function’s first argument must be a description of the features in the model; R calls this a (model) formula. The model formula is similar to the model equation, but replaces the equals sign with a tilde <code>~</code> and omits the coefficients and residual. The intercept is included implicitly, but you can make it explicit by writing it as a <code>1</code> (imagine the intercept as a coefficient for a column of ones).</p>
+<p>The second argument must be the dataset: a data frame with columns corresponding to the features in the model.</p>
+<p>So the code to fit the mass model for the California market squid is:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>model <span class="ot">=</span> <span class="fu">lm</span>(mass_g <span class="sc">~</span> dorsal_mantle_length_mm, squid)</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>model</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = mass_g ~ dorsal_mantle_length_mm, data = squid)
+
+Coefficients:
+            (Intercept)  dorsal_mantle_length_mm  
+               -65.8846                   0.8342  </code></pre>
+</div>
+</div>
+<p>The output shows the estimates for the coefficients. We’ll learn more about how to interpret models in <a href="#sec-interpreting-models" class="quarto-xref"><span>Section 9.5</span></a>. Before that, we need to review the assumptions of a linear model and examine whether they’re satisfied for this model.</p>
+</section>
+</section>
+<section id="sec-model-assumptions" class="level2" data-number="9.2">
+<h2 data-number="9.2" class="anchored" data-anchor-id="sec-model-assumptions"><span class="header-section-number">9.2</span> Model Assumptions</h2>
+<p>A linear model involves many assumptions about the features being modeled and the dataset used to fit the model. <span class="citation" data-cites="gelman2020">Gelman et al. (<a href="../references.html#ref-gelman2020" role="doc-biblioref">2020</a>)</span> lists these assumptions (from most to least important):</p>
+<ol type="1">
+<li><p>Validity: the outcome should measure what you actually want to study, the model should include all relevant features, and the model should generalize well. For instance, a model for blood pressure should not be treated as a model for general health unless this can be justified by expert knowledge.</p></li>
+<li><p>Representativeness: the dataset you use to train the model should be representative of the population to which you want the model to generalize. For example, a model for how long people can hold their breath should not be based on a sample of Olympic swimmers. On the other hand, a representative sample might include a few Olympic swimmers, because they’re people too!</p></li>
+<li><p>Linearity: the relationship between the outcome and the predictors should be roughly linear. Often the relationship between the outcome and the features in the dataset isn’t linear, but it’s possible to transform the outcome or features to get a linear relationship (see <a href="#sec-selecting-features" class="quarto-xref"><span>Section 9.4</span></a>).</p></li>
+<li><p>Independence of errors: the residual for one observation should not depend on the residuals of others. This assumption means linear models are incompatible with most temporal and spatial datasets, although there are modifications we can make to accomodate these kinds of datasets.</p></li>
+<li><p>Equal variance of errors: the residuals should all have the same standard deviation. When they don’t, then the model is worse at predicting for some inputs than others. One way to address this is by using weighted least squares to fit the model rather than ordinary least squares.</p></li>
+<li><p>Normality of errors: the residuals should be have a normal distribution. This is assumption really only necessary for hypothesis testing (with CLT-based methods); it doesn’t matter for the coefficient estimates. This assumption is sometimes misinterpreted to mean that the outcome must have a normal distribution, which is not true.</p></li>
+</ol>
+<p>Check these assumptions before and after fitting a linear model. The first two assumptions are really about the research question and data collection process, so failing to satisfy them usually can’t be fixed by changing the model. On the other hand, the last four assumptions relate to the model directly, and failing to satisfy them can sometimes be fixed by changing the model.</p>
+<p><a href="#sec-model-diagnostics" class="quarto-xref"><span>Section 9.3</span></a> describes how to check some of these assumptions with model diagnostics.</p>
+</section>
+<section id="sec-model-diagnostics" class="level2" data-number="9.3">
+<h2 data-number="9.3" class="anchored" data-anchor-id="sec-model-diagnostics"><span class="header-section-number">9.3</span> Model Diagnostics</h2>
+<p>Most of the information about how well a model fits is in the residuals, since the residuals measure what the model got wrong. We can make a variety of plots based on the residuals to check whether the assumptions from <a href="#sec-model-assumptions" class="quarto-xref"><span>Section 9.2</span></a> are satisfied and whether there are any other problems.</p>
+<p>For a linear model with only one feature, a good diagnostic starting point is to plot the feature against the residuals. This is called a <strong>residual plot</strong>. Patterns in the residual plot can reveal problems with linearity, independence of errors, and equal variance of errors. Let’s make this plot for the residuals from the mass model for the California market squid dataset.</p>
+<p>In R, the <code>predict</code> function returns predictions from a model. Absent any additional arguments, it returns predictions for the dataset used to fit the model. So to get the predictions for the squid mass model:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>squid<span class="sc">$</span>predicted_mass_g <span class="ot">=</span> <span class="fu">predict</span>(model)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>We can use the predictions to calculate the residuals, in order to plot the residuals against the flipper length feature:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(squid) <span class="sc">+</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">aes</span>(<span class="at">x =</span> dorsal_mantle_length_mm, <span class="at">y =</span> mass_g <span class="sc">-</span> predicted_mass_g) <span class="sc">+</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div id="fig-squid-residuals-predictor" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-squid-residuals-predictor-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="linear-models_files/figure-html/fig-squid-residuals-predictor-1.png" class="img-fluid figure-img" width="672">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-squid-residuals-predictor-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;9.3: Dorsal mantle length versus residuals for the squid mass linear model.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tip
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The <code>resid</code> function returns the residuals from a model. It’s a convenient alternative to computing the residuals from the predictions.</p>
+</div>
+</div>
+<p>For a dataset and model that satisfy the assumptions (<a href="#sec-model-assumptions" class="quarto-xref"><span>Section 9.2</span></a>), the residuals should be centered on 0 (mean 0) and should not exhibit any patterns. Four kinds of patterns are especially important signs of problems:</p>
+<ul>
+<li>A trend in the residuals (that is, a line or curve that they follow): this usually means that the linearity assumption isn’t satisfied.</li>
+<li>A “fan” or other shape in the range of the residuals: this usually means that the equal variance assumption isn’t satisfied.</li>
+<li>Extreme residuals: like shapes, this usually means that the equal variance assumption isn’t satisfied.</li>
+<li>Extreme predictor values: this means the representativeness assumption isn’t satisfied. Even if the residuals are small, predictions might not generalize well because the model doesn’t have many examples (observations) around the extreme value.</li>
+</ul>
+<p>The residual plot will also exhibit patterns when the independence assumption isn’t satisfied, but many different patterns are possible depending on the nature of the dependence.</p>
+<p>The residuals for the squid mass model in <a href="#fig-squid-residuals-predictor" class="quarto-xref">Figure&nbsp;<span>9.3</span></a> exhibit all four of the problem patterns. The residuals lie on a U-shaped curve which tapers at each end. There are three extreme residuals, one of which corresponds to an extreme predictor value; we should investigate these as potential outliers and possibly exclude them when fitting the model.</p>
+<p>For models with multiple predictors, we can plot each one separately against the residuals. We can also plot the predictions against the residuals. These plots are all residual plots, and the interpretation is the same as for a model with a single feature, with the exception that we can’t check for extreme predictor values in the predictions versus residuals plot. Let’s plot the predictions against the residuals for the squid mass model:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(squid) <span class="sc">+</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">aes</span>(<span class="at">x =</span> predicted_mass_g, <span class="at">y =</span> mass_g <span class="sc">-</span> predicted_mass_g) <span class="sc">+</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div id="fig-squid-residuals-predicted" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-squid-residuals-predicted-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="linear-models_files/figure-html/fig-squid-residuals-predicted-1.png" class="img-fluid figure-img" width="672">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-squid-residuals-predicted-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;9.4: Predictions versus residuals for the squid mass linear model.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>Notice that <a href="#fig-squid-residuals-predictor" class="quarto-xref">Figure&nbsp;<span>9.3</span></a> and <a href="#fig-squid-residuals-predicted" class="quarto-xref">Figure&nbsp;<span>9.4</span></a> only differ in the values on the x-axis. This is always the case for a model with a single feature. For models with multiple features, the residual plots for individual features will not necessarily be the same as the plot of predictions versus residuals.</p>
+<p>Most statistical software, including R, provide three more diagnostic plots for linear models:</p>
+<ul>
+<li>The <strong>normal quantile-quantile plot</strong> (normal QQ plot) displays the quantiles of a normal distribution against the quantiles of the residuals. QQ plots are helpful for checking how similar two distributions are, because similar distributions will have similar quantiles. For a linear model, we can use the normal QQ plot to check the normality assumption. The normal QQ plot is less important than other diagnostics, because the normality assumption is less important than the other assumptions.</li>
+<li>The <strong>scale-location plot</strong> displays the predictions against the square root of the standardized residuals. This is a transformation of the residual plot, so the interpretation is the same (although the mean of the standardized residuals will not be 0); the transformation simply makes some patterns easier to notice.</li>
+<li>The <strong>leverage plot</strong> displays a statistic called leverage against the residuals. Leverage is a measure of how far away each observation in the dataset is from the others. Observations with high leverage may be outliers and may have undue influence over the linear model (similar to how extreme values affect the sample mean).</li>
+</ul>
+<p>In R, we can use the ggfortify package’s <code>autoplot</code> function to make all four diagnostic plots for a model:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(<span class="st">"ggfortify"</span>)</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="fu">autoplot</span>(model)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div id="fig-squid-diagnostics" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-squid-diagnostics-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="linear-models_files/figure-html/fig-squid-diagnostics-1.png" class="img-fluid figure-img" width="672">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-squid-diagnostics-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;9.5: Diagnostic plots for the squid mass linear model. Clockwise from the top left, they are the residual plot, normal QQ plot, leverage plot, and scale-location plot.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>The residual plot in <a href="#fig-squid-diagnostics" class="quarto-xref">Figure&nbsp;<span>9.5</span></a> is the same as <a href="#fig-squid-residuals-predicted" class="quarto-xref">Figure&nbsp;<span>9.4</span></a>; the scale-location plot exhibits similar problems. The normal QQ plot shows that the residuals are probably not normally distributed, with extreme values in both tails. The leverage plot shows that the observation with extreme dorsal mantle length has a lot of leverage; since it also has a large residual, this means it’s exerting a lot of influence on the model without much benefit.</p>
+<p>Let’s refit the model without the extreme observations we noted in <a href="#fig-squid-diagnostics" class="quarto-xref">Figure&nbsp;<span>9.5</span></a> (and also in <a href="#fig-squid-scatter" class="quarto-xref">Figure&nbsp;<span>9.1</span></a>). We can use the <code>squid_cloud</code> subset from earlier for this:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>model <span class="ot">=</span> <span class="fu">lm</span>(mass_g <span class="sc">~</span> dorsal_mantle_length_mm, squid_cloud)</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="fu">autoplot</span>(model)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div id="fig-squid-diagnostics-clean" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-squid-diagnostics-clean-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="linear-models_files/figure-html/fig-squid-diagnostics-clean-1.png" class="img-fluid figure-img" width="672">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-squid-diagnostics-clean-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;9.6: Diagnostic plots for the squid mass linear model, after removing extreme observations.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>The new diagnostic plots in <a href="#fig-squid-diagnostics-clean" class="quarto-xref">Figure&nbsp;<span>9.6</span></a> show that removing the extreme observations improved two problems: the most extreme residuals are closer to the others, and the high-leverage residuals are smaller. Nevertheless, there’s still a distinct curve and a taper to the residuals in the residual plot that suggest non-linearity and unequal variance, respectively; we’ll address these problems in <a href="#sec-selecting-features" class="quarto-xref"><span>Section 9.4</span></a> by adding additional terms to the model.</p>
+<div class="callout callout-style-default callout-note callout-titled" title="Note: R's Built-in Diagnostic Plots">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-8-contents" aria-controls="callout-8" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Note: R’s Built-in Diagnostic Plots
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-8" class="callout-8-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>Instead of using the ggfortify package, to make diagnostic plots for a model with ggplot2, it’s also possible to make diagnostic plots with R’s built-in <code>plot</code> function:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(model)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="linear-models_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="linear-models_files/figure-html/unnamed-chunk-5-2.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="linear-models_files/figure-html/unnamed-chunk-5-3.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="linear-models_files/figure-html/unnamed-chunk-5-4.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled" title="See Also">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>See Also
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>For examples of patterns to look for in residual plots, see:</p>
+<ul>
+<li>The <a href="https://openintrostat.github.io/ims/inf-model-slr.html#sec-tech-cond-linmod">“Checking model conditions”</a> section in <em>Introduction to Modern Statistics</em> <span class="citation" data-cites="ims">(<a href="../references.html#ref-ims" role="doc-biblioref">Çetinkaya-Rundel and Hardin 2024</a>)</span></li>
+<li>The “Residual plots” section in <a href="https://avehtari.github.io/ROS-Examples/"><em>Regression and Other Stories</em></a> <span class="citation" data-cites="gelman2020">(<a href="../references.html#ref-gelman2020" role="doc-biblioref">Gelman et al. 2020</a>)</span></li>
+</ul>
+</div>
+</div>
+</section>
+<section id="sec-selecting-features" class="level2" data-number="9.4">
+<h2 data-number="9.4" class="anchored" data-anchor-id="sec-selecting-features"><span class="header-section-number">9.4</span> Selecting Features</h2>
+<p>A dataset might have dozens or hundreds of features, but including every feature in a linear model is usually not a good idea. One problem is that each additional predictor in the model means an additional coefficient to estimate. When the number of observations is low relative to the number of predictors, there usually isn’t enough information to compute accurate coefficient estimates. A large number of predictors can also lead to problems with <strong>overfitting</strong>, where the model fits the sample extremely well but fits the population poorly.</p>
+<p>Another problem, <strong>multicollinearity</strong>, is that when two predictors are highly correlated (<a href="../exploring-data/relationships-between-features.html#sec-correlation" class="quarto-xref"><span>Section 5.2</span></a>), they effectively contain redundant information. As we add more predictors to the model, it becomes more likely that two (or more) will be correlated. Multicollinearity makes it difficult (or impossible) to compute accurate coefficient estimates for the affected predictors.</p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tip
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>If two predictors are highly correlated, consider removing one of them from the model.</p>
+</div>
+</div>
+<p>The point is that we should be cautious about which predictors we add to a model. The best approach is to base the model on expert knowledge or a hypothesis about the relationship between the outcome and other features in the dataset. In exploratory work, we can instead or additionally use the model diagonistics (<a href="#sec-model-diagnostics" class="quarto-xref"><span>Section 9.3</span></a>) to decide whether it might be missing important predictors (and whether adding a predictor improves the fit).</p>
+<p>The diagnostic plots (<a href="#fig-squid-diagnostics-clean" class="quarto-xref">Figure&nbsp;<span>9.6</span></a>) for the squid mass model exhibit a U-shaped curve in the residuals, and the scatter plot of dorsal mantle length versus mass (<a href="#fig-squid-scatter-clean" class="quarto-xref">Figure&nbsp;<span>9.2</span></a>) also exhibits a curve. The curve in both looks like it could be quadratic; this suggests we’re missing a squared predictor. For most physical objects, mass is proportional to volume, which is roughly length cubed; considering this, it makes sense to include squared or even cubed dorsal mantle length in the mass model.</p>
+<p>Let’s try adding squared dorsal mantle length to the mass model. We’ll also keep the original dorsal mantle length predictor; when including a power of a feature in a model, it’s often a good idea to include lower powers as well.</p>
+<p>We can square the <code>dorsal_mantle_length_mm</code> feature in the model formula by writing it inside of the <code>I</code> function (which makes R treat arithmetic in a formula as arithmetic):</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>quad_model <span class="ot">=</span> <span class="fu">lm</span>(</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>  mass_g <span class="sc">~</span> dorsal_mantle_length_mm <span class="sc">+</span> <span class="fu">I</span>(dorsal_mantle_length_mm<span class="sc">^</span><span class="dv">2</span>),</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>  squid_cloud</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>quad_model</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = mass_g ~ dorsal_mantle_length_mm + I(dorsal_mantle_length_mm^2), 
+    data = squid_cloud)
+
+Coefficients:
+                 (Intercept)       dorsal_mantle_length_mm  
+                   77.386910                     -1.538497  
+I(dorsal_mantle_length_mm^2)  
+                    0.009674  </code></pre>
+</div>
+</div>
+<p>To see how this changes things, we’ll recreate the diagnostic plots:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">autoplot</span>(quad_model)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div id="fig-squid-diagnostics-quad" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-squid-diagnostics-quad-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="linear-models_files/figure-html/fig-squid-diagnostics-quad-1.png" class="img-fluid figure-img" width="672">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-squid-diagnostics-quad-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;9.7: Diagnostic plots for the squid mass linear model, with a squared dorsal mantle length term.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>The diagnostics in <a href="#fig-squid-diagnostics-quad" class="quarto-xref">Figure&nbsp;<span>9.7</span></a> are much improved. In the residual plot, there’s no longer any signs of a curve. There still is in the scale-location plot, but it’s minor. The residuals still taper at the tails of the prediction range, but much less than they did in <a href="#fig-squid-diagnostics-clean" class="quarto-xref">Figure&nbsp;<span>9.6</span></a>. The leverage plot also shows improvement, with high-leverage residuals nearly halved. The QQ plot is about the same. On the whole, the diagnostics are now good enough to keep the model, with some caution when interpreting hypothesis tests that assume normally distributed residuals.</p>
+<div class="callout callout-style-default callout-note callout-titled" title="Note: Adding a Cubic Term">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-11-contents" aria-controls="callout-11" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Note: Adding a Cubic Term
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-11" class="callout-11-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>Based on our reasoning earlier, we might want to try adding cubed dorsal mantle length to the model too:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>cubic_model <span class="ot">=</span> <span class="fu">lm</span>(</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>  mass_g <span class="sc">~</span></span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>    dorsal_mantle_length_mm <span class="sc">+</span></span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">I</span>(dorsal_mantle_length_mm<span class="sc">^</span><span class="dv">2</span>) <span class="sc">+</span></span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">I</span>(dorsal_mantle_length_mm<span class="sc">^</span><span class="dv">3</span>),</span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>  squid_cloud</span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a><span class="fu">autoplot</span>(cubic_model)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div id="fig-squid-diagnostics-cubic" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-squid-diagnostics-cubic-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="linear-models_files/figure-html/fig-squid-diagnostics-cubic-1.png" class="img-fluid figure-img" width="672">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-squid-diagnostics-cubic-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;9.8: Diagnostic plots for the squid mass linear model, with a cubed dorsal mantle length term.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>Overall, <a href="#fig-squid-diagnostics-cubic" class="quarto-xref">Figure&nbsp;<span>9.8</span></a> is similar to <a href="#fig-squid-diagnostics-quad" class="quarto-xref">Figure&nbsp;<span>9.7</span></a>. There’s a little improvement in the high-leverage residuals, but any other improvements are subtle. At this point, we can leave the cubic term out to make the model simpler, or include it, because it matches our intuition about the relationship between mass and volume. We can also check other diagnostics, such as adjusted R-squared (more about this in <a href="#sec-interpreting-models" class="quarto-xref"><span>Section 9.5</span></a>) or an estimate of the model’s accuracy on new data points (for example, by cross-validating the model).</p>
+</div>
+</div>
+</div>
+<section id="categorical-predictors" class="level3" data-number="9.4.1">
+<h3 data-number="9.4.1" class="anchored" data-anchor-id="categorical-predictors"><span class="header-section-number">9.4.1</span> Categorical Predictors</h3>
+<p>Up to this point, we’ve only considered linear models with numerical predictors. Linear models can also have categorical predictors. For a categorical predictor, we add a constant offset to the prediction for each category. We still call the offsets coefficients, because each category can be represented by a feature that’s 1 for observations in the category and 0 otherwise.</p>
+<div class="callout callout-style-default callout-note callout-titled" title="Note: Indicators">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Note: Indicators
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The 0 and 1 representation for a category is called an <strong>indicator</strong> or <strong>one-hot encoding</strong>.</p>
+</div>
+</div>
+<p>In R and most other statistical software, the first category is treated as a baseline or reference category with coefficient 0, so a categorical predictor with <span class="math inline">\(k\)</span> categories only requires <span class="math inline">\(k - 1\)</span> coefficient estimates.</p>
+<p>Let’s try fitting a model with a categorical predictor to the California market squid dataset. Suppose we want to examine whether the age of a squid affects it size. We’ll use mass as a substitute for size use maturity as substitute for age. Then the linear model is:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>maturity_model <span class="ot">=</span> <span class="fu">lm</span>(mass_g <span class="sc">~</span> maturity, squid_cloud)</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>maturity_model</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = mass_g ~ maturity, data = squid_cloud)
+
+Coefficients:
+   (Intercept)  maturityMature   maturitySpent  
+         22.17           19.79           16.32  </code></pre>
+</div>
+</div>
+<p>There are three maturity categories: immature, mature, and spent. The model treats immature as the baseline category, so the model output only lists coefficients for the mature and spent categories. Think of these coefficients as the additional mass for the given category compared to the reference category.</p>
+<p>As usual, it’s a good idea to check the model diagnostics:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">autoplot</span>(maturity_model)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div id="fig-squid-diagnostics-maturity" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-squid-diagnostics-maturity-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="linear-models_files/figure-html/fig-squid-diagnostics-maturity-1.png" class="img-fluid figure-img" width="672">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-squid-diagnostics-maturity-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;9.9: Diagnostic plots for the squid mass linear model based on maturity alone.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>In <a href="#fig-squid-diagnostics-maturity" class="quarto-xref">Figure&nbsp;<span>9.9</span></a>, notice that the there are only three different predicted values; this reflects that there are only three maturity categories, and maturity is the only predictor in the model. The residual plot and scale-location plot don’t show any trends. On the other hand, the residuals spread out more for more mature squid, which means there’s unequal variance. The QQ plot shows that the residuals are probably not normally distributed. The leverage plot looks okay. The takeaway for this model is that the coefficient and standard error estimates are likely accurate, but because there’s evidence that the residuals do not have equal variance and are not normally distributed, we should be cautious about using standard hypothesis tests for the model. There are several test statistics designed for groups with unequal variance; we should use one of these if we want to conduct a test.</p>
+</section>
+<section id="interactions" class="level3" data-number="9.4.2">
+<h3 data-number="9.4.2" class="anchored" data-anchor-id="interactions"><span class="header-section-number">9.4.2</span> Interactions</h3>
+<p>Sometimes an outcome depends on how two or more predictors <strong>interact</strong>. That is, the relationship between the outcome and one of the predictors changes when the other predictor changes. We can model a multipicative interaction in a linear model by including a term for the product of two or more features (whether they are numerical or categorical). Generally, if we include an interaction term for two features, we should also include terms for each feature separately.</p>
+</section>
+<section id="transformations" class="level3" data-number="9.4.3">
+<h3 data-number="9.4.3" class="anchored" data-anchor-id="transformations"><span class="header-section-number">9.4.3</span> Transformations</h3>
+<p>Mathematically transforming the outcome or predictors in a linear model is often helpful when the assumptions of linearity, equal variance of errors, and normality of errors aren’t satisfied. We saw an example of this at the beginning of this section, where adding a quadratic term to the squid mass model corrected problems with non-linearity and unequal variance.</p>
+<p>Choosing appropriate transformations can be difficult in practice, because we rarely know the true nature of the relationship. Fortunately, relationships that a model fails to account for typically show up as patterns in its residuals (<a href="#sec-model-diagnostics" class="quarto-xref"><span>Section 9.3</span></a>). We can use the residuals to decide if and how features should be transformed.</p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tip
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Many kinds of non-linear relationships can be made linear with transformations.</p>
+<p>For example, suppose that the true relationship between two features <span class="math inline">\(x_i\)</span> and <span class="math inline">\(y_i\)</span> is exponential:</p>
+<p><span class="math display">\[
+y_i = \textrm{e}^{\beta_0 + \beta_1 x_i}
+\]</span></p>
+<p>We can make the relationship linear by taking logarithms:</p>
+<p><span class="math display">\[
+\ln{y_i} = \beta_0 + \beta_1 x_i
+\]</span></p>
+<p>In this case, we should fit a linear model with <span class="math inline">\(\ln{y_i}\)</span> as the outcome and <span class="math inline">\(x_i\)</span> as a predictor.</p>
+</div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled" title="See Also">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>See Also
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>We recommend the textbook <a href="https://feat.engineering/"><em>Feature Engineering and Selection</em></a> <span class="citation" data-cites="kuhn2020">(<a href="../references.html#ref-kuhn2020" role="doc-biblioref">Kuhn and Johnson 2020</a>)</span> as a thorough introduction to transforming and selecting features for linear models, as well as many other kinds of models.</p>
+</div>
+</div>
+</section>
+</section>
+<section id="sec-interpreting-models" class="level2" data-number="9.5">
+<h2 data-number="9.5" class="anchored" data-anchor-id="sec-interpreting-models"><span class="header-section-number">9.5</span> Interpreting Models</h2>
+<p>Once we’ve fitted a model and checked that the diagnostics look okay, we can move on to interpreting the coefficients and other model statistics. This section describes a few different tools for interpretation.</p>
+<section id="model-summary" class="level3" data-number="9.5.1">
+<h3 data-number="9.5.1" class="anchored" data-anchor-id="model-summary"><span class="header-section-number">9.5.1</span> Model Summary</h3>
+<p>We can use R’s <code>summary</code> function to get a detailed description of a model:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(quad_model)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = mass_g ~ dorsal_mantle_length_mm + I(dorsal_mantle_length_mm^2), 
+    data = squid_cloud)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-35.237  -3.267   0.521   3.775  52.794 
+
+Coefficients:
+                              Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept)                  77.386910   3.670391   21.08   &lt;2e-16 ***
+dorsal_mantle_length_mm      -1.538497   0.057980  -26.54   &lt;2e-16 ***
+I(dorsal_mantle_length_mm^2)  0.009674   0.000228   42.44   &lt;2e-16 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 5.9 on 6191 degrees of freedom
+Multiple R-squared:  0.8404,    Adjusted R-squared:  0.8403 
+F-statistic: 1.63e+04 on 2 and 6191 DF,  p-value: &lt; 2.2e-16</code></pre>
+</div>
+</div>
+<p>Let’s go through the model summary a few lines at a time. It begins with the R code we used to fit the model:</p>
+<pre class="text"><code>Call:
+lm(formula = mass_g ~ dorsal_mantle_length_mm + I(dorsal_mantle_length_mm^2),
+    data = squid_cloud)</code></pre>
+<p>Next, it lists the quartiles of the residuals:</p>
+<pre class="text"><code>Residuals:
+    Min      1Q  Median      3Q     Max
+-35.237  -3.267   0.521   3.775  52.794</code></pre>
+<p>The distribution of the residuals is an important source of diagnostic information. We recommend visualizing the residuals, as in <a href="#sec-model-diagnostics" class="quarto-xref"><span>Section 9.3</span></a>, but their quartiles are occasionally useful for quickly inspecting a model.</p>
+<p>After the residual quartiles, the summary lists the coefficients in a table:</p>
+<pre class="text"><code>Coefficients:
+                              Estimate Std. Error t value Pr(&gt;|t|)
+(Intercept)                  77.386910   3.670391   21.08   &lt;2e-16 ***
+dorsal_mantle_length_mm      -1.538497   0.057980  -26.54   &lt;2e-16 ***
+I(dorsal_mantle_length_mm^2)  0.009674   0.000228   42.44   &lt;2e-16 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
+<p>Each row of the table corresponds to one term in the model. The first is typically the intercept <span class="math inline">\(\beta_0\)</span>. The remaining rows correspond to features. The columns contain an estimate of the coefficient, an estimate of its standard error, and two columns related to hypothesis testing. We’ll examine these last two columns in <a href="#sec-hypothesis-tests-for-models" class="quarto-xref"><span>Section 9.6</span></a>.</p>
+<section id="residual-standard-deviation" class="level4 unnumbered">
+<h4 class="unnumbered anchored" data-anchor-id="residual-standard-deviation">Residual Standard Deviation</h4>
+<p>Finally, the summary lists several statistics about the model as a whole, beginning with:</p>
+<pre class="text"><code>Residual standard error: 5.9 on 6191 degrees of freedom</code></pre>
+<p>Residual standard error is the sample standard deviation of the residuals (with a statistical correction for the number of terms being estimated in the model). Recall that standard deviation is approximately the mean distance to the mean. In a linear model with an intercept, the residuals always have mean 0 (<span class="math inline">\(\bar{\epsilon} = 0\)</span>), so the residual standard error is approximately the mean distance between the actual outcomes and the fitted line.</p>
+<div class="callout callout-style-default callout-note callout-titled" title="Definition: Residual Standard Deviation">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-15-contents" aria-controls="callout-15" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Definition: Residual Standard Deviation
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-15" class="callout-15-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>The sample variance of the residuals for a linear model with <span class="math inline">\(k\)</span> terms (including the intercept) is defined as</p>
+<p><span class="math display">\[
+s_\epsilon^2
+= \frac{\textrm{SS}_\epsilon}{n - k}
+= \frac{1}{n - k} \sum_{i=1}^n (\epsilon_i - 0)^2
+\]</span></p>
+<p>Think of this as the variance in the sample that’s not explained by the model.</p>
+<p>The sample standard deviation of the residuals <span class="math inline">\(s_\epsilon\)</span> is the square root of <span class="math inline">\(s_\epsilon^2\)</span>.</p>
+</div>
+</div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled" title="Note: The Name &quot;Residual Standard Error&quot;">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-16-contents" aria-controls="callout-16" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Note: The Name “Residual Standard Error”
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-16" class="callout-16-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>The name “residual standard error” is an R invention. Standard error refers to the standard deviation of an estimator across many samples, but there’s no estimator and no resampling at work here. The R documentation even notes that this name is inappropriate (in <code>?sigma</code>).</p>
+<p>Appropriate names include “standard deviation of the residuals” and “residual standard deviation” among others.</p>
+<p>See <a href="https://stats.stackexchange.com/questions/144433/why-do-we-say-residual-standard-error">this StackOverflow post</a> for additional discussion.</p>
+</div>
+</div>
+</div>
+</section>
+<section id="r-squared-statistics" class="level4 unnumbered">
+<h4 class="unnumbered anchored" data-anchor-id="r-squared-statistics">R-Squared Statistics</h4>
+<pre class="text"><code>Multiple R-squared:  0.8404,    Adjusted R-squared:  0.8403</code></pre>
+<p>The R-squared statistics, conventionally denoted by <span class="math inline">\(R^2\)</span> and <span class="math inline">\(R_\textrm{adj}^2\)</span>, are ratios of variance in the outcome that’s explained by the model to total variance.</p>
+<p>R-squared <span class="math inline">\(R^2\)</span> is always between 0 and 1. Values closer to 1 indicate that the model explains more of the variance in the outcome. R-squared is non-decreasing as more terms are included in the model, because more terms means more flexibility to fit the observations. This is a limitation: we can’t use R-squared to decide how many terms to include in the model, because it will always suggest more terms are better.</p>
+<p>Adjusted R-squared <span class="math inline">\(R_\textrm{adj}^2\)</span> decreases when terms with weak explanatory power are added to the model, so it tends to be more useful than ordinary R-squared <span class="math inline">\(R^2\)</span>. Its value can sometimes be smaller than 0.</p>
+<div class="callout callout-style-default callout-note callout-titled" title="Definition: R-Squared Statistics">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-17-contents" aria-controls="callout-17" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Definition: R-Squared Statistics
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-17" class="callout-17-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>The R-squared statistics are based on the idea that the variance of the outcome <span class="math inline">\(y_i\)</span> can be partitioned into two meaningful parts: variance explained by the model and unexplained variance from other, often unknown, processes.</p>
+<p>Mathematically, variance is a sum of squares. The <strong>total sum of squares</strong> for the outcome <span class="math inline">\(y_i\)</span> is defined as</p>
+<p><span class="math display">\[
+\textrm{SS}
+= \sum_{i=1}^n (y_i - \bar{y})^2
+= (n - 1) s^2
+\]</span></p>
+<p>Notice that the total sum of squares is part of and proportional to the sample variance <span class="math inline">\(s^2\)</span> (<a href="../exploring-data/numerical-features.html#sec-standard-deviation" class="quarto-xref"><span>Section 3.4.2</span></a>).</p>
+<p>We can partition the total sum of squares into two parts, the <strong>explained sum of squares</strong> <span class="math inline">\(\textrm{SS}_\textrm{model}\)</span> and the residual sum of squares <span class="math inline">\(\textrm{SS}_\epsilon\)</span>:</p>
+<p><span class="math display">\[
+\textrm{SS}
+= \textrm{SS}_\textrm{model} + \textrm{SS}_\epsilon
+= \sum_{i=1}^n (\hat{y}_i - \bar{y})^2 + \sum_{i=1}^n (y_i - \hat{y}_i)^2
+\]</span></p>
+<p>Then R-squared <span class="math inline">\(R^2\)</span> is defined in terms of the sums of squares as</p>
+<p><span class="math display">\[
+R^2
+= 1 - \frac{\textrm{SS}_\epsilon}{\textrm{SS}}
+= \frac{\textrm{SS}_\textrm{model}}{\textrm{SS}}
+\]</span></p>
+<p>For a model with <span class="math inline">\(k\)</span> terms (excluding the intercept), the adjusted R-squared <span class="math inline">\(R_\textrm{adj}^2\)</span> is defined as</p>
+<p><span class="math display">\[
+R_\textrm{adj}^2
+= 1 - \frac{\textrm{SS}_\epsilon}{n - k - 1} \cdot \frac{n - 1}{\textrm{SS}}
+= 1 - \frac{s_\epsilon^2}{s^2}
+\]</span></p>
+<p>The denominator <span class="math inline">\(n - k - 1\)</span> accounts for the number of terms in the model.</p>
+</div>
+</div>
+</div>
+<p>R-squared, whether adjusted or not, mostly tells us about how well the model fits <em>the sample</em>. A model that fits a sample well might not fit the population well, and a model that fits the population well might not fit a sample well. Moreover, for some populations, observations are always noisy (accurate measurement is difficult). Then R-squared can be large even if the model fits the population well.</p>
+<div class="callout callout-style-default callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Warning
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Treat R-squared as one statistic among many when examining a model.</p>
+<p>To estimate how well a model will generalize, use other methods specifically designed for that purpose, such as cross-validation.</p>
+</div>
+</div>
+</section>
+<section id="f-statistic" class="level4 unnumbered">
+<h4 class="unnumbered anchored" data-anchor-id="f-statistic">F Statistic</h4>
+<pre class="text"><code>F-statistic: 1.63e+04 on 2 and 6191 DF,  p-value: &lt; 2.2e-16</code></pre>
+<p>The F statistic is the ratio of variance in the outcome that’s explained by the model to unexplained variance. The F statistic is always positive.</p>
+<p>The F statistic is also the relative difference between the residual sum of squares (unexplained variance) for a simplified model with only an intercept (the same as predicting the outcome with the sample mean) and for the fitted model. This perspective is helpful for interpreting the statistic: larger values indicate that the fitted model is better at explaining the variance of the outcome than the simplified model.</p>
+<div class="callout callout-style-default callout-note callout-titled" title="Definition: F Statistic">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-19-contents" aria-controls="callout-19" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Definition: F Statistic
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-19" class="callout-19-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>For a model with <span class="math inline">\(k\)</span> terms (excluding the intercept), the F statistic is defined as</p>
+<p><span class="math display">\[
+F
+= \frac{\textrm{SS}_\textrm{model}} {\textrm{SS}_\epsilon}
+  \cdot \frac{n - k - 1} {k}
+= \frac{\textrm{SS} - \textrm{SS}_\epsilon}{\textrm{SS}_\epsilon}
+  \cdot \frac{n - k - 1}{k}
+\]</span></p>
+</div>
+</div>
+</div>
+<p>The F statistic is primarily used for a hypothesis test where the null hypothesis is that the model coefficients (excluding the intercept) are all 0. As <span class="citation" data-cites="gelman2020">Gelman et al. (<a href="../references.html#ref-gelman2020" role="doc-biblioref">2020</a>)</span> point out, this null hypothesis is unrealistic—if we believe it’s plausible that a predictor is entirely unrelated to the outcome, we shouldn’t include it in the model in the first place. The F test is often used to decide whether a model with fewer features might be more appropriate, but there are better approaches, such as examining standard errors for the coefficient estimates to decide whether the estimates are too imprecise to be useful.</p>
+<div class="callout callout-style-default callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Warning
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>As with R-squared, treat the F statistic as one statistic among many when examining a model.</p>
+</div>
+</div>
+<div class="callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Important
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Treat every model as a simplification of reality. Statistics can help us understand how well a model describes data, but can’t tell us whether a model is “correct” (and it’s unclear what it means for a simplification to be “correct” anyway).</p>
+</div>
+</div>
+</section>
+</section>
+<section id="predictions-and-marginal-means" class="level3" data-number="9.5.2">
+<h3 data-number="9.5.2" class="anchored" data-anchor-id="predictions-and-marginal-means"><span class="header-section-number">9.5.2</span> Predictions and Marginal Means</h3>
+<p>When a model only has one or two predictors, and they’re not transformed, we often interpret the model by examining the coefficients directly. Interpretation is more difficult for models with a many predictors, especially if some are transformed or have interactions. We might also want to ask questions about the model that aren’t easy to answer based on the coefficients alone, such as how the outcome varies across different subpopulations of interest.</p>
+<p>One solution to these problems is to examine <strong>marginal means</strong>, means of (or “marginalized over”) the predictions on a grid of predictor values. The choice of grid depends on the question we want to answer. In some disciplines, marginal means are also called <strong>marginal effects</strong>.</p>
+<p>For example, suppose we want to investigate whether a new treatment lowers blood pressure. We conduct a study where half of the subjects receive the treatment and half don’t. In addition to blood pressure, we also collect other information about the people in the study, such as their age and medical history. Although we can compare the blood pressure of those who received the treatment to those who didn’t directly, what we really want is to compare <strong>counterfactuals</strong>: what would the blood pressure of people who received the treatment be if they hadn’t received it, and what would the blood pressure of people who didn’t receive the treatment be if they had? We can use marginal means to address these questions as well as many others.</p>
+<p>In R, the <a href="https://doi.org/10.32614/CRAN.package.marginaleffects">marginaleffects</a> package and the <a href="https://rvlenth.github.io/emmeans/">emmeans</a> package each provide a variety of functions to compute marginal means. The also have many other features, such as functions to create grids, carry out hypothesis tests, and compute other aggregates of model predictions.</p>
+<div class="callout callout-style-default callout-note callout-titled" title="See Also">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>See Also
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>To learn more about how to interpret models with marginal means, we recommend <a href="https://marginaleffects.com/"><em>Model to Meaning</em></a> <span class="citation" data-cites="arel-bundock2025">(<a href="../references.html#ref-arel-bundock2025" role="doc-biblioref">Arel-Bundock 2025</a>)</span>. The book is oriented around case studies and serves as an introduction to the R package marginaleffects.</p>
+</div>
+</div>
+</section>
+</section>
+<section id="sec-hypothesis-tests-for-models" class="level2" data-number="9.6">
+<h2 data-number="9.6" class="anchored" data-anchor-id="sec-hypothesis-tests-for-models"><span class="header-section-number">9.6</span> Testing Models</h2>
+<p>Linear models are often useful in data analyses where we want to test some hypothesis (<a href="hypothesis-tests.html" class="quarto-xref"><span>Chapter 8</span></a>). Three different approaches (among many) that we can take to test coefficients are:</p>
+<ul>
+<li><p>Permutation tests: we can test whether the outcome and all predictors are correlated (that is, null hypothesis <span class="math inline">\(\beta_1 = \dots = \beta_k = 0\)</span> for a model with <span class="math inline">\(k\)</span> predictors). However, we can’t test individual coefficients with a permutation test, and we can’t test for non-zero coefficient values.</p></li>
+<li><p>Bootstrap confidence intervals: we can resample the residuals with replacement, adding them back to the model predictions, to generate bootstrap estimates and confidence intervals for the coefficients and other statistics. By inverting the confidence intervals, we can test individual coefficients and other statistics.</p></li>
+<li><p>Classical tests: by assuming that the errors are independent, normally distributed, and have equal variance, we can use classical tests (typically based on Student’s t distribution) for the individual coefficients and other statistics. Specifically, in the single predictor case, we assume for <span class="math inline">\(i = 1,
+\dots, n\)</span> that</p>
+<p><span class="math display">\[
+y_i = \beta_0 + \beta_1 x_i + \epsilon_i
+\quad\textrm{where}\quad
+\epsilon_i \sim \mathcal{N}(0, \sigma^2)
+\]</span></p>
+<p>In practice, these tests tend to have nearly-correct error rates as long as the sample size is large (<span class="math inline">\(n \geq 30\)</span>) and the distribution of errors is symmetrical, even if it isn’t normal.</p></li>
+</ul>
+<p>For all of these, the linear model assumptions of validity, representativeness, linearity, independence of errors, and equal variance of errors are critical. In general, failing to satisfy these assumptions increases testing error rates, which makes the discernibility level (and power estimates) inaccurate.</p>
+<p>R’s built-in functions focus exclusively on classical tests, and the classical tests work well in most cases, so that’s what we’ll cover here. The <code>summary</code> function displays the standard score for each coefficient. Under the linear model assumptions, for a model trained on <span class="math inline">\(n\)</span> observations and <span class="math inline">\(k\)</span> predictors, each standard score comes from a t distribution with normality <span class="math inline">\(n - k - 1\)</span>.</p>
+<p>The <code>summary</code> function also displays a p-value for each coefficent for a test with null hypothesis <span class="math inline">\(H_0: \beta_i = 0\)</span> and alternative hypothesis <span class="math inline">\(H_A:
+\beta_i \neq 0\)</span>. This p-value is computed from the t distribution.</p>
+<p>As an example, let’s look at the summary for the squid mass model with the squared dorsal mantle length term:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(quad_model)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = mass_g ~ dorsal_mantle_length_mm + I(dorsal_mantle_length_mm^2), 
+    data = squid_cloud)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-35.237  -3.267   0.521   3.775  52.794 
+
+Coefficients:
+                              Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept)                  77.386910   3.670391   21.08   &lt;2e-16 ***
+dorsal_mantle_length_mm      -1.538497   0.057980  -26.54   &lt;2e-16 ***
+I(dorsal_mantle_length_mm^2)  0.009674   0.000228   42.44   &lt;2e-16 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 5.9 on 6191 degrees of freedom
+Multiple R-squared:  0.8404,    Adjusted R-squared:  0.8403 
+F-statistic: 1.63e+04 on 2 and 6191 DF,  p-value: &lt; 2.2e-16</code></pre>
+</div>
+</div>
+<p>In this case, at level <span class="math inline">\(\alpha = 0.05\)</span>, the coefficients for both dorsal mantle length and squared dorsal mantle length are statistically discernable. There’s strong evidence in the data that they should not be 0. For this model, the QQ plot (<a href="#fig-squid-diagnostics-quad" class="quarto-xref">Figure&nbsp;<span>9.7</span></a>) indicated that the residuals are not normally distributed, and that they’re skewed rather than symmetrical, so the error rate of the test might be higher than chosen level 5%. Nevertheless, because this is a very large dataset and the relationship matches our intuition about the physical world, we have no reason to doubt that the coefficients should not be 0.</p>
+<p>The built-in R function <code>confint</code> returns classical (t distribution) confidence intervals for the coefficients in a linear model:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="fu">confint</span>(quad_model)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                                    2.5 %      97.5 %
+(Intercept)                  70.191668429 84.58215058
+dorsal_mantle_length_mm      -1.652157158 -1.42483638
+I(dorsal_mantle_length_mm^2)  0.009226814  0.01012057</code></pre>
+</div>
+</div>
+<p>These provide more insight into the range of likely values for each coefficient than the p-values alone.</p>
+<p>The <a href="https://doi.org/10.32614/CRAN.package.marginaleffects">marginaleffects</a> package and <a href="https://rvlenth.github.io/emmeans/">emmeans</a> package provide functions to test more sophisticated hypotheses. They support a variety of testing methods, including the bootstrap and classical tests.</p>
+<div class="callout callout-style-default callout-note callout-titled" title="See Also">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>See Also
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>This chapter is based on many sources (see <a href="../../chapters/references.html">References</a>), but two textbooks were especially influential:</p>
+<ul>
+<li><a href="https://openintrostat.github.io/ims/"><em>Introduction to Modern Statistics</em></a> <span class="citation" data-cites="ims">(<a href="../references.html#ref-ims" role="doc-biblioref">Çetinkaya-Rundel and Hardin 2024</a>)</span> provides a beginner-friendly introduction to data exploration and applied statistics. If you’re new to statistics or want a gentle refresher, it’s a great starting point for learning more.</li>
+<li><a href="https://avehtari.github.io/ROS-Examples/"><em>Regression and Other Stories</em></a> <span class="citation" data-cites="gelman2020">(<a href="../references.html#ref-gelman2020" role="doc-biblioref">Gelman et al. 2020</a>)</span> provides a thorough introduction to linear models (as well as other kinds of models) while keeping the focus solidly on realistic applications. It includes details about several intermediate to advanced topics that aren’t covered here, such as Bayesian statistics.</li>
+</ul>
+<p>DataLab also has two older workshops about linear models:</p>
+<ul>
+<li><a href="https://ucdavisdatalab.github.io/workshop_regression/">A Practical Introduction to Regression Modeling in R</a></li>
+<li><a href="https://ucdavisdatalab.github.io/workshop-model-validation/">Model Validation for Applied Data Science</a></li>
+</ul>
+</div>
+</div>
+
+
+<div id="refs" class="references csl-bib-body hanging-indent" role="list" style="display: none">
+<div id="ref-anscombe1973" class="csl-entry" role="listitem">
+Anscombe, F. J. 1973. <span>“Graphs in Statistical Analysis.”</span> <em>The American Statistician</em> 27 (1): 17–21. <a href="https://doi.org/10.1080/00031305.1973.10478966">https://doi.org/10.1080/00031305.1973.10478966</a>.
+</div>
+<div id="ref-arel-bundock2025" class="csl-entry" role="listitem">
+Arel-Bundock, Vincent. 2025. <em>Model to Meaning: How to Interpret Statistical Models with <span>R</span> and Python</em>. <span>CRC</span> Press <span>LLC</span>. <a href="https://marginaleffects.com/">https://marginaleffects.com/</a>.
+</div>
+<div id="ref-carroll2020" class="csl-entry" role="listitem">
+Carroll, Stephanie Russo, Ibrahim Garba, Oscar L. Figueroa-Rodríguez, et al. 2020. <span>“The <span>CARE</span> Principles for Indigenous Data Governance.”</span> <em>Data Science Journal</em> 19 (1). <a href="https://doi.org/10.5334/dsj-2020-043">https://doi.org/10.5334/dsj-2020-043</a>.
+</div>
+<div id="ref-ims" class="csl-entry" role="listitem">
+Çetinkaya-Rundel, Mine, and Johanna Hardin. 2024. <em>Introduction to Modern Statistics</em>. 2nd ed. <span>OpenIntro</span>. <a href="https://openintrostat.github.io/ims/">https://openintrostat.github.io/ims/</a>.
+</div>
+<div id="ref-dignazio2020" class="csl-entry" role="listitem">
+D’Ignazio, Catherine, and Lauren F. Klein. 2020. <em>Data Feminism</em>. The <span>MIT</span> Press. <a href="https://doi.org/10.7551/mitpress/11805.001.0001">https://doi.org/10.7551/mitpress/11805.001.0001</a>.
+</div>
+<div id="ref-davison1997" class="csl-entry" role="listitem">
+Davison, A. C., and D. V. Hinkley. 1997. <em>Bootstrap Methods and Their Application</em>. Cambridge University Press.
+</div>
+<div id="ref-openintro" class="csl-entry" role="listitem">
+Diez, David M., Christopher D. Barr, and Mine Cetinkaya-Rundel. 2019. <em><span>OpenIntro</span> Statistics</em>. Fourth Edition. <span>OpenIntro</span>. <a href="https://open.umn.edu/opentextbooks/textbooks/60">https://open.umn.edu/opentextbooks/textbooks/60</a>.
+</div>
+<div id="ref-gelman2020" class="csl-entry" role="listitem">
+Gelman, Andrew, Jennifer Hill, and Aki Vehtari. 2020. <em>Regression and Other Stories</em>. Cambridge University Press. <a href="https://avehtari.github.io/ROS-Examples/">https://avehtari.github.io/ROS-Examples/</a>.
+</div>
+<div id="ref-hesterberg2014" class="csl-entry" role="listitem">
+Hesterberg, Tim. 2014. <em>What Teachers Should Know about the Bootstrap: Resampling in the Undergraduate Statistics Curriculum</em>. <span>arXiv</span>:1411.5279. <span>arXiv</span>. <a href="https://doi.org/10.48550/arXiv.1411.5279">https://doi.org/10.48550/arXiv.1411.5279</a>.
+</div>
+<div id="ref-kuhn2020" class="csl-entry" role="listitem">
+Kuhn, Max, and Kjell Johnson. 2020. <em>Feature Engineering and Selection: A Practical Approach for Predictive Models</em>. <span>CRC</span> Press, Taylor &amp; Francis Group. <a href="https://feat.engineering/">https://feat.engineering/</a>.
+</div>
+<div id="ref-lindelov2019" class="csl-entry" role="listitem">
+Lindeløv, Jonas Kristoffer. 2019. <span>“Common Statistical Tests Are Linear Models.”</span> June 28. <a href="https://lindeloev.github.io/tests-as-linear/">https://lindeloev.github.io/tests-as-linear/</a>.
+</div>
+<div id="ref-datasaurus" class="csl-entry" role="listitem">
+Matejka, Justin, and George Fitzmaurice. 2017. <span>“Same Stats, Different Graphs: Generating Datasets with Varied Appearance and Identical Statistics Through Simulated Annealing.”</span> <em>Proceedings of the 2017 <span>CHI</span> Conference on Human Factors in Computing Systems</em> (New York, <span>NY</span>, <span>USA</span>), <span>CHI</span> ’17, May 2, 1290–94. <a href="https://doi.org/10.1145/3025453.3025912">https://doi.org/10.1145/3025453.3025912</a>.
+</div>
+<div id="ref-mean-calculator" class="csl-entry" role="listitem">
+Pul, Ruurtjan, Peter Troshin, and Svetlana Fomina. 2026. <span>“Mean Calculator.”</span> <a href="https://meancalculator.com/">https://meancalculator.com/</a>.
+</div>
+<div id="ref-turing-way" class="csl-entry" role="listitem">
+The Turing Way Community. 2025. <em>The Turing Way: A Handbook for Reproducible, Ethical and Collaborative Research</em>. V. 1.2.3. Zenodo, released April. <a href="https://doi.org/10.5281/zenodo.15213042">https://doi.org/10.5281/zenodo.15213042</a>.
+</div>
+<div id="ref-wilber2019" class="csl-entry" role="listitem">
+Wilber, Jared. 2019. <span>“The Permutation Test: A Visual Explanation of Statistical Testing.”</span> March. <a href="https://www.jwilber.me/permutationtest/">https://www.jwilber.me/permutationtest/</a>.
+</div>
+</div>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/ucdavisdatalab\.github\.io\/dwr_workshop_statistics");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="../../chapters/applied-statistics/hypothesis-tests.html" class="pagination-link" aria-label="Hypothesis Tests">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Hypothesis Tests</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="../../chapters/temporal-data/index.html" class="pagination-link" aria-label="Overview">
+        <span class="nav-page-text">Overview</span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+
+<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/ucdavisdatalab/dwr_workshop_statistics/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li><li><a href="https://github.com/ucdavisdatalab/dwr_workshop_statistics/blob/main/chapters/applied-statistics/linear-models.qmd" class="toc-action"><i class="bi empty"></i>View source</a></li></ul></div></div></div></footer></body></html>

@@ -1,0 +1,1691 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.9.38">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="description" content="Reader for the DWR Statistics workshop series.">
+
+<title>7&nbsp; Quantifying Uncertainty – DWR Statistics Workshops</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
+
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<link href="../../chapters/applied-statistics/hypothesis-tests.html" rel="next">
+<link href="../../chapters/applied-statistics/index.html" rel="prev">
+<link href="../..//images/logos/datalab-logo_square_150x150.png" rel="icon" type="image/png">
+<script src="../../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-15634bcf2e68342d4ad2dfa704d543f6.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap-4927f781319b8b164c3724fad35bda6c.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<style>
+.callout.callout-style-default .callout-body {
+  padding: 0 1.5rem 0;
+}
+.cell-output-stdout {
+  overflow-y: scroll;
+  max-height: 30rem;
+  margin-bottom: 0.75rem;
+}
+#quarto-sidebar a.text-start {
+  margin-top: 1rem;
+  font-weight: bold;
+}
+</style>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<meta property="og:title" content="7&nbsp; Quantifying Uncertainty – DWR Statistics Workshops">
+<meta property="og:description" content="Reader for the DWR Statistics workshop series.">
+<meta property="og:image" content="https://ucdavisdatalab.github.io/dwr_workshop_statistics/images/applied-statistics/market_squid.jpg">
+<meta property="og:site_name" content="DWR Statistics Workshops">
+<meta property="og:image:alt" content="A illustration of a squid in profile. The squid has a long body,   large blue eye, and tentacles. Its body is white with many brown and orange   speckles, as well as a few green and black speckles.">
+<meta name="twitter:title" content="7&nbsp; Quantifying Uncertainty – DWR Statistics Workshops">
+<meta name="twitter:description" content="Reader for the DWR Statistics workshop series.">
+<meta name="twitter:image" content="https://ucdavisdatalab.github.io/dwr_workshop_statistics/images/applied-statistics/market_squid.jpg">
+<meta name="twitter:image:alt" content="A illustration of a squid in profile. The squid has a long body,   large blue eye, and tentacles. Its body is white with many brown and orange   speckles, as well as a few green and black speckles.">
+<meta name="twitter:card" content="summary_large_image">
+</head>
+
+<body class="nav-sidebar floating quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../chapters/applied-statistics/index.html">Introduction to Applied Statistics</a></li><li class="breadcrumb-item"><a href="../../chapters/applied-statistics/quantifying-uncertainty.html"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Quantifying Uncertainty</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header sidebar-header-stacked">
+      <a href="https://datalab.ucdavis.edu/" class="sidebar-logo-link">
+      <img src="../../images/logos/datalab-logo-full-color-rgb.png" alt="The logo of the UC Davis DataLab." class="sidebar-logo light-content py-0 d-lg-inline d-none">
+      <img src="../../images/logos/datalab-logo-full-color-rgb.png" alt="The logo of the UC Davis DataLab." class="sidebar-logo dark-content py-0 d-lg-inline d-none">
+      </a>
+    <div class="sidebar-title mb-0 py-0">
+      <a href="../../">DWR Statistics Workshops</a> 
+        <div class="sidebar-tools-main">
+    <a href="https://github.com/ucdavisdatalab/dwr_workshop_statistics" title="Source Code" class="quarto-navigation-tool px-1" aria-label="Source Code"><i class="bi bi-github"></i></a>
+</div>
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Overview</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text">Exploring Data</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/exploring-data/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Overview</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/exploring-data/getting-to-know-data.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Getting to Know the Data</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/exploring-data/categorical-features.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Categorical Features</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/exploring-data/numerical-features.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Numerical Features</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/exploring-data/outliers.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Outliers</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/exploring-data/relationships-between-features.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Relationships Between Features</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/exploring-data/missing-values.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Missing Values</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true">
+ <span class="menu-text">Introduction to Applied Statistics</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/applied-statistics/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Overview</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/applied-statistics/quantifying-uncertainty.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Quantifying Uncertainty</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/applied-statistics/hypothesis-tests.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Hypothesis Tests</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/applied-statistics/linear-models.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Linear Models</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true">
+ <span class="menu-text">Working with Temporal Data</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/temporal-data/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Overview</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true">
+ <span class="menu-text">Working with Censored Data</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/censored-data/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Overview</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="true">
+ <span class="menu-text">Appendices</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/references.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">References</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#sec-dataset-ca-market-squid" id="toc-sec-dataset-ca-market-squid" class="nav-link active" data-scroll-target="#sec-dataset-ca-market-squid"><span class="header-section-number">7.1</span> Dataset: CA Market Squid</a></li>
+  <li><a href="#sampling-variation" id="toc-sampling-variation" class="nav-link" data-scroll-target="#sampling-variation"><span class="header-section-number">7.2</span> Sampling Variation</a>
+  <ul class="collapse">
+  <li><a href="#sec-sampling-distribution" id="toc-sec-sampling-distribution" class="nav-link" data-scroll-target="#sec-sampling-distribution"><span class="header-section-number">7.2.1</span> The Sampling Distribution</a></li>
+  </ul></li>
+  <li><a href="#bias" id="toc-bias" class="nav-link" data-scroll-target="#bias"><span class="header-section-number">7.3</span> Bias</a></li>
+  <li><a href="#sec-bootstrap-algorithm" id="toc-sec-bootstrap-algorithm" class="nav-link" data-scroll-target="#sec-bootstrap-algorithm"><span class="header-section-number">7.4</span> The Bootstrap Algorithm</a></li>
+  <li><a href="#sec-bootstrap-percentile-intervals" id="toc-sec-bootstrap-percentile-intervals" class="nav-link" data-scroll-target="#sec-bootstrap-percentile-intervals"><span class="header-section-number">7.5</span> Bootstrap Percentile Intervals</a></li>
+  <li><a href="#sec-central-limit-theorem" id="toc-sec-central-limit-theorem" class="nav-link" data-scroll-target="#sec-central-limit-theorem"><span class="header-section-number">7.6</span> The Central Limit Theorem</a></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/ucdavisdatalab/dwr_workshop_statistics/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li><li><a href="https://github.com/ucdavisdatalab/dwr_workshop_statistics/blob/main/chapters/applied-statistics/quantifying-uncertainty.qmd" class="toc-action"><i class="bi empty"></i>View source</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../chapters/applied-statistics/index.html">Introduction to Applied Statistics</a></li><li class="breadcrumb-item"><a href="../../chapters/applied-statistics/quantifying-uncertainty.html"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Quantifying Uncertainty</span></a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Quantifying Uncertainty</span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<div class="callout callout-style-default callout-note callout-titled" title="Learning Goals">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-1-contents" aria-controls="callout-1" aria-expanded="true" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Learning Goals
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-1" class="callout-1-contents callout-collapse collapse show">
+<div class="callout-body-container callout-body">
+<p>After this lesson, you should be able to:</p>
+<ul>
+<li>Explain what a sampling distribution is</li>
+<li>Explain the difference between a population distribution, an empirical distribution, and a sampling distribution</li>
+<li>Explain why we use standard deviation and other measures of scale to measure uncertainty</li>
+<li>Use the bootstrap to estimate the sampling distribution of an estimator</li>
+<li>Explain what a confidence interval is</li>
+<li>Use the bootstrap to compute a confidence interval for an estimate</li>
+<li>Explain what the Central Limit Theorem is and why we can use it to construct confidence intervals</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="callout callout-style-default callout-important callout-titled" title="Required Packages">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Important</span>Required Packages
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>This chapter uses the following R packages:</p>
+<ul>
+<li>dplyr</li>
+<li>ggplot2</li>
+<li>purrr</li>
+</ul>
+<p>For a refresher about how to install and load packages, see the <a href="https://ucdavisdatalab.github.io/dwr_workshop_r_basics/chapters/getting-started/getting-started.html#sec-packages">Packages</a> section of DataLab’s R Basics workshop reader.</p>
+</div>
+</div>
+<p><a href="../exploring-data/numerical-features.html" class="quarto-xref"><span>Chapter 3</span></a> introduced three estimators for the location or center of a distribution: the mode, median, and mean. These aren’t the only estimators. In fact, for any estimation problem we face, we can invent as many estimators as we want. Most of the time, we can rule out a lot of estimators that obviously won’t work well (such as estimating location with the number 8, regardless of the data). For the remaining estimators, we need a way to decide how well they work and how much confidence to place in their estimates. Even if we know which estimator we want to use, these details are critical to how we should interpret and communicate the estimates.</p>
+<p>This chapter introduces a versatile strategy for evaluating estimators (whether they estimate location or something else). It also briefly explains a second strategy that was developed before computers became widely available, which is still the most-used strategy today.</p>
+<section id="sec-dataset-ca-market-squid" class="level2" data-number="7.1">
+<h2 data-number="7.1" class="anchored" data-anchor-id="sec-dataset-ca-market-squid"><span class="header-section-number">7.1</span> Dataset: CA Market Squid</h2>
+<p>The <a href="https://en.wikipedia.org/wiki/Doryteuthis_opalescens">market squid</a> is a small squid that lives along the west coast of North America. In California, there are multiple fisheries for market squid. From 1989 to 1994, the California Department of Fish and Wildlife (CDFW) collected mass, length, sex, and maturity measurements for samples of caught squid in order to study the effects of fishing on squid size and reproduction.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="../../images/applied-statistics/market_squid.jpg" style="height:24em" alt="A illustration of a squid in profile. The squid has a long body,   large blue eye, and tentacles. Its body is white with many brown and orange   speckles, as well as a few green and black speckles." class="figure-img"></p>
+<figcaption>An illustration of a market squid from the <a href="https://marinespecies.wildlife.ca.gov/market-squid/">CDFW Marine Species Portal</a>.</figcaption>
+</figure>
+</div>
+<p>The CDFW publishes most of the data it collects to the <a href="https://data.ca.gov/">California Open Data Portal</a>. The examples in this and subsequent chapters use a cleaned 1989-1994 version of the California market squid dataset.</p>
+<div class="callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Important
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><a href="https://ucdavis.box.com/s/ru6rpxgt5ohbtbvqlas9cnpua61h0bb2">Click here</a> to download the 1989-1994 California market squid dataset.</p>
+<p>If you haven’t already, we recommend you create a directory for this workshop. In your workshop directory, create a <code>data/</code> subdirectory. Download and save the dataset in the <code>data/</code> subdirectory.</p>
+</div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled" title="Documentation for 1989-1994 California Market Squid Dataset">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-4-contents" aria-controls="callout-4" aria-expanded="true" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Documentation for 1989-1994 California Market Squid Dataset
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-4" class="callout-4-contents callout-collapse collapse show">
+<div class="callout-body-container callout-body">
+<p>Each row in the dataset contains measurements from one squid.</p>
+<table class="table-striped table-hover caption-top table">
+<colgroup>
+<col style="width: 25%">
+<col style="width: 75%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: right;">Column</th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;"><code>sample_id</code></td>
+<td style="text-align: left;">Identifier for the sample</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;"><code>date</code></td>
+<td style="text-align: left;">When sample was taken</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;"><code>gear</code></td>
+<td style="text-align: left;">Fishing gear used to catch the squid</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;"><code>location</code></td>
+<td style="text-align: left;">Description of where sample was taken</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;"><code>cdfw_block</code></td>
+<td style="text-align: left;">CDFW fishing block number</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;"><code>port</code></td>
+<td style="text-align: left;">Nearest port city (always Monterey)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;"><code>sets</code></td>
+<td style="text-align: left;">Identifier for the school of squid</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;"><code>squid_number</code></td>
+<td style="text-align: left;">Identifier for the squid (within each sample)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;"><code>mass_g</code></td>
+<td style="text-align: left;">Mass in grams (to nearest 0.1 g)</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;"><code>dorsal_mantle_length_mm</code></td>
+<td style="text-align: left;">Dorsal mantle length in millimeters</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;"><code>sex</code></td>
+<td style="text-align: left;">Sex</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;"><code>maturity</code></td>
+<td style="text-align: left;">Maturity category (immature, mature, or spent)</td>
+</tr>
+</tbody>
+</table>
+<p>The messy source dataset is available <a href="https://data.ca.gov/dataset/market-squid-fishery-historic-biological-samples-1989-1994-california">here</a>. It includes a CDFW report by Robert Leos which explains the sampling procedure and analyzes the dataset.</p>
+</div>
+</div>
+</div>
+<p>The dataset is in RDS format, so we can load it into R with the <code>readRDS</code> function:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>squid <span class="ot">=</span> <span class="fu">readRDS</span>(<span class="st">"data/1989-1994_ca_market_squid.rds"</span>)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(squid)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Classes 'tbl_df', 'tbl' and 'data.frame':   6202 obs. of  12 variables:
+ $ sample_id              : chr  "Mry1" "Mry1" "Mry1" "Mry1" ...
+ $ date                   : Date, format: "1989-04-17" "1989-04-17" ...
+ $ gear                   : Factor w/ 3 levels "Drum Seine","Lampara",..: 3 3 3 3 3 3 3 3 3 3 ...
+ $ location               : chr  "West of Holiday Inn" "West of Holiday Inn" "West of Holiday Inn" "West of Holiday Inn" ...
+ $ cdfw_block             : num  526 526 526 526 526 526 526 526 526 526 ...
+ $ port                   : Factor w/ 1 level "Monterey": 1 1 1 1 1 1 1 1 1 1 ...
+ $ sets                   : num  3 3 3 3 3 3 3 3 3 3 ...
+ $ squid_number           : num  21 2 3 4 5 8 10 11 12 15 ...
+ $ mass_g                 : num  14.6 72 47.6 37.7 60 62.2 52.9 32.3 46.9 56.7 ...
+ $ dorsal_mantle_length_mm: num  93 145 138 131 149 148 140 128 149 147 ...
+ $ sex                    : Factor w/ 2 levels "Female","Male": 2 2 2 2 2 2 2 2 2 2 ...
+ $ maturity               : Factor w/ 3 levels "Immature","Mature",..: 1 2 2 2 2 2 2 2 2 2 ...</code></pre>
+</div>
+</div>
+<p>It includes measurements for 6,202 squid. We can use the <code>summary</code> function to get a brief statistical summary of the columns:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(squid)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  sample_id              date                     gear        location        
+ Length:6202        Min.   :1989-04-17   Drum Seine :2752   Length:6202       
+ Class :character   1st Qu.:1990-05-08   Lampara    : 325   Class :character  
+ Mode  :character   Median :1990-11-19   Purse Seine:3100   Mode  :character  
+                    Mean   :1991-04-25   NA's       :  25                     
+                    3rd Qu.:1992-07-14                                        
+                    Max.   :1994-10-31                                        
+                                                                              
+   cdfw_block          port           sets        squid_number
+ Min.   :472.0   Monterey:6002   Min.   :1.000   Min.   : 1   
+ 1st Qu.:526.0   NA's    : 200   1st Qu.:2.000   1st Qu.: 7   
+ Median :526.0                   Median :3.000   Median :13   
+ Mean   :525.1                   Mean   :2.667   Mean   :13   
+ 3rd Qu.:526.0                   3rd Qu.:3.000   3rd Qu.:19   
+ Max.   :592.0                   Max.   :7.000   Max.   :25   
+ NA's   :3377                    NA's   :2075                 
+     mass_g        dorsal_mantle_length_mm     sex           maturity   
+ Min.   :   2.50   Min.   : 58.0           Female:2972   Immature: 376  
+ 1st Qu.:  29.70   1st Qu.:118.0           Male  :3230   Mature  :4849  
+ Median :  37.80   Median :127.0                         Spent   : 974  
+ Mean   :  42.81   Mean   :127.2                         NA's    :   3  
+ 3rd Qu.:  48.30   3rd Qu.:136.0                                        
+ Max.   :6509.00   Max.   :455.0                                        
+ NA's   :1                                                              </code></pre>
+</div>
+</div>
+<p>The <code>mass_g</code> column contains at least one outlier, the maximum value 6,509. The density plot reveals that there are several:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(<span class="st">"ggplot2"</span>)</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(squid) <span class="sc">+</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">aes</span>(<span class="at">x =</span> mass_g) <span class="sc">+</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_density</span>() <span class="sc">+</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_rug</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: Removed 1 row containing non-finite outside the scale range
+(`stat_density()`).</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: Removed 1 row containing missing values or values outside the scale range
+(`geom_rug()`).</code></pre>
+</div>
+<div class="cell-output-display">
+<div id="fig-squid-mass_g-density-extreme" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-squid-mass_g-density-extreme-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="quantifying-uncertainty_files/figure-html/fig-squid-mass_g-density-extreme-1.png" class="img-fluid figure-img" width="672">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-squid-mass_g-density-extreme-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;7.1: A density plot of mass in grams for the California market squid dataset.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>Market squid typically have body masses around 40 grams. A market squid with body mass over ten times that (400 grams) would be extremely unusual. These observations are probably erroneous. We could contact CDFW to try to learn more, but for now we’ll just exclude them from the dataset. We’ll also exclude observations where mass is missing:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(<span class="st">"dplyr"</span>)</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>squid <span class="ot">=</span> <span class="fu">filter_out</span>(squid, mass_g <span class="sc">&gt;=</span> <span class="dv">400</span> <span class="sc">|</span> <span class="fu">is.na</span>(mass_g))</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="fu">nrow</span>(squid)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 6197</code></pre>
+</div>
+</div>
+<p>After removing the outliers and missing values, we’re left with 6,197 squid. There are still a few unusually large squid, but most of them are around 40 grams:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(squid) <span class="sc">+</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">aes</span>(<span class="at">x =</span> mass_g) <span class="sc">+</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_density</span>() <span class="sc">+</span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_rug</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div id="fig-squid-mass_g-density" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-squid-mass_g-density-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="quantifying-uncertainty_files/figure-html/fig-squid-mass_g-density-1.png" class="img-fluid figure-img" width="672">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-squid-mass_g-density-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;7.2: A density plot of mass in grams for the California market squid dataset, after removing outliers.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>The sample mean is:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mean</span>(squid<span class="sc">$</span>mass_g)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 40.26416</code></pre>
+</div>
+</div>
+<p>This makes sense given the typical mass of a market squid.</p>
+</section>
+<section id="sampling-variation" class="level2" data-number="7.2">
+<h2 data-number="7.2" class="anchored" data-anchor-id="sampling-variation"><span class="header-section-number">7.2</span> Sampling Variation</h2>
+<p>We conduct data analysis to learn or answer questions about some population of interest. In many cases, we can’t collect data for the entire population because doing so would be unethical (for instance, when testing a new, unproven medicine) or because the cost (in time, money, etc.) is prohibitive. Instead, we collect a sample from the population (<a href="../exploring-data/getting-to-know-data.html#sec-collection-strategy" class="quarto-xref"><span>Section 1.1.2</span></a>), compute estimates to answer our questions, and hope that the results for the sample generalize to the population.</p>
+<p><strong>Sampling variation</strong> is one of two sources of estimator error. When a sample is collected randomly, it might be missing important parts of the population, which makes estimates worse. Even samples that represent the population well will yield different estimates from one to the next.</p>
+<p>To get a better understanding of sampling variation, let’s pretend that the CA market squid dataset is the entire population we want to study. In reality, the dataset is just a sample of squid caught along the west coast, but we’ll ignore this for the moment.</p>
+<!--
+For example, suppose we want to understand height differences (in inches)
+between adult mothers and eldest daughters. We probably can't collect height
+differences for every mother and daughter in the world, or country, or even
+local region. But we can choose some feasible number of height differences, say
+50, to collect as a sample.
+-->
+<p>Suppose we take a sample of 50 squid from the population. We can do this in R with the built-in <code>sample</code> function or dplyr’s <code>slice_sample</code> function. The code to collect the sample is:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1215</span>)</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>sample1 <span class="ot">=</span> <span class="fu">slice_sample</span>(squid, <span class="at">n =</span> <span class="dv">50</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Let’s examine the distribution of the sample. First, we’ll look at a summary:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(sample1<span class="sc">$</span>mass_g)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+  17.70   27.32   34.45   36.46   44.08   73.60 </code></pre>
+</div>
+</div>
+<p>Notice that the sample mean is different from the population mean (40.26). To get a better sense of how the data are distributed, we can also make a density plot:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(sample1) <span class="sc">+</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">aes</span>(<span class="at">x =</span> mass_g) <span class="sc">+</span></span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_density</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div id="fig-sample1-density" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-sample1-density-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="quantifying-uncertainty_files/figure-html/fig-sample1-density-1.png" class="img-fluid figure-img" width="672">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-sample1-density-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;7.3: Density plot of the empirical distribution of the first sample (50 observations).
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>Remember that we’re pretending the California market squid dataset is our entire population of interest. We collected the sample randomly from that population. So the distribution in <a href="#fig-sample1-density" class="quarto-xref">Figure&nbsp;<span>7.3</span></a> is an estimate of the population distribution in <a href="#fig-squid-mass_g-density" class="quarto-xref">Figure&nbsp;<span>7.2</span></a>. We call this estimate an <strong>empirical distribution</strong> because it’s based on our empirical knowledge (a sample).</p>
+<p>For this sample, the empirical distribution is quite a bit different from the population distribution. Like a sample mean estimates a population mean, an emprical distribution estimates a population distribution. The population distribution might have longer tails, or be more symmetrical, or have some other characteristic that’s underrepresented in the dataset. We turn to the empirical distribution because it’s the best we can do with the sample we have.</p>
+<p>Now suppose our colleagues decide to collect two more samples of 50 squid each, to compare the results:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>sample2 <span class="ot">=</span> <span class="fu">slice_sample</span>(squid, <span class="at">n =</span> <span class="dv">50</span>)</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>sample3 <span class="ot">=</span> <span class="fu">slice_sample</span>(squid, <span class="at">n =</span> <span class="dv">50</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>For sample 2, the statistics are:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(sample2<span class="sc">$</span>mass_g)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+  15.60   33.45   38.80   40.56   47.90   83.20 </code></pre>
+</div>
+</div>
+<p>And for sample 3, the statistics are:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(sample3<span class="sc">$</span>mass_g)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+   8.10   28.82   36.90   41.77   57.25   83.60 </code></pre>
+</div>
+</div>
+<p>The sample mean varies from one sample to the next, because each sample consists of different members of the population. If we continued to take samples, we’d end up with many different sample means, all estimates of the same population mean.</p>
+<section id="sec-sampling-distribution" class="level3" data-number="7.2.1">
+<h3 data-number="7.2.1" class="anchored" data-anchor-id="sec-sampling-distribution"><span class="header-section-number">7.2.1</span> The Sampling Distribution</h3>
+<p>Now let’s change our perspective to thinking about the sample means themselves as a dataset. This dataset tells us about the characteristics and distribution of the sample mean as an estimator. We call the distribution of an estimator a <strong>sampling distribution</strong>, because it describes how the estimates are distributed across samples.</p>
+<p>We can use a density plot to visualize the distribution of the sample means. For 1,000 sample means from 1,000 samples, it looks like this:</p>
+<div class="cell">
+<div class="cell-output-display">
+<div id="fig-sample_mean-density" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-sample_mean-density-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="quantifying-uncertainty_files/figure-html/fig-sample_mean-density-1.png" class="img-fluid figure-img" width="672">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-sample_mean-density-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;7.4: Density plot of the sampling distribution of the mean, based on 1,000 estimates.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>Notice that the sampling distribution in <a href="#fig-sample_mean-density" class="quarto-xref">Figure&nbsp;<span>7.4</span></a> is different from the population distribution (<a href="#fig-squid-mass_g-density" class="quarto-xref">Figure&nbsp;<span>7.2</span></a>). It’s still centered on the population mean (40.26), but it’s less spread out (every sample mean is within about 6 grams of the population mean) and it’s more symmetrical.</p>
+<p>The sampling distribution is also different from any given empirical distribution (such as <a href="#fig-sample1-density" class="quarto-xref">Figure&nbsp;<span>7.3</span></a>) since they estimate the population distribution.</p>
+<div class="callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Important
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>An estimator’s sampling distribution will usually be different from the population distribution (and any empirical distributions).</p>
+</div>
+</div>
+<p>The scale (<a href="../exploring-data/numerical-features.html#sec-scale-statistics" class="quarto-xref"><span>Section 3.4</span></a>) of a distribution measures uncertainty about what the value of an individual observation will be. When the scale is large, many values are possible, so uncertainty is high. When the scale is small, only a few values are possible, so uncertainty is low. In the extreme case, when the scale is as small as it can be, the distribution is no longer random: it’s a single, constant value that we know every observation will take.</p>
+<p>By the same reasoning, the scale of a sampling distribution measures uncertainty about the estimates. When the scale is large, estimates will vary a lot from sample to sample, so we might not trust any single estimate. When the scale is small, the estimates tend to agree regardless of the sample, so we can be more certain. In other words, we can judge how confident to be about an estimator based on the scale of its sampling distribution.</p>
+<p>For the sample means summarized by <a href="#fig-sample_mean-density" class="quarto-xref">Figure&nbsp;<span>7.4</span></a>, the sample standard deviation is about 2.11. The standard deviation of an estimator is called its <strong>standard error</strong>, because it helps us judge how uncertain to be about the estimates. In other words, it informs us about how much error there might be in the estimates <em>due to random variation between samples</em>. The larger the standard error is, the more uncertain we are about the estimate.</p>
+</section>
+</section>
+<section id="bias" class="level2" data-number="7.3">
+<h2 data-number="7.3" class="anchored" data-anchor-id="bias"><span class="header-section-number">7.3</span> Bias</h2>
+<p>Sampling variation is only one of the two sources of estimator error. The other is statistical <strong>bias</strong>, where an estimator estimates the wrong quantity. Notice that this definition of bias is much narrower and more specific than the definition of bias in ordinary speech and writing.</p>
+<p>We say an estimator is <strong>unbiased</strong> if it estimates the correct quantity on average. This is the same as the sampling distribution being centered on the correct quantity.</p>
+<p>Minimizing standard error is often at odds with minimizing bias. For instance, we can always come up with a biased estimator with lower standard error than even the best unbiased estimator. We call this tension the <strong>bias-variance tradeoff</strong> (variance is the squared standard error). Whether or not it’s appropriate to accept some bias to reduce standard error depends on the specific estimation problem.</p>
+<div class="callout callout-style-default callout-note callout-titled" title="Note: Consistency">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Note: Consistency
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Consistency is another important statistical property. We say an estimator is <strong>consistent</strong> if the estimates get closer to being correct as the sample size increases.</p>
+<p>An unbiased estimator is consistent if its standard error decreases as the sample size increases. Biased estimators can also be consistent.</p>
+</div>
+</div>
+</section>
+<section id="sec-bootstrap-algorithm" class="level2" data-number="7.4">
+<h2 data-number="7.4" class="anchored" data-anchor-id="sec-bootstrap-algorithm"><span class="header-section-number">7.4</span> The Bootstrap Algorithm</h2>
+<p>Most of the time, we only have one sample. And if we had more than one sample, we’d combine them into a single sample, since more observations generally lead to more accurate estimates. So if we want to evaluate an estimator, we need a way to estimate its sampling distribution with only one sample.</p>
+<p>The <strong>bootstrap</strong>, or bootstrap algorithm, is one such method. The main idea is to draw new samples from the dataset (which is itself a sample) rather than the population. Assuming the dataset is representative of the population, these new <strong>bootstrap resamples</strong> should have similar characteristics to a sample from the population. The bootstrap resamples must be drawn with replacement. Another way to think about this is that we’re using the known empirical distribution as a substitute for the unknown population distribution.</p>
+<p>Once we have several bootstrap resamples, we can compute an estimate on each one. This gives us a collection of <strong>bootstrap estimates</strong>. By treating the bootstrap estimates as a dataset in their own right, we can analyze the <strong>bootstrap sampling distribution</strong> of the estimator and use it to estimate statistics such as standard error.</p>
+<div class="callout callout-style-default callout-note callout-titled" title="Algorithm: The Bootstrap">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Algorithm: The Bootstrap
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Suppose we have a sample and want to know more about a particular estimator’s sampling distribution. To use the bootstrap algorithm:</p>
+<ol type="1">
+<li>Construct a new sample of the same size by sampling <em>with</em> replacement. This is a bootstrap resample.</li>
+<li>Compute an estimate on the bootstrap resample. This is a bootstrap estimate.</li>
+<li>Repeat steps 1-2 to compute a collection of <span class="math inline">\(b\)</span> resamples and <span class="math inline">\(b\)</span> estimates.</li>
+<li>Use the bootstrap estimates to estimate standard error or other properties of the sampling distribution.</li>
+</ol>
+<p>Use <span class="math inline">\(b \geq 10,000\)</span> resamples. Larger values of <span class="math inline">\(b\)</span> lead to better approximation of the sampling distribution, but also increase computing time.</p>
+</div>
+</div>
+<p>A bootstrap sampling distribution is a useful but imperfect estimate of the sampling distribution. Unlike the sampling distribution, it’s centered on the estimate for the original dataset. On the other hand, the scale is about the same as in the sampling distribution, so we can use it to estimate standard error.</p>
+<p>Let’s apply the bootstrap to the California market squid dataset. We’ll stop pretending that the dataset is the population. Instead, we’ll treat the dataset as a sample (because it is), and we’ll try to estimate the distribution of the sample mean.</p>
+<p>To make resampling easier, we’ll extract the <code>mass_g</code> column as a variable. Then we can use R’s <code>sample</code> function to generate a bootstrap resample. We need to set <code>replace = TRUE</code> to make the function sample with replacement. The function samples the same number of observations by default:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>mass_g <span class="ot">=</span> squid<span class="sc">$</span>mass_g</span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>boot <span class="ot">=</span> <span class="fu">sample</span>(mass_g, <span class="at">replace =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>The density plot for the bootstrap resample is:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="fu">data.frame</span>(<span class="at">x =</span> boot)) <span class="sc">+</span></span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">aes</span>(<span class="at">x =</span> x) <span class="sc">+</span></span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_density</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div id="fig-boot1-density" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-boot1-density-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="quantifying-uncertainty_files/figure-html/fig-boot1-density-1.png" class="img-fluid figure-img" width="672">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-boot1-density-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;7.5: Density plot of the first bootstrap resample.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p><a href="#fig-squid-mass_g-density" class="quarto-xref">Figure&nbsp;<span>7.2</span></a> shows the distribution of the original dataset, while <a href="#fig-boot1-density" class="quarto-xref">Figure&nbsp;<span>7.5</span></a> shows the distribution of the bootstrap resample. The two distributions are nearly identical, which is typical for large samples. Nevertheless, the sample mean is slightly different from the population mean (40.26):</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mean</span>(boot)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 40.37468</code></pre>
+</div>
+</div>
+<p>We can use R’s apply functions or the purrr package’s map functions to repeat the resampling step many times. We’ll compute <span class="math inline">\(b = 1,000\)</span> resamples to keep the computing time manageable, but in practice <span class="math inline">\(b \geq 10,000\)</span> is more appropriate:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(<span class="st">"purrr"</span>)</span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>b <span class="ot">=</span> <span class="dv">1000</span></span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>boot_resamples <span class="ot">=</span> <span class="fu">map</span>(<span class="dv">1</span><span class="sc">:</span>b, \(i) {</span>
+<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">sample</span>(mass_g, <span class="at">replace =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a>})</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled" title="See Also">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>See Also
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>For a review of R’s apply functions and the purrr package, see the <a href="https://ucdavisdatalab.github.io/dwr_workshop_r_basics/chapters/organizing-code/control-flow.html#loops">Loops</a> section of DataLab’s R Basics workshop reader.</p>
+<p>The <a href="https://purrr.tidyverse.org/">documentation for the purrr package</a> is also a useful reference.</p>
+</div>
+</div>
+<p>Each of the bootstrap resamples is slightly different. To demonstrate this, here are density plots for several, as well as the density plot for the original sample:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>slice <span class="ot">=</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">5</span></span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>df <span class="ot">=</span> <span class="fu">data.frame</span>(</span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">x =</span> <span class="fu">c</span>(mass_g, <span class="fu">unlist</span>(boot_resamples[slice])),</span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Make a categorical feature to identify each resample.</span></span>
+<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">sample =</span> <span class="fu">rep</span>(</span>
+<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">c</span>(<span class="st">"original"</span>, <span class="fu">paste0</span>(<span class="st">"resample"</span>, slice)),</span>
+<span id="cb27-7"><a href="#cb27-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">each =</span> <span class="fu">length</span>(mass_g)</span>
+<span id="cb27-8"><a href="#cb27-8" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb27-9"><a href="#cb27-9" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb27-10"><a href="#cb27-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-11"><a href="#cb27-11" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(df) <span class="sc">+</span></span>
+<span id="cb27-12"><a href="#cb27-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">aes</span>(<span class="at">x =</span> x) <span class="sc">+</span></span>
+<span id="cb27-13"><a href="#cb27-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_density</span>() <span class="sc">+</span></span>
+<span id="cb27-14"><a href="#cb27-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="fu">vars</span>(sample))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div id="fig-bootstrap_resamples-density" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-bootstrap_resamples-density-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="quantifying-uncertainty_files/figure-html/fig-bootstrap_resamples-density-1.png" class="img-fluid figure-img" width="672">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-bootstrap_resamples-density-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;7.6: Density plot of five bootstrap resamples, as well as the original sample.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>The next step is to compute an estimate, in this case the sample mean, on each of the bootstrap resamples. Again we can use the purrr package for this:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>boot_means <span class="ot">=</span> <span class="fu">map_dbl</span>(boot_resamples, mean)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>With the bootstrap estimates, we can make a density plot:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="fu">data.frame</span>(<span class="at">bootstrap_mean =</span> boot_means)) <span class="sc">+</span></span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">aes</span>(<span class="at">x =</span> bootstrap_mean) <span class="sc">+</span></span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_density</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div id="fig-bootstrap_mean-density" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-bootstrap_mean-density-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="quantifying-uncertainty_files/figure-html/fig-bootstrap_mean-density-1.png" class="img-fluid figure-img" width="672">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-bootstrap_mean-density-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;7.7: Density plot of 1,000 bootstrap sample means. This distribution approximates the sampling distribution of the mean.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>Two details of <a href="#fig-bootstrap_mean-density" class="quarto-xref">Figure&nbsp;<span>7.7</span></a> are important to notice. First, the distribution is centered at roughly 40.26, the mean of the original sample. For an unbiased estimator, the bootstrap sampling distribution is always centered on the original estimate.</p>
+<div class="callout callout-style-default callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Warning
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Remember that the bootstrap sampling distribution is itself an estimate and its center is usually different from the actual sampling distribution.</p>
+<p>Fortunately, the scale of the bootstrap sampling distribution tends to be similar to the actual sampling distribution. So we can still use it to estimate standard error.</p>
+</div>
+</div>
+<p>Second, notice that the spread of the bootstrap sampling distribution is much smaller than the spread of the sampling distribution in <a href="#fig-sample_mean-density" class="quarto-xref">Figure&nbsp;<span>7.4</span></a>. In fact, the standard deviation of the bootstrap estimates is:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sd</span>(boot_means)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.1948083</code></pre>
+</div>
+</div>
+<p>This is about 1/10th of the standard error (2.11) we found in <a href="#sec-sampling-distribution" class="quarto-xref"><span>Section 7.2.1</span></a>. The reason for this difference is that now each sample has 6197 observations instead of 50 observations, so the estimates of the mean are much more accurate.</p>
+<p>The takeaway is that the bootstrap sampling distribution is useful for estimating standard error, even though its center (and sometimes its shape) can differ from the actual sampling distribution.</p>
+<div class="callout callout-style-default callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Warning
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The bootstrap is known to perform poorly in a few specific situations:</p>
+<ul>
+<li>When the size <span class="math inline">\(n\)</span> of the original sample is small (say <span class="math inline">\(n &lt; 30\)</span>). In this case, the methods in <a href="#sec-central-limit-theorem" class="quarto-xref"><span>Section 7.6</span></a> are usually a better choice.</li>
+<li>When the original sample is a poor representative of the population. This is a difficult case, because the best solution is to collect more and better data.</li>
+<li>When the estimator is designed to estimate an extreme value, such as the population minimum or maximum. In this case, there are often sophisticated methods tailored specifically to the estimator that perform better.</li>
+</ul>
+</div>
+</div>
+</section>
+<section id="sec-bootstrap-percentile-intervals" class="level2" data-number="7.5">
+<h2 data-number="7.5" class="anchored" data-anchor-id="sec-bootstrap-percentile-intervals"><span class="header-section-number">7.5</span> Bootstrap Percentile Intervals</h2>
+<p>We can account for uncertainty about an estimate by instead presenting an interval of estimates. We call this a <strong>confidence interval</strong>. The interval should be narrow when we’re relatively confident (small standard error) and wide when we’re uncertain (large standard error). <span class="citation" data-cites="ims">Çetinkaya-Rundel and Hardin (<a href="../references.html#ref-ims" role="doc-biblioref">2024</a>)</span> explain confidence intervals with a helpful analogy: a single estimate is like fishing with a spear, whereas a confidence interval is like fishing with a net. With the confidence interval, we have a better chance of estimating correctly.</p>
+<p>There are many ways to construct confidence intervals for an estimate. A relatively simple way is to use percentiles of the bootstrap sampling distribution. This is called a <strong>bootstrap percentile interval</strong>. For example, if we take the 2.5th and 97.5th percentiles of the bootstrap means, we get:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="fu">quantile</span>(boot_means, <span class="fu">c</span>(<span class="fl">0.025</span>, <span class="fl">0.975</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>    2.5%    97.5% 
+39.87449 40.63477 </code></pre>
+</div>
+</div>
+<p>We estimate that the population mean is somewhere in this interval, although as with any estimate, this might be wrong. We call this a 95% bootstrap percentile interval because it covers the central 95% of the bootstrap sampling distribution. For reasons beyond the scope of this reader, there’s also a 95% chance that the interval covers the population mean.</p>
+<!--
+For the sampling distribution of means in @fig-sample_mean-density, the 2.5th
+percentile is about 36.1 and the 97.5th percentile
+is about 44.49. So a confidence interval for the
+sample mean is:
+
+$$
+(-0.27,\ 0.27).
+$$
+
+We say this is a 95% percent confidence interval. The interval covers
+approximately 95% of the plausible estimates. For reasons that go beyond the
+scope of this reader, there's also an approximately 95% chance that it covers
+the population mean. This confidence interval happens to be centered on 0, but
+there's no reason a confidence interval has to be. We'll revisit confidence
+intervals in @sec-bootstrap-percentile-intervals.
+-->
+<div class="callout callout-style-default callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Warning
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>In situations where the bootstap performs poorly (see <a href="#sec-bootstrap-algorithm" class="quarto-xref"><span>Section 7.4</span></a>), the bootstrap percentile intervals will usually be too narrow. In other words, they tend to understate uncertainty and have less than a 95% chance of covering the population parameter.</p>
+</div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled" title="See Also">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>See Also
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>For another introduction to the bootstrap and confidence intervals, see the <a href="https://openintrostat.github.io/ims/foundations-bootstrapping.html">Confidence intervals with bootstrapping</a> chapter, as well as subsequent chapters, of <em>Introduction to Modern Statistics</em> <span class="citation" data-cites="ims">(<a href="../references.html#ref-ims" role="doc-biblioref">Çetinkaya-Rundel and Hardin 2024</a>)</span>.</p>
+<p>To learn more about the bootstrap, including other ways to bootstrap and to use the bootstrap to construct confidence intervals, see <em>Bootstrap Methods and Their Application</em> <span class="citation" data-cites="davison1997">(<a href="../references.html#ref-davison1997" role="doc-biblioref">Davison and Hinkley 1997</a>)</span>.</p>
+<p>In R, the <a href="https://doi.org/10.32614/CRAN.package.boot">boot</a> package provides functions to carry out a bootstrap and compute confidence intervals.</p>
+<p>The <a href="https://infer.netlify.app/">infer</a> package provides functions for many methods in applied statistics, with an interface inspired by and compatible with the <a href="https://tidyverse.org/">Tidyverse</a>. The bootstrap is among the methods the package supports.</p>
+</div>
+</div>
+</section>
+<section id="sec-central-limit-theorem" class="level2" data-number="7.6">
+<h2 data-number="7.6" class="anchored" data-anchor-id="sec-central-limit-theorem"><span class="header-section-number">7.6</span> The Central Limit Theorem</h2>
+<p>The bootstrap is only possible because modern computers can resample a dataset in a few seconds, but statisticians have needed to quantify uncertainty since long before computers were invented. To do this, they developed mathematical models of distributions and formulas for computing confidence intervals. These methods are still widely used. Compared to the bootstrap, they have different strengths and weaknesses, so it’s useful to be familiar with both.</p>
+<p>Before we can compute confidence intervals, we need to define some statistical concepts. A <strong>random variable</strong> is an unrealized number or category that will be drawn randomly from a specific distribution. Think of a random variable as an observation that hasn’t been collected yet. We might know how the population is distributed, but we don’t know the value of the observation. The statistical convention is to write random variables in uppercase, like <span class="math inline">\(X\)</span> or <span class="math inline">\(Y\)</span>, and non-random values in lowercase, like <span class="math inline">\(x\)</span> and <span class="math inline">\(y\)</span>.</p>
+<p>The <strong>normal distribution</strong> is the centerpiece of many classical methods. Its density curve is bell-shaped and extends to infinity in both the negative and positive directions:</p>
+<div class="cell">
+<div class="cell-output-display">
+<div id="fig-standard-normal" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-standard-normal-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="quantifying-uncertainty_files/figure-html/fig-standard-normal-1.png" class="img-fluid figure-img" width="672">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-standard-normal-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;7.8: Density plot of the standard normal distribution. The mean is 0 and the standard deviation is 1.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>The normal distribution is really a family of distributions parameterized by their mean <span class="math inline">\(\mu\)</span> and variance <span class="math inline">\(\sigma^2\)</span>. We denote these by <span class="math inline">\(\mathcal{N}(\mu,
+\sigma^2)\)</span>. All of them have the characteristic bell-shaped density. We call the normal distribution with mean 0 and variance 1, denoted <span class="math inline">\(\mathcal{N}(0,
+1)\)</span>, the <strong>standard normal distribution</strong>.</p>
+<p>Normal distributions are common because sums of random variables tend to be nearly normal, especially if the number of terms in the sum is large. The sample mean is an example of this. Suppose <span class="math inline">\(X_1, X_2, \dots, X_n\)</span> are identically distributed random variables from a population with mean <span class="math inline">\(\mu\)</span> and standard deviation <span class="math inline">\(\sigma\)</span>. Suppose also that the value of each one is drawn independently of the others. Then the sample mean <span class="math inline">\(\bar{X}\)</span>, which estimates the population mean <span class="math inline">\(\mu\)</span>, is unbiased: its mean is <span class="math inline">\(\mu\)</span>. Its standard error is:</p>
+<p><span class="math display">\[
+\textrm{SE} = \frac{\sigma}{\sqrt{n}}.
+\]</span></p>
+<p>As the number of observations <span class="math inline">\(n\)</span> increases, the distribution of <span class="math inline">\(\bar{X}\)</span> becomes closer and closer to a normal distribution. Specifically,</p>
+<p><span class="math display">\[
+\bar{X} \to \mathcal{N}\left(\mu, \frac{\sigma^2}{n}\right)
+\quad as \quad
+n \to \infty.
+\]</span></p>
+<p>This result is known as the <strong>Central Limit Theorem</strong> (CLT) and is one of the foundations of statistics. The CLT is important because it tells us that for large samples, the sampling distribution of the mean is approximately normal. We can use this to compute confidence intervals.</p>
+<p>We can rearrange the CLT mathematically to write it in terms of a standard normal distribution:</p>
+<p><span class="math display">\[
+\frac{\bar{X} - \mu} {\sigma / \sqrt{n}} \to \mathcal{N} (0, 1)
+\quad as \quad
+n \to \infty.
+\]</span></p>
+<p>Notice that the left-hand side is just the standard score (<a href="../exploring-data/outliers.html#sec-standardization" class="quarto-xref"><span>Section 4.3</span></a>) of the sample mean.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>There are other versions of the CLT that remove some of the assumptions. The most important assumptions are that the random variables are independent and that their standard deviations are finite.</p>
+</div>
+</div>
+<p>Most of the time, we don’t know the population standard deviation <span class="math inline">\(\sigma\)</span>. We can replace it with the sample standard deviation <span class="math inline">\(S\)</span> to estimate the standard error of the sample mean:</p>
+<p><span class="math display">\[
+\textrm{SE} = \frac{\sigma}{\sqrt{n}} \approx \frac{S}{\sqrt{n}}.
+\]</span></p>
+<p>For large samples (say <span class="math inline">\(n \geq 30\)</span>), we can also replace <span class="math inline">\(\sigma\)</span> with <span class="math inline">\(S\)</span> in the CLT. For small samples, <span class="math inline">\(S\)</span> tends to underestimate, so the standard score is larger and doesn’t have a standard normal distribution. The density is still bell-shaped, but the tails are notably heavier. We call this <strong>Student’s t distribution</strong> (or the t distribution).</p>
+<div class="cell">
+<div class="cell-output-display">
+<div id="fig-t5" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-t5-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="quantifying-uncertainty_files/figure-html/fig-t5-1.png" class="img-fluid figure-img" width="672">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-t5-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;7.9: Density plot of the standard normal distribution (solid) and Student’s t distribution with 5 degrees of freedom (dotted).
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>Like the normal distribution, Student’s t distribution is really a family of distributions. The t distribution has just one parameter: <strong>normality</strong>, a positive integer that controls how heavy the tails are. As normality increases, the tails become lighter, and the t distribution becomes more and more like a standard normal distribution. We denote the t distribution by by <span class="math inline">\(t_v\)</span>, where <span class="math inline">\(v\)</span> is normality. The normality parameter is also called <strong>degrees of freedom</strong>.</p>
+<p>After replacing <span class="math inline">\(\sigma\)</span> with <span class="math inline">\(S\)</span>, the distribution of the standard score of the sample mean is approximately a t distribution with normality <span class="math inline">\(n - 1\)</span>. In mathematical notation:</p>
+<p><span class="math display">\[
+\DeclareMathOperator{\adist}{\dot{\sim}}
+\]</span></p>
+<p><span class="math display">\[
+\frac{\bar{X} - \mu} {S / \sqrt{n}} \adist t_{n - 1}.
+\]</span></p>
+<p>The symbol <span class="math inline">\(\adist\)</span> means “is approximately distributed as.” The distribution is exact if <span class="math inline">\(X_1, X_2, \dots, X_n\)</span> are normally distributed.</p>
+<p>The distribution of the sample mean (and of its standard score) matters because we can use it to construct a confidence interval. Specifically, because we know the distribution, we can find a quantile <span class="math inline">\(q\)</span> that bounds the standard score on both sides with probability <span class="math inline">\(1 - \alpha\)</span>. That is,</p>
+<p><span class="math display">\[
+-q \leq \frac{\bar{X} - \mu}{S / \sqrt{n}} \leq q.
+\]</span></p>
+<p>We can rearrange the inequality to isolate the population mean <span class="math inline">\(\mu\)</span>, since its value is unknown to us:</p>
+<p><span class="math display">\[
+\bar{X} - q \cdot\frac{S}{\sqrt{n}}
+\leq \mu
+\leq \bar{X} + q \cdot\frac{S}{\sqrt{n}}.
+\]</span></p>
+<div class="callout callout-style-default callout-note callout-titled" title="Note: Deriving the Confidence Interval">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-14-contents" aria-controls="callout-14" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Note: Deriving the Confidence Interval
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-14" class="callout-14-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>First, we multiply by <span class="math inline">\(-S / \sqrt{n}\)</span>:</p>
+<p><span class="math display">\[
+q \cdot\frac{S}{\sqrt{n}}
+\geq \mu - \bar{X}
+\geq -q \cdot\frac{S}{\sqrt{n}}
+\]</span></p>
+<p>Written from smallest to largest, this is:</p>
+<p><span class="math display">\[
+-q \cdot\frac{S}{\sqrt{n}}
+\leq \mu - \bar{X}
+\leq q \cdot\frac{S}{\sqrt{n}}
+\]</span></p>
+<p>Finally, we add <span class="math inline">\(\bar{X}\)</span>:</p>
+<p><span class="math display">\[
+\bar{X} - q \cdot\frac{S}{\sqrt{n}}
+\leq \mu
+\leq \bar{X} + q \cdot\frac{S}{\sqrt{n}}.
+\]</span></p>
+</div>
+</div>
+</div>
+<p>The endpoints of this inequality are random; the population mean <span class="math inline">\(\mu\)</span> is non-random. To make this <span class="math inline">\(1 - \alpha\)</span> confidence interval concrete, we replace the random values with their estimates:</p>
+<p><span class="math display">\[
+\left(
+  \bar{x} - q \cdot \frac{s}{\sqrt{n}},
+  \ \bar{x} + q \cdot \frac{s}{\sqrt{n}}
+\right).
+\]</span></p>
+<p>In this case, <span class="math inline">\(q\)</span> is the <span class="math inline">\(1 - \alpha / 2\)</span> quantile of <span class="math inline">\(t_{n - 1}\)</span>.</p>
+<p>In R, the <code>qt</code> function computes quantiles of the t distribution. So the code to construct a 95% confidence interval for mass in the California market squid example is:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>n <span class="ot">=</span> <span class="fu">length</span>(squid<span class="sc">$</span>mass_g)</span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>std_err <span class="ot">=</span> <span class="fu">sd</span>(squid<span class="sc">$</span>mass_g) <span class="sc">/</span> <span class="fu">sqrt</span>(n)</span>
+<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-4"><a href="#cb34-4" aria-hidden="true" tabindex="-1"></a><span class="co"># For a 0.95 = 1 - 0.05 confidence interval.</span></span>
+<span id="cb34-5"><a href="#cb34-5" aria-hidden="true" tabindex="-1"></a>ci <span class="ot">=</span> <span class="fu">mean</span>(squid<span class="sc">$</span>mass_g) <span class="sc">+</span> <span class="fu">qt</span>(<span class="fu">c</span>(<span class="fl">0.025</span>, <span class="fl">0.975</span>), n <span class="sc">-</span> <span class="dv">1</span>) <span class="sc">*</span> std_err</span>
+<span id="cb34-6"><a href="#cb34-6" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(ci, <span class="dv">2</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 39.89 40.64</code></pre>
+</div>
+</div>
+<p>This t distribution confidence interval almost identical to the bootstrap percentile interval (39.87, 40.63).</p>
+<p>Compared to bootstrap percentile intervals, t distribution confidence intervals have several advantages. They’re cheaper to compute since no resampling is needed. They also work relatively well even when the sample size is small.</p>
+<p>The main limitation of t distribution confidence intervals is that they’re exclusively for the sample mean. The sampling distribution of a different statistic will not necessarily be a t distribution. There are <a href="https://en.wikipedia.org/wiki/Delta_method">some methods</a> to generalize the CLT to other statistics, but the bootstrap is more flexible overall.</p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tip
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Knowing several different ways to compute confidence intervals (or any other estimate) is a great way to check work. Compute them both ways and check whether they agree. If they don’t, go back and look for mistakes in the computations.</p>
+</div>
+</div>
+<!--
+:::{.callout-tip title="Tip: Bootstrap t Intervals"}
+:::
+-->
+<div class="callout callout-style-default callout-note callout-titled" title="See Also">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>See Also
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><a href="https://openintrostat.github.io/ims/"><em>Introduction to Modern Statistics</em></a> <span class="citation" data-cites="ims">(<a href="../references.html#ref-ims" role="doc-biblioref">Çetinkaya-Rundel and Hardin 2024</a>)</span> introduces both the bootstrap and classical methods based on the CLT.</p>
+<p><a href="https://www.openintro.org/book/os/"><em>OpenIntro Statistics</em></a> <span class="citation" data-cites="openintro">(<a href="../references.html#ref-openintro" role="doc-biblioref">Diez et al. 2019</a>)</span> is an introductory statistics textbook that exclusively uses classical methods based on the CLT. It provides a more detailed look at these methods without letting rigor get in the way of intuition.</p>
+</div>
+</div>
+
+
+<div id="refs" class="references csl-bib-body hanging-indent" role="list" style="display: none">
+<div id="ref-anscombe1973" class="csl-entry" role="listitem">
+Anscombe, F. J. 1973. <span>“Graphs in Statistical Analysis.”</span> <em>The American Statistician</em> 27 (1): 17–21. <a href="https://doi.org/10.1080/00031305.1973.10478966">https://doi.org/10.1080/00031305.1973.10478966</a>.
+</div>
+<div id="ref-arel-bundock2025" class="csl-entry" role="listitem">
+Arel-Bundock, Vincent. 2025. <em>Model to Meaning: How to Interpret Statistical Models with <span>R</span> and Python</em>. <span>CRC</span> Press <span>LLC</span>. <a href="https://marginaleffects.com/">https://marginaleffects.com/</a>.
+</div>
+<div id="ref-carroll2020" class="csl-entry" role="listitem">
+Carroll, Stephanie Russo, Ibrahim Garba, Oscar L. Figueroa-Rodríguez, et al. 2020. <span>“The <span>CARE</span> Principles for Indigenous Data Governance.”</span> <em>Data Science Journal</em> 19 (1). <a href="https://doi.org/10.5334/dsj-2020-043">https://doi.org/10.5334/dsj-2020-043</a>.
+</div>
+<div id="ref-ims" class="csl-entry" role="listitem">
+Çetinkaya-Rundel, Mine, and Johanna Hardin. 2024. <em>Introduction to Modern Statistics</em>. 2nd ed. <span>OpenIntro</span>. <a href="https://openintrostat.github.io/ims/">https://openintrostat.github.io/ims/</a>.
+</div>
+<div id="ref-dignazio2020" class="csl-entry" role="listitem">
+D’Ignazio, Catherine, and Lauren F. Klein. 2020. <em>Data Feminism</em>. The <span>MIT</span> Press. <a href="https://doi.org/10.7551/mitpress/11805.001.0001">https://doi.org/10.7551/mitpress/11805.001.0001</a>.
+</div>
+<div id="ref-davison1997" class="csl-entry" role="listitem">
+Davison, A. C., and D. V. Hinkley. 1997. <em>Bootstrap Methods and Their Application</em>. Cambridge University Press.
+</div>
+<div id="ref-openintro" class="csl-entry" role="listitem">
+Diez, David M., Christopher D. Barr, and Mine Cetinkaya-Rundel. 2019. <em><span>OpenIntro</span> Statistics</em>. Fourth Edition. <span>OpenIntro</span>. <a href="https://open.umn.edu/opentextbooks/textbooks/60">https://open.umn.edu/opentextbooks/textbooks/60</a>.
+</div>
+<div id="ref-gelman2020" class="csl-entry" role="listitem">
+Gelman, Andrew, Jennifer Hill, and Aki Vehtari. 2020. <em>Regression and Other Stories</em>. Cambridge University Press. <a href="https://avehtari.github.io/ROS-Examples/">https://avehtari.github.io/ROS-Examples/</a>.
+</div>
+<div id="ref-hesterberg2014" class="csl-entry" role="listitem">
+Hesterberg, Tim. 2014. <em>What Teachers Should Know about the Bootstrap: Resampling in the Undergraduate Statistics Curriculum</em>. <span>arXiv</span>:1411.5279. <span>arXiv</span>. <a href="https://doi.org/10.48550/arXiv.1411.5279">https://doi.org/10.48550/arXiv.1411.5279</a>.
+</div>
+<div id="ref-kuhn2020" class="csl-entry" role="listitem">
+Kuhn, Max, and Kjell Johnson. 2020. <em>Feature Engineering and Selection: A Practical Approach for Predictive Models</em>. <span>CRC</span> Press, Taylor &amp; Francis Group. <a href="https://feat.engineering/">https://feat.engineering/</a>.
+</div>
+<div id="ref-lindelov2019" class="csl-entry" role="listitem">
+Lindeløv, Jonas Kristoffer. 2019. <span>“Common Statistical Tests Are Linear Models.”</span> June 28. <a href="https://lindeloev.github.io/tests-as-linear/">https://lindeloev.github.io/tests-as-linear/</a>.
+</div>
+<div id="ref-datasaurus" class="csl-entry" role="listitem">
+Matejka, Justin, and George Fitzmaurice. 2017. <span>“Same Stats, Different Graphs: Generating Datasets with Varied Appearance and Identical Statistics Through Simulated Annealing.”</span> <em>Proceedings of the 2017 <span>CHI</span> Conference on Human Factors in Computing Systems</em> (New York, <span>NY</span>, <span>USA</span>), <span>CHI</span> ’17, May 2, 1290–94. <a href="https://doi.org/10.1145/3025453.3025912">https://doi.org/10.1145/3025453.3025912</a>.
+</div>
+<div id="ref-mean-calculator" class="csl-entry" role="listitem">
+Pul, Ruurtjan, Peter Troshin, and Svetlana Fomina. 2026. <span>“Mean Calculator.”</span> <a href="https://meancalculator.com/">https://meancalculator.com/</a>.
+</div>
+<div id="ref-turing-way" class="csl-entry" role="listitem">
+The Turing Way Community. 2025. <em>The Turing Way: A Handbook for Reproducible, Ethical and Collaborative Research</em>. V. 1.2.3. Zenodo, released April. <a href="https://doi.org/10.5281/zenodo.15213042">https://doi.org/10.5281/zenodo.15213042</a>.
+</div>
+<div id="ref-wilber2019" class="csl-entry" role="listitem">
+Wilber, Jared. 2019. <span>“The Permutation Test: A Visual Explanation of Statistical Testing.”</span> March. <a href="https://www.jwilber.me/permutationtest/">https://www.jwilber.me/permutationtest/</a>.
+</div>
+</div>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/ucdavisdatalab\.github\.io\/dwr_workshop_statistics");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="../../chapters/applied-statistics/index.html" class="pagination-link" aria-label="Overview">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Overview</span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="../../chapters/applied-statistics/hypothesis-tests.html" class="pagination-link" aria-label="Hypothesis Tests">
+        <span class="nav-page-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Hypothesis Tests</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+
+<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/ucdavisdatalab/dwr_workshop_statistics/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li><li><a href="https://github.com/ucdavisdatalab/dwr_workshop_statistics/blob/main/chapters/applied-statistics/quantifying-uncertainty.qmd" class="toc-action"><i class="bi empty"></i>View source</a></li></ul></div></div></div></footer></body></html>

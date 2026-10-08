@@ -1,0 +1,1242 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.9.38">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="description" content="Reader for the DWR Statistics workshop series.">
+
+<title>8&nbsp; Hypothesis Tests – DWR Statistics Workshops</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
+
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<link href="../../chapters/applied-statistics/linear-models.html" rel="next">
+<link href="../../chapters/applied-statistics/quantifying-uncertainty.html" rel="prev">
+<link href="../..//images/logos/datalab-logo_square_150x150.png" rel="icon" type="image/png">
+<script src="../../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-15634bcf2e68342d4ad2dfa704d543f6.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap-4927f781319b8b164c3724fad35bda6c.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<style>
+.callout.callout-style-default .callout-body {
+  padding: 0 1.5rem 0;
+}
+.cell-output-stdout {
+  overflow-y: scroll;
+  max-height: 30rem;
+  margin-bottom: 0.75rem;
+}
+#quarto-sidebar a.text-start {
+  margin-top: 1rem;
+  font-weight: bold;
+}
+</style>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<meta property="og:title" content="8&nbsp; Hypothesis Tests – DWR Statistics Workshops">
+<meta property="og:description" content="Reader for the DWR Statistics workshop series.">
+<meta property="og:image" content="https://ucdavisdatalab.github.io/dwr_workshop_statistics/chapters/applied-statistics/hypothesis-tests_files/figure-html/fig-permutation-density-1.png">
+<meta property="og:site_name" content="DWR Statistics Workshops">
+<meta property="og:image:height" content="960">
+<meta property="og:image:width" content="1344">
+<meta name="twitter:title" content="8&nbsp; Hypothesis Tests – DWR Statistics Workshops">
+<meta name="twitter:description" content="Reader for the DWR Statistics workshop series.">
+<meta name="twitter:image" content="https://ucdavisdatalab.github.io/dwr_workshop_statistics/chapters/applied-statistics/hypothesis-tests_files/figure-html/fig-permutation-density-1.png">
+<meta name="twitter:image-height" content="960">
+<meta name="twitter:image-width" content="1344">
+<meta name="twitter:card" content="summary_large_image">
+</head>
+
+<body class="nav-sidebar floating quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../chapters/applied-statistics/index.html">Introduction to Applied Statistics</a></li><li class="breadcrumb-item"><a href="../../chapters/applied-statistics/hypothesis-tests.html"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Hypothesis Tests</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header sidebar-header-stacked">
+      <a href="https://datalab.ucdavis.edu/" class="sidebar-logo-link">
+      <img src="../../images/logos/datalab-logo-full-color-rgb.png" alt="The logo of the UC Davis DataLab." class="sidebar-logo light-content py-0 d-lg-inline d-none">
+      <img src="../../images/logos/datalab-logo-full-color-rgb.png" alt="The logo of the UC Davis DataLab." class="sidebar-logo dark-content py-0 d-lg-inline d-none">
+      </a>
+    <div class="sidebar-title mb-0 py-0">
+      <a href="../../">DWR Statistics Workshops</a> 
+        <div class="sidebar-tools-main">
+    <a href="https://github.com/ucdavisdatalab/dwr_workshop_statistics" title="Source Code" class="quarto-navigation-tool px-1" aria-label="Source Code"><i class="bi bi-github"></i></a>
+</div>
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Overview</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text">Exploring Data</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/exploring-data/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Overview</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/exploring-data/getting-to-know-data.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Getting to Know the Data</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/exploring-data/categorical-features.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Categorical Features</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/exploring-data/numerical-features.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Numerical Features</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/exploring-data/outliers.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Outliers</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/exploring-data/relationships-between-features.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Relationships Between Features</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/exploring-data/missing-values.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Missing Values</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true">
+ <span class="menu-text">Introduction to Applied Statistics</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/applied-statistics/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Overview</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/applied-statistics/quantifying-uncertainty.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Quantifying Uncertainty</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/applied-statistics/hypothesis-tests.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Hypothesis Tests</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/applied-statistics/linear-models.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Linear Models</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true">
+ <span class="menu-text">Working with Temporal Data</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/temporal-data/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Overview</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true">
+ <span class="menu-text">Working with Censored Data</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/censored-data/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Overview</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="true">
+ <span class="menu-text">Appendices</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/references.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">References</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#forming-hypotheses" id="toc-forming-hypotheses" class="nav-link active" data-scroll-target="#forming-hypotheses"><span class="header-section-number">8.1</span> Forming Hypotheses</a></li>
+  <li><a href="#sec-framework" id="toc-sec-framework" class="nav-link" data-scroll-target="#sec-framework"><span class="header-section-number">8.2</span> The Framework</a></li>
+  <li><a href="#permutation-tests" id="toc-permutation-tests" class="nav-link" data-scroll-target="#permutation-tests"><span class="header-section-number">8.3</span> Permutation Tests</a></li>
+  <li><a href="#other-tests" id="toc-other-tests" class="nav-link" data-scroll-target="#other-tests"><span class="header-section-number">8.4</span> Other Tests</a></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/ucdavisdatalab/dwr_workshop_statistics/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li><li><a href="https://github.com/ucdavisdatalab/dwr_workshop_statistics/blob/main/chapters/applied-statistics/hypothesis-tests.qmd" class="toc-action"><i class="bi empty"></i>View source</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../chapters/applied-statistics/index.html">Introduction to Applied Statistics</a></li><li class="breadcrumb-item"><a href="../../chapters/applied-statistics/hypothesis-tests.html"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Hypothesis Tests</span></a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title"><span id="sec-statistical-tests" class="quarto-section-identifier"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Hypothesis Tests</span></span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<div class="callout callout-style-default callout-note callout-titled" title="Learning Goals">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-1-contents" aria-controls="callout-1" aria-expanded="true" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Learning Goals
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-1" class="callout-1-contents callout-collapse collapse show">
+<div class="callout-body-container callout-body">
+<p>After this lesson, you should be able to:</p>
+<ul>
+<li>Explain the purpose of a hypothesis test</li>
+<li>Describe the characteristics of a testable hypothesis</li>
+<li>Construct a testable hypothesis for a research question</li>
+<li>Explain what null and alternative hypotheses are</li>
+<li>Explain what a p-value is</li>
+<li>Explain what it means for an effect to be statistically discernable</li>
+<li>Use a permutation test to test a hypothesis</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="callout callout-style-default callout-important callout-titled" title="Required Packages">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Important</span>Required Packages
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>This chapter uses the following R packages:</p>
+<ul>
+<li>dplyr</li>
+<li>ggplot2</li>
+<li>purrr</li>
+</ul>
+<p>For a refresher about how to install and load packages, see the <a href="https://ucdavisdatalab.github.io/dwr_workshop_r_basics/chapters/getting-started/getting-started.html#sec-packages">Packages</a> section of DataLab’s R Basics workshop reader.</p>
+</div>
+</div>
+<p>Statistics help us make informed decisions about the world. Sometimes the goal is to evaluate whether a particular belief or <strong>hypothesis</strong> is true. We can weigh the evidence in a dataset for (or against) a hypothesis with a statistical procedure called a <strong>hypothesis test</strong>. Hypothesis tests take many forms and are often tailored to specific problems. Nonetheless, all hypothesis tests are based on a general framework. This chapter introduces the hypothesis testing framework as well as a specific kind of hypothesis test that’s broadly applicable because of its minimal assumptions.</p>
+<section id="forming-hypotheses" class="level2" data-number="8.1">
+<h2 data-number="8.1" class="anchored" data-anchor-id="forming-hypotheses"><span class="header-section-number">8.1</span> Forming Hypotheses</h2>
+<p>The first step in hypothesis testing is forming a suitable hypothesis. The best time to come up with a hypothesis is before you collect the dataset you’ll use to evaluate it. If the dataset has already been collected, the best time is <em>before</em> doing any exploration. This way the dataset serves as a fair, independent sample for testing the hypothesis.</p>
+<div class="callout callout-style-default callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Warning
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>When you form a hypothesis based on patterns you see in a dataset, no matter how slight, using the same dataset to test the hypothesis will overstate the strength of the evidence.</p>
+<p>To test a hypothesis formed by exploring a dataset, you must collect an entirely new dataset from the same population.</p>
+</div>
+</div>
+<p>Ideally, your hypothesis is based on a clear conceptual model rooted in personal experience and expert knowledge about the topic. This knowledge may include prior work with <em>other</em> datasets. A good way to check is to write an explanation of your hypothesis and why you believe it might be true. Ask yourself whether a peer would find your argument convincing enough to warrant further investigation, and if not, adjust the hypothesis.</p>
+<div class="callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Important
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>We form hypotheses about a population and use hypothesis tests to test them on samples. If you can collect data for the entire population, there’s no need to conduct a hypothesis test—the sample statistics are the population statistics!</p>
+</div>
+</div>
+<p>In order to test a hypothesis with data, there are two requirements. First, the hypothesis must relate to something that can be measured. If you can’t measure it, you can’t test it (although in some cases you can choose and test a proxy). If you already have a dataset, make sure that its features allow asking the kinds of questions you want to ask.</p>
+<p>Second, the hypothesis must be specific and falsifiable. Data and statistics can’t help with a hypothesis that’s too broad or impossible to disprove. Try to translate your hypothesis into a statement about a population parameter.</p>
+<p>As an example, suppose you study trout in California rivers. You suspect that the trout population in one river increased over the past year. You’re not able to conduct a complete census of the trout population, so you collect counts at specific locations and times. These counts are the feature you can use to address the hypothesis. There are several ways to make the hypothesis specific enough to test; a simple one is to ask whether the mean counts in the current year (averaging over locations) are higher than the mean counts in the previous year.</p>
+<!--
+As an example, suppose you've developed a new medicine to lower blood pressure.
+Naturally, your hypothesis is that people who take the medicine will have lower
+blood pressure than people who don't, all other things being equal. When you
+collect a dataset, you must measure blood pressure in order to be able to
+conclude anything about the hypothesis. You can make the hypothesis more
+specific by comparing the mean blood pressure of the two groups.
+-->
+</section>
+<section id="sec-framework" class="level2" data-number="8.2">
+<h2 data-number="8.2" class="anchored" data-anchor-id="sec-framework"><span class="header-section-number">8.2</span> The Framework</h2>
+<p>Every hypothesis test consists of the following steps:</p>
+<ol type="1">
+<li><p>Describe the hypothesis in terms of two competing claims. The first, called the <strong>null hypothesis</strong>, should be a reasonable default or baseline. The second, called the <strong>alternative hypothesis</strong> should be the hypothesis you believe might be true and want to test. The null and alternative hypotheses must be mutually exclusive, meaning only one can possibly be true.</p></li>
+<li><p>Identify a <strong>test statistic</strong> related to the hypothesis with a known sampling distribution. Many hypothesis tests use the sample mean, since its distribution is well-understood (<a href="quantifying-uncertainty.html#sec-central-limit-theorem" class="quarto-xref"><span>Section 7.6</span></a>). Compute the statistic on the sample.</p></li>
+<li><p>Assume the null hypothesis is true. Use the sampling distribution to compute the probability of getting a statistic at least as unlikely as the sample statistic. For most hypothesis tests, we interpret “unlikely” as extreme (farther out in the distribution’s tails). This probability, called a <strong>p-value</strong>, is a measure of evidence against the null hypothesis.</p></li>
+<li><p>If the p-value is very small, the sample statistic is unlikely under the null hypothesis. In this case, we say that the result is <strong>statistically discernable</strong> and reject the null hypothesis. Otherwise, the sample statistic is compatible with the null hypothesis, so we do not reject it.</p></li>
+</ol>
+<p>In step 4, the convention is to choose a specific threshhold for “very small,” called the <strong>discernibility level</strong>. This is usually denoted by the Greek letter <span class="math inline">\(\alpha\)</span> (alpha). The discernibility level is the approximate probability of rejecting the null hypothesis when it’s true (a false positive). Most statistical software defaults to <span class="math inline">\(\alpha = 0.05\)</span> (5%), but you should think carefully about what an acceptable false positive rate is for your work.</p>
+<div class="callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Important
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>This framework only allows us to test whether the null hypothesis is unlikely!</p>
+<p>A small p-value does not guarantee that the alternative hypothesis is correct if multiple alternatives are possible. Along the same lines, a large p-value does not guarantee that the null hypothesis is correct, nor that the alternative hypothesis is incorrect.</p>
+</div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled" title="Note: Statistical Significance">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Note: Statistical Significance
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>“Statistically significant” is another term for for statistically discernable. We prefer the latter, because somtimes a result is statistically discernable but not important or meaningful in any real-world sense. Calling such a result “significant” can easily give the wrong impression.</p>
+</div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled" title="Note: Power">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Note: Power
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>After learning about the discernibility level, you might wonder: what about the probability of failing to reject the null hypothesis when it’s false (a false negative)?</p>
+<p>Statisticians usually denote this probability by the Greek letter <span class="math inline">\(\beta\)</span> (beta). Its inverse, <span class="math inline">\(1 - \beta\)</span>, is called the <strong>power</strong> of the hypothesis test. The power is the approximate probability that the test (correctly) rejects the null hypothesis when it’s false. Hypothesis tests are often designed to maximize the power <span class="math inline">\(1 - \beta\)</span> for a given discernibility level <span class="math inline">\(\alpha\)</span>.</p>
+<p>Power depends on the sampling distribution(s) under the alternative hypothesis. It’s usually impossible to compute the exact power of a test, because the alternative hypothesis depends on unknown population parameters rather than specifying them. That said, for many tests, we can estimate power by choosing reasonably likely parameter estimates (for example, based on other data).</p>
+<p>Power also depends on sample size. If you plan to collect a dataset and carry out a hypothesis test, you should take power estimates into account when selecting the sample size. An experiment that uses an underpowered hypothesis test is a waste of resources.</p>
+</div>
+</div>
+</section>
+<section id="permutation-tests" class="level2" data-number="8.3">
+<h2 data-number="8.3" class="anchored" data-anchor-id="permutation-tests"><span class="header-section-number">8.3</span> Permutation Tests</h2>
+<p>We can use the California market squid dataset (<a href="quantifying-uncertainty.html#sec-dataset-ca-market-squid" class="quarto-xref"><span>Section 7.1</span></a>) to explore how hypothesis tests work in practice. Recall the structure of the dataset:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(squid)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>tibble [6,197 × 12] (S3: tbl_df/tbl/data.frame)
+ $ sample_id              : chr [1:6197] "Mry1" "Mry1" "Mry1" "Mry1" ...
+ $ date                   : Date[1:6197], format: "1989-04-17" "1989-04-17" ...
+ $ gear                   : Factor w/ 3 levels "Drum Seine","Lampara",..: 3 3 3 3 3 3 3 3 3 3 ...
+ $ location               : chr [1:6197] "West of Holiday Inn" "West of Holiday Inn" "West of Holiday Inn" "West of Holiday Inn" ...
+ $ cdfw_block             : num [1:6197] 526 526 526 526 526 526 526 526 526 526 ...
+ $ port                   : Factor w/ 1 level "Monterey": 1 1 1 1 1 1 1 1 1 1 ...
+ $ sets                   : num [1:6197] 3 3 3 3 3 3 3 3 3 3 ...
+ $ squid_number           : num [1:6197] 21 2 3 4 5 8 10 11 12 15 ...
+ $ mass_g                 : num [1:6197] 14.6 72 47.6 37.7 60 62.2 52.9 32.3 46.9 56.7 ...
+ $ dorsal_mantle_length_mm: num [1:6197] 93 145 138 131 149 148 140 128 149 147 ...
+ $ sex                    : Factor w/ 2 levels "Female","Male": 2 2 2 2 2 2 2 2 2 2 ...
+ $ maturity               : Factor w/ 3 levels "Immature","Mature",..: 1 2 2 2 2 2 2 2 2 2 ...</code></pre>
+</div>
+</div>
+<p>Suppose we want to know whether male and female market squid differ in size. We can use dorsal mantle length as a measure of size.</p>
+<p>To formalize our hypothesis, we’ll denote the mean dorsal mantle length for the population of female market squid by <span class="math inline">\(\mu_f\)</span> and for the population of male market squid by <span class="math inline">\(\mu_m\)</span>. Then we can write our hypothesis in two parts:</p>
+<ul>
+<li><p>A null hypothesis <span class="math inline">\(H_0: \mu_f = \mu_m\)</span>, that the means are equal.</p></li>
+<li><p>An alternative hypothesis <span class="math inline">\(H_A: \mu_f \neq \mu_m\)</span>, that the means are not equal.</p></li>
+</ul>
+<p>Another way to write the null hypothesis is <span class="math inline">\(H_0: \mu_f - \mu_m = 0\)</span>, that the difference in means is 0. With the dataset, we can estimate <span class="math inline">\(\mu_f - \mu_m\)</span> with the difference of sample means <span class="math inline">\(\bar{x}_f - \bar{x}_m\)</span>.</p>
+<p>In order to test this in R, first let’s create a helper function that computes the difference in mean dorsal mantle length between female and male squid for a given sample:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(<span class="st">"dplyr"</span>)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>difference_of_fm_lengths <span class="ot">=</span> <span class="cf">function</span>(data) {</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>  females <span class="ot">=</span> <span class="fu">filter</span>(data, sex <span class="sc">==</span> <span class="st">"Female"</span>)</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>  males <span class="ot">=</span> <span class="fu">filter</span>(data, sex <span class="sc">==</span> <span class="st">"Male"</span>)</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>  length_f <span class="ot">=</span> <span class="fu">mean</span>(females<span class="sc">$</span>dorsal_mantle_length_mm, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>  length_m <span class="ot">=</span> <span class="fu">mean</span>(males<span class="sc">$</span>dorsal_mantle_length_mm, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>  length_f <span class="sc">-</span> length_m</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>For the sample we have, the difference in means between females and males is:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>fm_length_diff <span class="ot">=</span> <span class="fu">difference_of_fm_lengths</span>(squid)</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>fm_length_diff</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] -3.477432</code></pre>
+</div>
+</div>
+<p>So female squid are about 3.48 millimeters shorter. This difference is not zero, but that could be due to the sample rather than a property of the entire population. If the null hypothesis is true—meaning females and males have the same mean length—is it likely that a sample would show a -3.48 difference? To address this, we need to think about the sampling distribution of the difference.</p>
+<p>Under the null hypothesis, females and males are indistinguishable in terms of length. So if we resample by permuting the sex, the difference in sample means should still be close to 0. By computing many resamples, we can approximate the sampling distribution of the difference when the null hypothesis is true. Then we can determine whether the difference for the original sample is likely. This procedure is a kind of hypothesis test called a <strong>permutation test</strong> or <strong>randomization test</strong>.</p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tip
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><a href="https://www.jwilber.me/permutationtest/"><em>The Permutation Test: A Visual Explanation of Statistical Testing</em></a> <span class="citation" data-cites="wilber2019">(<a href="../references.html#ref-wilber2019" role="doc-biblioref">Wilber 2019</a>)</span> is an excellent online visual introduction permutation tests.</p>
+</div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled" title="Algorithm: Permutation Test">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Algorithm: Permutation Test
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Suppose we want to test a hypothesis about the relationship between two features, and we can quantify the hypothesis with a statistic. To test the hypothesis with a permutation test:</p>
+<ol type="1">
+<li>Construct a new sample by permuting one of the two features. Permuting means shuffling or sampling <em>without</em> replacement.</li>
+<li>Compute the statistic on the new sample.</li>
+<li>Repeat steps 1-2 to compute a collection of <span class="math inline">\(k\)</span> statistics.</li>
+<li>Use the collected statistics to estimate the sampling distribution.</li>
+<li>Use the sampling distribution to estimate a p-value for the statistic computed on the original sample.</li>
+</ol>
+<p>Depending on the size of the original sample, it’s sometimes possible to compute all permutations (without any random sampling). Then we say the test is <strong>exact</strong>.</p>
+</div>
+</div>
+<p>Let’s work through a permutation test for the squid. We can use R’s <code>sample</code> function to permute a feature. We’ll also use the purrr package’s <code>map</code> function to repeat the permutation step:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(<span class="st">"purrr"</span>)</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">12099</span>)</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Resample by shuffling `sex` (no replacement).</span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>perm_resamples <span class="ot">=</span> <span class="fu">map</span>(<span class="fu">seq_len</span>(<span class="dv">10000</span>), \(i) {</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>  samp <span class="ot">=</span> squid</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>  samp<span class="sc">$</span>sex <span class="ot">=</span> <span class="fu">sample</span>(samp<span class="sc">$</span>sex)</span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>  samp</span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>})</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Next, we need to compute the difference in mean dorsal mantle length between female and male squid on each new sample. For instance, on the first new sample:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">difference_of_fm_lengths</span>(perm_resamples[[<span class="dv">1</span>]])</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.5540301</code></pre>
+</div>
+</div>
+<p>We can use the purrr package again to repeat this for all of the new samples:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>perm_fm_length_diffs <span class="ot">=</span> <span class="fu">map_dbl</span>(perm_resamples, difference_of_fm_lengths)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>This collection of statistics enables us to estimate the sampling distribution. We can make a density plot and mark where the original sample statistic lies:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(<span class="st">"ggplot2"</span>)</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="fu">data.frame</span>(<span class="at">difference_of_means =</span> perm_fm_length_diffs)) <span class="sc">+</span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">aes</span>(<span class="at">x =</span> difference_of_means) <span class="sc">+</span></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_density</span>() <span class="sc">+</span></span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_rug</span>() <span class="sc">+</span></span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_vline</span>(<span class="at">xintercept =</span> fm_length_diff, <span class="at">linetype =</span> <span class="st">"dotted"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div id="fig-permutation-density" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-permutation-density-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="hypothesis-tests_files/figure-html/fig-permutation-density-1.png" class="img-fluid figure-img" width="672">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-permutation-density-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;8.1: Density plot of the sampling distribution of the difference of means, assuming the null hypothesis that the means are equal is true. The dotted vertical line marks the value of the original sample statistic.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>Based on <a href="#fig-permutation-density" class="quarto-xref">Figure&nbsp;<span>8.1</span></a>, the original sample statistic is an extreme value! If the null hypothesis is true, it’s very unlikely that the difference -3.48. would occur by chance.</p>
+<p>Let’s complete the permutation test by computing a p-value and comparing it to discernibility level <span class="math inline">\(\alpha = 0.05\)</span>. To compute the p-value, we need to estimate the probability of getting a value at least as extreme as the original sample statistic. We can use a <strong>cumulative distribution function</strong>, a function that estimates the cumulative probability of all values up to a given value, to do this. Since we don’t know the mathematical form of the sampling distribution, we’ll use an <strong>empirical cumulative distribution function</strong> (ECDF), an estimate based on the collection of statistics we computed by permuting.</p>
+<p>R’s <code>ecdf</code> function computes an ECDF based on a sample. The ECDF is itself a function, which we can use to estimate the p-value:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ecdf</span>(perm_fm_length_diffs)(fm_length_diff)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0</code></pre>
+</div>
+</div>
+<p>So under the null hypothesis, there’s almost 0% chance of getting a more extreme (more negative) difference than -3.48. At level <span class="math inline">\(\alpha = 0.05\)</span>, the difference in means is statistically discernable and we reject the null hypothesis. The sample provides strong evidence that female and male squid have different mean dorsal mantle lengths.</p>
+<div class="callout callout-style-default callout-important callout-titled" title="Important: One- and Two-Sided Hypothesis Tests">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Important</span>Important: One- and Two-Sided Hypothesis Tests
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Technically, our hypothesis test of difference in mean squid lengths is a <strong>two-sided test</strong>: we’d reject the null hypothesis whether the difference very negative or very positive. This is implied by the stated null hypothesis <span class="math inline">\(H_0:
+\mu_f = \mu_m\)</span>.</p>
+<p>In a two-sided test with discernibility level <span class="math inline">\(\alpha\)</span>, we check whether the p-value is less than <span class="math inline">\(\alpha / 2\)</span>, since we allocate half of the probability to extreme negative values and half to extreme positive values.</p>
+<p>We can write the test as a <strong>one-sided test</strong> instead if we only want to test for a negative (or positive) difference. Then the null hypothesis is <span class="math inline">\(H_0:
+\mu_f \geq \mu_m\)</span> and the alternative hypothesis is <span class="math inline">\(H_A: \mu_f &lt; \mu_m\)</span> (to test for a positive difference, flip the inequalities).</p>
+<p>In a one-sided test with discernibility level <span class="math inline">\(\alpha\)</span>, we simply check whether the p-value is less than <span class="math inline">\(\alpha\)</span>.</p>
+<p>The distinction between one- and two-sided tests is subtle, but it matters when reporting discernibility levels. Make sure to think about the research question and choose the most appropriate test <em>before</em> computing the p-value.</p>
+</div>
+</div>
+<div class="callout callout-style-default callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Warning
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The conclusion of a hypothesis test is not guaranteed to be correct, and other sources of knowledge about the hypothesis should also be taken into account!</p>
+</div>
+</div>
+</section>
+<section id="other-tests" class="level2" data-number="8.4">
+<h2 data-number="8.4" class="anchored" data-anchor-id="other-tests"><span class="header-section-number">8.4</span> Other Tests</h2>
+<p>Like the bootstrap algorithm, permutation tests only became possible in the age of computing. Before that, statisticians developed a wide variety of hypothesis tests based on mathematical approximations. Many of these rely on the CLT (<a href="quantifying-uncertainty.html#sec-central-limit-theorem" class="quarto-xref"><span>Section 7.6</span></a>) or other statistical results about large-sample behavior.</p>
+<p>We don’t cover classical hypothesis tests here (beyond the framework in <a href="#sec-framework" class="quarto-xref"><span>Section 8.2</span></a>) because there are so many different kinds—they’re usually tailored to specific kinds of hypotheses and statistics—and because they’re covered in detail in most introductory statistics textbooks.</p>
+<div class="callout callout-style-default callout-tip callout-titled" title="Note: Hypothesis Tests as Models">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Note: Hypothesis Tests as Models
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Introductory statistics courses often teach and encourage students to memorize a long list of hypothesis tests tailored to specific circumstances. Most of these hypothesis tests can also be described in terms of linear models (<a href="linear-models.html" class="quarto-xref"><span>Chapter 9</span></a>); different terms in the model lead to different tests.</p>
+<p>The website <a href="https://lindeloev.github.io/tests-as-linear/">“Common statistical tests are linear models”</a> <span class="citation" data-cites="lindelov2019">(<a href="../references.html#ref-lindelov2019" role="doc-biblioref">Lindeløv 2019</a>)</span> provides an introduction and overview of this idea.</p>
+</div>
+</div>
+<p>Permutation tests are more versatile than classical hypothesis tests because they make fewer assumptions. However, they do have a few disadvantages:</p>
+<ul>
+<li>They’re designed to compare two or more samples, features, or categories. For a single feature in a single sample, other tests are more appropriate.</li>
+<li>They’re only suitable for testing datasets where the observations are exchangeable under the null hypothesis. In other words, datasets where permuting won’t break some other inherent structure. For instance, permuatation tests are usually not appropriate for testing time series.</li>
+<li>They take longer to compute. This is usually only a problem if the sample size is very large.</li>
+</ul>
+<p>In addition to classical hypothesis tests, it’s also possible to use the bootstrap (<a href="quantifying-uncertainty.html#sec-bootstrap-algorithm" class="quarto-xref"><span>Section 7.4</span></a>} for hypothesis tests. The key idea is that a <span class="math inline">\((1 - \alpha)\%\)</span> confidence interval is equivalent to a hypothesis test with discernibility level <span class="math inline">\(\alpha\)</span>, regardless of how we construct the confidence interval. If the parameter value specified by the null hypothesis is in the confidence interval, then the test fails to reject the null hypothesis; otherwise, the test rejects the null hypothesis. Constructing a test this way is called <strong>inverting</strong> the confidence interval. Bootstrap hypothesis tests are often useful in cases where we can’t use a permutation test.</p>
+<div class="callout callout-style-default callout-note callout-titled" title="See Also">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>See Also
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><a href="https://openintrostat.github.io/ims/"><em>Introduction to Modern Statistics</em></a> <span class="citation" data-cites="ims">(<a href="../references.html#ref-ims" role="doc-biblioref">Çetinkaya-Rundel and Hardin 2024</a>)</span> provides a more thorough introduction to hypothesis tests (permutation, bootstrap, and classical tests) with many examples.</p>
+<p><a href="https://www.openintro.org/book/os/"><em>OpenIntro Statistics</em></a> <span class="citation" data-cites="openintro">(<a href="../references.html#ref-openintro" role="doc-biblioref">Diez et al. 2019</a>)</span> introduces a wide variety of classical hypothesis tests (more than <em>Introduction to Modern Statistics</em>), but doesn’t cover permutation or bootstrap tests.</p>
+<p>In R, there are built-in functions to carry out classical hypothesis tests. The <a href="https://doi.org/10.32614/CRAN.package.coin">coin</a> package provides functions to carry out permutation tests. The <a href="https://doi.org/10.32614/CRAN.package.boot">boot</a> package provides functions to carry out bootstrap tests.</p>
+</div>
+</div>
+
+
+<div id="refs" class="references csl-bib-body hanging-indent" role="list" style="display: none">
+<div id="ref-anscombe1973" class="csl-entry" role="listitem">
+Anscombe, F. J. 1973. <span>“Graphs in Statistical Analysis.”</span> <em>The American Statistician</em> 27 (1): 17–21. <a href="https://doi.org/10.1080/00031305.1973.10478966">https://doi.org/10.1080/00031305.1973.10478966</a>.
+</div>
+<div id="ref-arel-bundock2025" class="csl-entry" role="listitem">
+Arel-Bundock, Vincent. 2025. <em>Model to Meaning: How to Interpret Statistical Models with <span>R</span> and Python</em>. <span>CRC</span> Press <span>LLC</span>. <a href="https://marginaleffects.com/">https://marginaleffects.com/</a>.
+</div>
+<div id="ref-carroll2020" class="csl-entry" role="listitem">
+Carroll, Stephanie Russo, Ibrahim Garba, Oscar L. Figueroa-Rodríguez, et al. 2020. <span>“The <span>CARE</span> Principles for Indigenous Data Governance.”</span> <em>Data Science Journal</em> 19 (1). <a href="https://doi.org/10.5334/dsj-2020-043">https://doi.org/10.5334/dsj-2020-043</a>.
+</div>
+<div id="ref-ims" class="csl-entry" role="listitem">
+Çetinkaya-Rundel, Mine, and Johanna Hardin. 2024. <em>Introduction to Modern Statistics</em>. 2nd ed. <span>OpenIntro</span>. <a href="https://openintrostat.github.io/ims/">https://openintrostat.github.io/ims/</a>.
+</div>
+<div id="ref-dignazio2020" class="csl-entry" role="listitem">
+D’Ignazio, Catherine, and Lauren F. Klein. 2020. <em>Data Feminism</em>. The <span>MIT</span> Press. <a href="https://doi.org/10.7551/mitpress/11805.001.0001">https://doi.org/10.7551/mitpress/11805.001.0001</a>.
+</div>
+<div id="ref-davison1997" class="csl-entry" role="listitem">
+Davison, A. C., and D. V. Hinkley. 1997. <em>Bootstrap Methods and Their Application</em>. Cambridge University Press.
+</div>
+<div id="ref-openintro" class="csl-entry" role="listitem">
+Diez, David M., Christopher D. Barr, and Mine Cetinkaya-Rundel. 2019. <em><span>OpenIntro</span> Statistics</em>. Fourth Edition. <span>OpenIntro</span>. <a href="https://open.umn.edu/opentextbooks/textbooks/60">https://open.umn.edu/opentextbooks/textbooks/60</a>.
+</div>
+<div id="ref-gelman2020" class="csl-entry" role="listitem">
+Gelman, Andrew, Jennifer Hill, and Aki Vehtari. 2020. <em>Regression and Other Stories</em>. Cambridge University Press. <a href="https://avehtari.github.io/ROS-Examples/">https://avehtari.github.io/ROS-Examples/</a>.
+</div>
+<div id="ref-hesterberg2014" class="csl-entry" role="listitem">
+Hesterberg, Tim. 2014. <em>What Teachers Should Know about the Bootstrap: Resampling in the Undergraduate Statistics Curriculum</em>. <span>arXiv</span>:1411.5279. <span>arXiv</span>. <a href="https://doi.org/10.48550/arXiv.1411.5279">https://doi.org/10.48550/arXiv.1411.5279</a>.
+</div>
+<div id="ref-kuhn2020" class="csl-entry" role="listitem">
+Kuhn, Max, and Kjell Johnson. 2020. <em>Feature Engineering and Selection: A Practical Approach for Predictive Models</em>. <span>CRC</span> Press, Taylor &amp; Francis Group. <a href="https://feat.engineering/">https://feat.engineering/</a>.
+</div>
+<div id="ref-lindelov2019" class="csl-entry" role="listitem">
+Lindeløv, Jonas Kristoffer. 2019. <span>“Common Statistical Tests Are Linear Models.”</span> June 28. <a href="https://lindeloev.github.io/tests-as-linear/">https://lindeloev.github.io/tests-as-linear/</a>.
+</div>
+<div id="ref-datasaurus" class="csl-entry" role="listitem">
+Matejka, Justin, and George Fitzmaurice. 2017. <span>“Same Stats, Different Graphs: Generating Datasets with Varied Appearance and Identical Statistics Through Simulated Annealing.”</span> <em>Proceedings of the 2017 <span>CHI</span> Conference on Human Factors in Computing Systems</em> (New York, <span>NY</span>, <span>USA</span>), <span>CHI</span> ’17, May 2, 1290–94. <a href="https://doi.org/10.1145/3025453.3025912">https://doi.org/10.1145/3025453.3025912</a>.
+</div>
+<div id="ref-mean-calculator" class="csl-entry" role="listitem">
+Pul, Ruurtjan, Peter Troshin, and Svetlana Fomina. 2026. <span>“Mean Calculator.”</span> <a href="https://meancalculator.com/">https://meancalculator.com/</a>.
+</div>
+<div id="ref-turing-way" class="csl-entry" role="listitem">
+The Turing Way Community. 2025. <em>The Turing Way: A Handbook for Reproducible, Ethical and Collaborative Research</em>. V. 1.2.3. Zenodo, released April. <a href="https://doi.org/10.5281/zenodo.15213042">https://doi.org/10.5281/zenodo.15213042</a>.
+</div>
+<div id="ref-wilber2019" class="csl-entry" role="listitem">
+Wilber, Jared. 2019. <span>“The Permutation Test: A Visual Explanation of Statistical Testing.”</span> March. <a href="https://www.jwilber.me/permutationtest/">https://www.jwilber.me/permutationtest/</a>.
+</div>
+</div>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/ucdavisdatalab\.github\.io\/dwr_workshop_statistics");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="../../chapters/applied-statistics/quantifying-uncertainty.html" class="pagination-link" aria-label="Quantifying Uncertainty">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Quantifying Uncertainty</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="../../chapters/applied-statistics/linear-models.html" class="pagination-link" aria-label="Linear Models">
+        <span class="nav-page-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Linear Models</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+
+<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/ucdavisdatalab/dwr_workshop_statistics/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li><li><a href="https://github.com/ucdavisdatalab/dwr_workshop_statistics/blob/main/chapters/applied-statistics/hypothesis-tests.qmd" class="toc-action"><i class="bi empty"></i>View source</a></li></ul></div></div></div></footer></body></html>

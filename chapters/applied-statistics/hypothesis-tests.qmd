@@ -1,4 +1,12 @@
-# Hypothesis Tests
+```{r}
+#| echo: false
+#| warning: false
+library("dplyr")
+squid = readRDS("data/1989-1994_ca_market_squid.rds")
+squid = filter_out(squid, mass_g >= 400 | is.na(mass_g))
+```
+
+# Hypothesis Tests {#sec-statistical-tests}
 
 ::: {.callout-note title="Learning Goals" collapse="false"}
 After this lesson, you should be able to:
@@ -17,7 +25,6 @@ This chapter uses the following R packages:
 
 * dplyr
 * ggplot2
-* palmerpenguins
 * purrr
 
 For a refresher about how to install and load packages, see the
@@ -170,105 +177,79 @@ test is a waste of resources.
 :::
 
 
-## Dataset: Palmer Penguins {#sec-dataset-palmer-penguins}
-
-![
-  Artwork by [Allison Horst][horst].
-](/images/applied-statistics/lter_penguins.png){#fig-penguins}
-
-[horst]: https://allisonhorst.com/
-
-As a source of examples, we'll use the [Palmer Penguins dataset][penguins],
-which was collected by [Dr. Kristen Gorman][gorman] at [Palmer Station,
-Antarctica][palmer]. [Alison Horst][horst] packaged the data for public use.
-The package is called palmerpenguins.
-
-[penguins]: https://allisonhorst.github.io/palmerpenguins/
-[gorman]: https://www.uaf.edu/cfos/people/faculty/detail/kristen-gorman.php
-[palmer]: https://pallter.marine.rutgers.edu/
-
-:::{.callout-important}
-Install the palmerpenguins package now if you didn't earlier.
-
-Load the package with the `library` function to access the dataset, which is
-called `penguins`.
-:::
-
-:::{.callout-warning}
-In recent versions of R, the `penguins` dataset is built-in, but has slightly
-different column names. If you want to follow along with this reader, make sure
-to use the dataset from the package rather than the built-in dataset.
-:::
-
-The dataset consists of observations of 344 penguins from 3 different species:
-[Adélie][], [Chinstrap][], and [Gentoo][]. The measurements include flipper
-length, bill width, sex, and body mass.
-
-[Adélie]: https://en.wikipedia.org/wiki/Ad%C3%A9lie_penguin
-[Chinstrap]: https://en.wikipedia.org/wiki/Chinstrap_penguin
-[Gentoo]: https://en.wikipedia.org/wiki/Gentoo_penguin
-
-
 ## Permutation Tests
 
-We can use the Palmer Penguins dataset to explore how hypothesis tests work in
-practice. Suppose we hypothesize that Adélie and Chinstrap penguins have
-different mean body masses. Let $\mu_a$ denote the population mean body mass
-for Adélie penguins and $\mu_c$ denote the same for Chinstrap penguins. Then we
-can formalize our hypothesis in two parts:
+We can use the California market squid dataset (@sec-dataset-ca-market-squid)
+to explore how hypothesis tests work in practice. Recall the structure of the
+dataset:
 
-* A null hypothesis $H_0: \mu_a = \mu_c$ that the means are equal. Another way
-  to write this is $H_0: \mu_a - \mu_c = 0$, that the difference in means is 0.
+```{r}
+str(squid)
+```
 
-* An alternative hypothesis $H_A: \mu_a \neq \mu_c$ that the means are not
+Suppose we want to know whether male and female market squid differ in size. We
+can use dorsal mantle length as a measure of size.
+
+To formalize our hypothesis, we'll denote the mean dorsal mantle length for the
+population of female market squid by $\mu_f$ and for the population of male
+market squid by $\mu_m$. Then we can write our hypothesis in two parts:
+
+* A null hypothesis $H_0: \mu_f = \mu_m$, that the means are equal.
+
+* An alternative hypothesis $H_A: \mu_f \neq \mu_m$, that the means are not
   equal.
 
-With the dataset, we can estimate $\mu_a - \mu_c$ with the difference of sample
-means $\bar{x}_a - \bar{x}_c$. In R, we'll first set up a helper function to
-compute the sample mean of each group and then compute their difference:
+Another way to write the null hypothesis is $H_0: \mu_f - \mu_m = 0$, that the
+difference in means is 0. With the dataset, we can estimate $\mu_f - \mu_m$
+with the difference of sample means $\bar{x}_f - \bar{x}_m$.
+
+In order to test this in R, first let's create a helper function that computes
+the difference in mean dorsal mantle length between female and male squid for a
+given sample:
 
 ```{r}
 #| warning: false
 library("dplyr")
 
-# This function computes the difference in sample means for Adelie and
-# Chinstrap penguins.
-difference_of_means_ac = function(data) {
-  adelie = filter(data, species == "Adelie")
-  chinstrap = filter(data, species == "Chinstrap")
+difference_of_fm_lengths = function(data) {
+  females = filter(data, sex == "Female")
+  males = filter(data, sex == "Male")
 
-  mean_a = mean(adelie$body_mass_g, na.rm = TRUE)
-  mean_c = mean(chinstrap$body_mass_g, na.rm = TRUE)
+  length_f = mean(females$dorsal_mantle_length_mm, na.rm = TRUE)
+  length_m = mean(males$dorsal_mantle_length_mm, na.rm = TRUE)
 
-  mean_a - mean_c
+  length_f - length_m
 }
 ```
 
-We can use the function to estimate the difference in mean body mass for Adélie
-and Chinstrip penguins:
+For the sample we have, the difference in means between females and males is:
 
 ```{r}
-#| warning: false
-library("palmerpenguins")
-
-penguins_ac = filter(penguins, species %in% c("Adelie", "Chinstrap"))
-diff_ac = difference_of_means_ac(penguins_ac)
-diff_ac
+fm_length_diff = difference_of_fm_lengths(squid)
+fm_length_diff
 ```
 
-The difference is not zero, but that could be due to the sample rather than a
-property of the entire population. But let's assume the null hypothesis is
-true, so the two species have the same mean body mass. Is it likely that a
-sample would have a `r round(diff_ac, 3)` difference? To address this, we need
-to know the sampling distribution of the difference.
+So female squid are about `r -round(fm_length_diff, 2)` millimeters shorter.
+This difference is not zero, but that could be due to the sample rather than a
+property of the entire population. If the null hypothesis is true---meaning
+females and males have the same mean length---is it likely that a sample would
+show a `r round(fm_length_diff, 2)` difference? To address this, we need to
+think about the sampling distribution of the difference.
 
-Under the null hypothesis, the two species are indistinguishable in terms of
-mean body mass. So if we resample by permuting the species, the difference in
-sample means should still be close to 0. By computing many resamples, we can
-approximate the sampling distribution of the difference when the null
-hypothesis is true. Then we can determine whether the difference for the
-original sample is likely. This procedure is a kind of hypothesis test called a
-**permutation test** or **randomization test**.
+Under the null hypothesis, females and males are indistinguishable in terms of
+length. So if we resample by permuting the sex, the difference in sample means
+should still be close to 0. By computing many resamples, we can approximate the
+sampling distribution of the difference when the null hypothesis is true. Then
+we can determine whether the difference for the original sample is likely. This
+procedure is a kind of hypothesis test called a **permutation test** or
+**randomization test**.
+
+:::{.callout-tip}
+[_The Permutation Test: A Visual Explanation of Statistical Testing_][perm]
+[@wilber2019] is an excellent online visual introduction permutation tests.
+
+[perm]: https://www.jwilber.me/permutationtest/
+:::
 
 :::{.callout-note title="Algorithm: Permutation Test"}
 Suppose we want to test a hypothesis about the relationship between two
@@ -288,35 +269,36 @@ compute all permutations (without any random sampling). Then we say the test is
 **exact**.
 :::
 
-Let's work through a permutation test for the Adélie and Chinstrap penguins. In
-R, we can use the `sample` function to permute a feature. We'll also use the
-purrr package's `map` function to repeat the permutation step:
+Let's work through a permutation test for the squid. We can use R's `sample`
+function to permute a feature. We'll also use the purrr package's `map`
+function to repeat the permutation step:
 
 ```{r}
 library("purrr")
 
 set.seed(12099)
 
-# Resample `species` by shuffling (no replacement).
-perm_resamples = map(seq_len(1000), \(i) {
-  samp = penguins_ac
-  samp$species = sample(samp$species)
+# Resample by shuffling `sex` (no replacement).
+perm_resamples = map(seq_len(10000), \(i) {
+  samp = squid
+  samp$sex = sample(samp$sex)
 
   samp
 })
 ```
 
-Next, we need to compute the difference of sample means on each new sample. For
-instance, on the first new sample:
+Next, we need to compute the difference in mean dorsal mantle length between
+female and male squid on each new sample. For instance, on the first new
+sample:
 
 ```{r}
-difference_of_means_ac(perm_resamples[[1]])
+difference_of_fm_lengths(perm_resamples[[1]])
 ```
 
 We can use the purrr package again to repeat this for all of the new samples:
 
 ```{r}
-perm_diffs_ac = map_dbl(perm_resamples, difference_of_means_ac)
+perm_fm_length_diffs = map_dbl(perm_resamples, difference_of_fm_lengths)
 ```
 
 This collection of statistics enables us to estimate the sampling distribution.
@@ -330,73 +312,133 @@ We can make a density plot and mark where the original sample statistic lies:
 #|     dotted vertical line marks the value of the original sample statistic.
 library("ggplot2")
 
-ggplot(data.frame(difference_of_means = perm_diffs_ac)) +
+ggplot(data.frame(difference_of_means = perm_fm_length_diffs)) +
   aes(x = difference_of_means) +
   geom_density() +
-  geom_vline(xintercept = diff_ac, linetype = "dotted")
+  geom_rug() +
+  geom_vline(xintercept = fm_length_diff, linetype = "dotted")
 ```
 
-Based on @fig-permutation-density, the original sample statistic is fairly
-close to the center of the distribution. In other words, it's a plausible
-difference even if the null hypothesis is true.
+Based on @fig-permutation-density, the original sample statistic is an extreme
+value! If the null hypothesis is true, it's very unlikely that the difference
+`r round(fm_length_diff, 2)`. would occur by chance.
 
-To compute a p-value, we need to estimate the probability of getting a value at
-least as extreme as the original sample statistic. We can use a **cumulative
-distribution function**, a function that estimates the cumulative probability
-of all values up to a given value, to do this. Since we don't know the
-mathematical form of the sampling distribution, we'll use an **empirical
-cumulative distribution function** (ECDF), an estimate based on the collection
-of statistics we computed by permuting.
+Let's complete the permutation test by computing a p-value and comparing it to
+discernibility level $\alpha = 0.05$. To compute the p-value, we need to
+estimate the probability of getting a value at least as extreme as the original
+sample statistic. We can use a **cumulative distribution function**, a function
+that estimates the cumulative probability of all values up to a given value, to
+do this. Since we don't know the mathematical form of the sampling
+distribution, we'll use an **empirical cumulative distribution function**
+(ECDF), an estimate based on the collection of statistics we computed by
+permuting.
 
 R's `ecdf` function computes an ECDF based on a sample. The ECDF is itself a
 function, which we can use to estimate the p-value:
 
 ```{r}
-ecdf(perm_diffs_ac)(diff_ac)
+ecdf(perm_fm_length_diffs)(fm_length_diff)
 ```
 
-So under the null hypothesis, there's a roughly 30% chance of getting a more
-extreme (more negative) difference than `r round(diff_ac, 3)`. At level $\alpha
-= 0.05$, the difference in means is not statistically discernable. We fail to
-reject the null hypothesis. It's still possible that Adélie and Chinstrap
-penguins do have different mean body masses, but we would need to collect
-additional data to prove it.
+So under the null hypothesis, there's almost 0% chance of getting a more
+extreme (more negative) difference than `r round(fm_length_diff, 2)`. At level
+$\alpha = 0.05$, the difference in means is statistically discernable and we
+reject the null hypothesis. The sample provides strong evidence that female and
+male squid have different mean dorsal mantle lengths.
+
+:::{.callout-important title="Important: One- and Two-Sided Hypothesis Tests"}
+Technically, our hypothesis test of difference in mean squid lengths is a
+**two-sided test**: we'd reject the null hypothesis whether the difference very
+negative or very positive. This is implied by the stated null hypothesis $H_0:
+\mu_f = \mu_m$.
+
+In a two-sided test with discernibility level $\alpha$, we check whether the
+p-value is less than $\alpha / 2$, since we allocate half of the probability to
+extreme negative values and half to extreme positive values.
+
+We can write the test as a **one-sided test** instead if we only want to test
+for a negative (or positive) difference. Then the null hypothesis is $H_0:
+\mu_f \geq \mu_m$ and the alternative hypothesis is $H_A: \mu_f < \mu_m$ (to
+test for a positive difference, flip the inequalities).
+
+In a one-sided test with discernibility level $\alpha$, we simply check whether
+the p-value is less than $\alpha$.
+
+The distinction between one- and two-sided tests is subtle, but it matters when
+reporting discernibility levels. Make sure to think about the research question
+and choose the most appropriate test *before* computing the p-value.
+:::
 
 :::{.callout-warning}
 The conclusion of a hypothesis test is not guaranteed to be correct, and other
 sources of knowledge about the hypothesis should also be taken into account!
 :::
 
-:::{.callout-note title="Note: Classical Hypothesis Tests"}
+
+## Other Tests
+
 Like the bootstrap algorithm, permutation tests only became possible in the age
 of computing. Before that, statisticians developed a wide variety of hypothesis
 tests based on mathematical approximations. Many of these rely on the CLT
-(@sec-central-limit-theorem).
+(@sec-central-limit-theorem) or other statistical results about large-sample
+behavior.
 
 We don't cover classical hypothesis tests here (beyond the framework in
 @sec-framework) because there are so many different kinds---they're usually
-tailored to specific kinds of hypotheses and statistics.
+tailored to specific kinds of hypotheses and statistics---and because they're
+covered in detail in most introductory statistics textbooks.
 
-Permutation tests are superior to classical hypothesis tests in most situations
-because they make fewer assumptions. However, they do have a few disadvantages:
+:::{.callout-tip title="Note: Hypothesis Tests as Models"}
+Introductory statistics courses often teach and encourage students to memorize
+a long list of hypothesis tests tailored to specific circumstances. Most of
+these hypothesis tests can also be described in terms of linear models
+(@sec-linear-models); different terms in the model lead to different tests.
 
+The website ["Common statistical tests are linear models"][tests-are-models]
+[@lindelov2019] provides an introduction and overview of this idea.
+
+[tests-are-models]: https://lindeloev.github.io/tests-as-linear/
+:::
+
+Permutation tests are more versatile than classical hypothesis tests because
+they make fewer assumptions. However, they do have a few disadvantages:
+
+* They're designed to compare two or more samples, features, or categories. For
+  a single feature in a single sample, other tests are more appropriate.
 * They're only suitable for testing datasets where the observations are
   exchangeable under the null hypothesis. In other words, datasets where
   permuting won't break some other inherent structure. For instance,
   permuatation tests are usually not appropriate for testing time series.
 * They take longer to compute. This is usually only a problem if the sample
   size is very large.
-:::
+
+In addition to classical hypothesis tests, it's also possible to use the
+bootstrap (@sec-bootstrap-algorithm} for hypothesis tests. The key idea is that
+a $(1 - \alpha)\%$ confidence interval is equivalent to a hypothesis test with
+discernibility level $\alpha$, regardless of how we construct the confidence
+interval. If the parameter value specified by the null hypothesis is in the
+confidence interval, then the test fails to reject the null hypothesis;
+otherwise, the test rejects the null hypothesis. Constructing a test this way
+is called **inverting** the confidence interval. Bootstrap hypothesis tests are
+often useful in cases where we can't use a permutation test.
 
 :::{.callout-note title="See Also"}
-For a more thorough explanation of hypothesis tests and permutation tests, as
-well as many more examples, see [_Introduction to Modern Statistics_][ims]
-[@ims]. This book also presents some classical hypothesis tests.
+[_Introduction to Modern Statistics_][ims] [@ims] provides a more thorough
+introduction to hypothesis tests (permutation, bootstrap, and classical tests)
+with many examples.
 
 [ims]: https://openintrostat.github.io/ims/
 
+[_OpenIntro Statistics_][openintro] [@openintro] introduces a wide variety of
+classical hypothesis tests (more than _Introduction to Modern Statistics_), but
+doesn't cover permutation or bootstrap tests.
+
+[openintro]: https://www.openintro.org/book/os/
+
 In R, there are built-in functions to carry out classical hypothesis tests. The
-[coin][] package provides functions to carry out permutation tests.
+[coin][] package provides functions to carry out permutation tests. The
+[boot][] package provides functions to carry out bootstrap tests.
 
 [coin]: https://doi.org/10.32614/CRAN.package.coin
+[boot]: https://doi.org/10.32614/CRAN.package.boot
 :::

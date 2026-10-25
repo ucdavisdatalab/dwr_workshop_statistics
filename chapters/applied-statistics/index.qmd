@@ -16,7 +16,6 @@ After this lesson, you should be able to:
 * Explain the assumptions of a linear model
 * Use diagnostics to evaluate how well a linear model fits
 * Interpret the estimates from a linear model
-* Explain what a generalized linear model is
 :::
 
 This workshop is an introduction to the foundations of applied statistics. By

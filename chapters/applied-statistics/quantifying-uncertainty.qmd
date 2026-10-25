@@ -44,7 +44,7 @@ strategy that was developed before computers became widely available, which is
 still the most-used strategy today.
 
 
-## Dataset: CA Market Squid {#sec-ca-market-squid}
+## Dataset: CA Market Squid {#sec-dataset-ca-market-squid}
 
 The [market squid][] is a small squid that lives along the west coast of North
 America. In California, there are multiple fisheries for market squid. From

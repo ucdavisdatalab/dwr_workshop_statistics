@@ -7,7 +7,7 @@ description = "Reader for the statistics workshop series."
 version = "2026.fall.0"  # <year>.<quarter>.<revision #>
 
 channels = ["conda-forge"]
-platforms = ["linux-64", "osx-64", "osx-arm64", "win-64"]
+platforms = ["linux-64", "win-64"]
 
 
 [tasks]
@@ -27,6 +27,12 @@ r-dplyr = ">=1.2.1,<2"
 r-purrr = ">=1.2.2,<2"
 r-palmerpenguins = ">=0.1.1,<0.2"
 r-ggfortify = ">=0.4.23,<0.5"
+r-tsibble = ">=1.2.0,<2"
+r-forecast = ">=9.0.2,<10"
+r-ggtime = ">=0.2.0,<0.3"
+r-feasts = ">=0.5.0,<0.6"
+r-fable = ">=0.5.0,<0.6"
+r-lme4 = ">=2.0_6,<3"
 
 
 [activation.env]

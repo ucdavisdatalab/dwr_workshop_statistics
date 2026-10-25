@@ -35,7 +35,10 @@ book:
     - part: "Working with Temporal Data"
       chapters:
         - "chapters/temporal-data/index.qmd"
-    - part: "Working with Censored Data"
+        - "chapters/temporal-data/types-of-temporal-data.qmd"
+        - "chapters/temporal-data/time-series.qmd"
+        - "chapters/temporal-data/repeated-measures.qmd"
+    - part: "Working with Missing and Censored Data"
       chapters:
         - "chapters/censored-data/index.qmd"
   appendices:

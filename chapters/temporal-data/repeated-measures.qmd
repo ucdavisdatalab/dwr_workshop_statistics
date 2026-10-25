@@ -1,0 +1,179 @@
+```{r}
+#| echo: false
+#| output: false
+orange = data.frame(Orange)
+```
+
+# Repeated Measures
+
+::: {.callout-note title="Learning Goals" collapse="false"}
+After this lesson, you should be able to:
+
+* Explain what partial pooling is
+* Explain why partial pooling is useful
+* Use R to fit a hierarchical model with a partially pooled intercept
+:::
+
+:::{.callout-important title="Required Packages"}
+This chapter uses the following R packages:
+
+* ggplot2
+* lme4
+
+For a refresher about how to install and load packages, see the
+[Packages][r-basics-packages] section of DataLab's R Basics workshop reader.
+
+[r-basics-packages]: https://ucdavisdatalab.github.io/dwr_workshop_r_basics/chapters/getting-started/getting-started.html#sec-packages
+:::
+
+This chapter introduces **hierarchical models**, multi-part linear models which
+are a fundamental tool for modeling repeated measures data. Along the way, we
+explain a few of the ideas that underpin these models.
+
+
+## Partial Pooling
+
+Datasets often contain features that we can use to group the observations. For
+instance, a dataset where the subjects are people might include features such
+as city of residence, educational attainment, and marriage status. If one of
+these features (or one of the subpopulations they characterize) is important to
+our analysis goals, we'll likely use the feature to group the observations
+during analysis.
+
+Repeated measures datasets present another case where there are features we can
+use to group observations. Because the measurements for each subject are
+repeated, we might want to group observations by subject (or by time of
+measurement).
+
+In the Orange Tree Growth dataset (@sec-dataset-orange), each tree has a unique
+ID number. We can use this to plot the observations for each tree separately:
+
+```{r}
+#| label: fig-orange-facet
+#| fig-cap: >
+#|    Per-tree scatterplots of age versus circumference for the Orange Tree
+#|    Growth dataset.
+library("ggplot2")
+
+ggplot(Orange) +
+  aes(x = age, y = circumference) +
+  geom_point() +
+  facet_wrap(~ Tree)
+```
+
+If we want to compute a statistic on a dataset with groups, two strategies we
+might consider are:
+
+* Compute a separate estimate for each group. This is a **no pooling**
+  strategy, because we never pool the groups.
+
+* Compute one estimate, ignoring the groups. This is a **complete pooling**
+  strategy, because we combine---or **pool**---all of the groups.
+
+The no pooling strategy has the obvious advantage that it reveals details about
+the groups that we would otherwise miss with the complete pooling strategy. On
+the other hand, the complete pooling strategy also has an advantage: even if
+the number observations in some groups is small, by pooling them we'll likely
+have enough observations to get an accurate estimate.
+
+As an extreme case, consider what happens if some of the groups have only one
+observation. The estimates for these groups will likely be poor, because they
+depend entirely on sampling of a single observations. As an even more extreme
+case, if some groups are empty (no observations), then we can't compute an
+estimate at all.
+
+We can use a third strategy, **partial pooling**, to improve on the other two.
+The idea is to compute the no pooling estimates (for groups with observations)
+and the complete pooling estimate, then take the a weighted average (or linear
+interpolation) of the two. The average is weighted with the sample size and
+precision (inverse variance) of each estimate, so that:
+
+* For groups with many observations and high precision, the average will be
+  close to the no pooling estimate;
+* For groups with few observations and low precision, the average will be close
+  to the complete pooling estimate.
+
+In other words, partial pooling shares information between groups, while still
+providing a separate estimate for each one. It also allows us to compute
+estimates for groups with only zero or one observation.
+
+Partial pooling is useful when working with repeated measures datasets because
+sometimes a measurement might be missing. It also leads to more accurate
+estimates even when all of the observations are there.
+
+
+## Hierarchical Models
+
+We can reap the benefits of partial pooling in a linear modeling context by
+using a **hierarchical model**. Hierarchical models are also known as
+multilevel models and linear mixed effect models (LMMs). They're called
+hierarchical models because partial pooling is equivalent to fitting a
+hierarchy of models: one at the dataset level and one or more at the group
+level.
+
+As a brief demonstration of how to fit a hierarchical model, let's fit models
+with no pooling, complete pooling, and partial pooling. We'll use the Orange
+Tree Growth dataset, with circumference as the outcome and age as a predictor.
+When we group the observations, we'll group by tree.
+
+Let's start with the complete pooling strategy. We'll fit a single model,
+ignoring the groups entirely:
+
+```{r}
+# Complete pooling:
+fit_compl = lm(circumference ~ age, orange)
+summary(fit_compl)
+```
+
+There's only one intercept in this model, computed based on all of the
+observations.
+
+Next, let's try the no pooling strategy. For this, we'll fit the model with a
+separate intercept for each tree. To do so, we can add `-1` in the model
+formula to remove the pooled intercept:
+
+```{r}
+# No pooling:
+fit_no = lm(circumference ~ age + Tree - 1, orange)
+summary(fit_no)
+```
+
+Finally, let's try the partial pooling strategy. The [lme4][] package is one of
+several packages we can use to fit a hierarchical model in R. We'll use its
+`lmer` function, which is a lot like the `lm` function. In the model formula,
+we'll add the groups as `(1 | Tree)`. This is lme4's notation for partially
+pooled intercept (another name for this is a **random effect**):
+
+```{r}
+# Partial pooling:
+library("lme4")
+
+fit_part = lmer(circumference ~ age + (1 | Tree) - 1, orange)
+summary(fit_part)
+```
+
+The residual standard deviation for the partial pooling model is only slightly
+higher than it is for the no pooling model, and we get the benefits of partial
+pooling.
+
+The example in this section only shows the simplest way to use a hierachical
+model. There are many other ways to use them, such as computing partially
+pooled slopes, that are useful for all kinds of grouped datasets.
+
+:::{.callout-note title="See Also"}
+The blog post [_Partial Pooling in Mixed-Effects Models_][partial] [@mahr2017]
+gives a nice demonstration of partial pooling with visual examples.
+
+DataLab's [A Practical Introduction to Regression Modeling in R][dl-reg-model]
+workshop reader includes a longer introduction to hierarchical models.
+
+The textbook _Data Analysis Using Regression and Multilevel/Hierarchical
+Models_ [@gelman2007] provides a thorough introduction to hierarchical models.
+
+Hierarchical models are closely associated with Bayesian statistics; for an
+introduction to Bayesian statistics, see the textbook _Statistical Rethinking_
+[@mcelreath2020].
+
+[partial]: https://www.tjmahr.com/plotting-partial-pooling-in-mixed-effects-models/
+[dl-reg-model]: https://ucdavisdatalab.github.io/workshop_regression/
+:::

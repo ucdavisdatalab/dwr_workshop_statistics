@@ -1,0 +1,147 @@
+# Getting Started
+
+::: {.callout-note title="Learning Goals" collapse="false"}
+After this lesson, you should be able to:
+
+* Explain the typical characteristics of a time series
+* Explain the typical characteristics of a repeated measures dataset
+:::
+
+This brief chapter introduces two different approaches to thinking about
+temporal data, as well as two datasets that exemplify each approach.
+
+
+## Types of Temporal Data
+
+In datasets collected over time, it's useful to think of each observation as a
+combination of a collection time and a subject. For example, researchers from
+the [Santa Cruz Puma Project][puma] use GPS collars to track the movements of
+pumas around Santa Cruz and the San Francisco Bay. Each observation in the
+dataset is at a specific time and for a specific puma.
+
+[puma]: https://www.santacruzpumas.org/
+
+<!--
+Two kinds of statistical analyses are strongly associated with temporal data:
+**time series** and **longitudinal data** analysis.
+-->
+
+A **time series** is a dataset where there are lots of observations over time
+for each subject. The number of subjects is usually modest---perhaps even just
+one. As a consequence, time series analysis methods focus on the observed
+subjects rather than the population at large. Major goals include:
+
+* Decomposing the trajectories of individual subjects over time into meaningful
+  components; often these are a long-term **trend** component and one or more
+  fixed-period **seasonal** components;
+* Making predictions or **forecasts** about future measurements.
+
+In contrast, a **longitudinal** (or **repeated measures**) dataset is one where
+there are lots of subjects, with a few observations over time for each one. The
+number of time points is usually small; there might only be two or three.
+Longitudinal data analysis methods tend to focus on the population rather than
+the observed subjects. The major goal is typically inference about the
+relationship between some predictors and outcome.
+
+We can, of course, apply methods from time series analysis to a longitudinal
+dataset and vice-versa. However, making reliable inferences and predictions
+about an individual subject's trajectory generally requires lots of
+observations of that subject. Likewise, making reliable inferences about a
+population generally requires a large sample of subjects.
+
+We distinguish between time series and longitudinal datasets because the
+analysis goals and methods are different. We present each separately over the
+next two chapters. Nevertheless, there is some overlap, which we'll try to
+point out.
+
+
+## Dataset: Sacramento River Water Temperature {#sec-dataset-sac-water-temp}
+
+The California Department of Water Resources (DWR) monitors water conditions at
+multiple stations along the Sacramento River (as well as other waterways in
+California). One such station is at [Hood, CA][hood].
+
+[hood]: https://en.wikipedia.org/wiki/Hood,_California
+
+The DWR publishes most of the data it collects to the [California Data Exchange
+Center][cdec]. The examples in this and subsequent chapters use
+minimally-cleaned version of the hourly water temperature data collected at the
+Hood monitoring station from 2010-2024.
+
+[cdec]: https://cdec.water.ca.gov/
+
+:::{.callout-important}
+[Click here][ca-water-temp] to download the 2010-2024 Sacramento River Water
+Temperature dataset.
+
+[ca-water-temp]: https://ucdavis.box.com/s/gfgn3vdc8df62uk58338evrdddcgogg7
+
+If you haven't already, we recommend you create a directory for this workshop.
+In your workshop directory, create a `data/` subdirectory. Download and save
+the dataset in the `data/` subdirectory.
+:::
+
+:::{.callout-note
+  title="Documentation for 2010-2024 Sacramento River Water Temperature
+  Dataset" collapse=false
+}
+
+Each row in the dataset contains measurements for one time.
+
+| Column | Description
+| -----: | :----------
+| time   | Datetime the temperature was collected
+| temp_f | Water temperature in degrees Fahrenheit
+
+: {.striped .hover tbl-colwidths="[25, 75]"}
+
+The source dataset (which is almost identical) is available
+[here][ca-water-temp-source] by searching for station ID `SRH`, sensor number
+`25`, start date `2010-01-01`, and end date `2024-12-31`.
+
+[ca-water-temp-source]: https://cdec.water.ca.gov/dynamicapp/wsSensorData
+:::
+
+After downloading the dataset, we can read it into R with `readRDS`:
+
+```{r}
+hood = readRDS("data/2010-2024_sacramento_river_hood_water_temp.rds")
+str(hood)
+```
+
+This is an example of a time series.
+
+
+## Dataset: Orange Tree Growth {#sec-dataset-orange}
+
+R's built-in `Orange` dataset records the circumferences of the trunks of five
+orange trees, each measured seven times over the course of about 4 years.
+
+:::{.callout-important}
+The dataset is included with R as the `Orange` variable.
+:::
+
+:::{.callout-note
+  title="Orange Tree Growth Dataset" collapse=false
+}
+
+Each row in the dataset contains measurements for one tree at one time.
+
+| Column        | Description
+| ------------: | :----------
+| Tree          | Unique ID number for the tree
+| age           | Age of the tree when the measurement was taken, in days since Dec 13, 1968
+| circumference | Circumference of the tree in millimeters
+
+: {.striped .hover tbl-colwidths="[25, 75]"}
+:::
+
+This dataset is built into R. We'll use a data-frame-only version (which drops
+some additional metadata attached to the dataset):
+
+```{r}
+orange = data.frame(Orange)
+str(orange)
+```
+
+This is an example of a repeated measures dataset.

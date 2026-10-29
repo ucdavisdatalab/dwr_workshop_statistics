@@ -1,0 +1,2064 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.9.38">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="description" content="Reader for the DWR Statistics workshop series.">
+
+<title>11&nbsp; Time Series – DWR Statistics Workshops</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
+
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<link href="../../chapters/temporal-data/repeated-measures.html" rel="next">
+<link href="../../chapters/temporal-data/types-of-temporal-data.html" rel="prev">
+<link href="../..//images/logos/datalab-logo_square_150x150.png" rel="icon" type="image/png">
+<script src="../../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-15634bcf2e68342d4ad2dfa704d543f6.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap-4927f781319b8b164c3724fad35bda6c.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<style>
+.callout.callout-style-default .callout-body {
+  padding: 0 1.5rem 0;
+}
+.cell-output-stdout {
+  overflow-y: scroll;
+  max-height: 30rem;
+  margin-bottom: 0.75rem;
+}
+#quarto-sidebar a.text-start {
+  margin-top: 1rem;
+  font-weight: bold;
+}
+</style>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<meta property="og:title" content="11&nbsp; Time Series – DWR Statistics Workshops">
+<meta property="og:description" content="Reader for the DWR Statistics workshop series.">
+<meta property="og:image" content="https://ucdavisdatalab.github.io/dwr_workshop_statistics/chapters/temporal-data/time-series_files/figure-html/fig-sacwt-line-messy-1.png">
+<meta property="og:site_name" content="DWR Statistics Workshops">
+<meta property="og:image:height" content="960">
+<meta property="og:image:width" content="1344">
+<meta name="twitter:title" content="11&nbsp; Time Series – DWR Statistics Workshops">
+<meta name="twitter:description" content="Reader for the DWR Statistics workshop series.">
+<meta name="twitter:image" content="https://ucdavisdatalab.github.io/dwr_workshop_statistics/chapters/temporal-data/time-series_files/figure-html/fig-sacwt-line-messy-1.png">
+<meta name="twitter:image-height" content="960">
+<meta name="twitter:image-width" content="1344">
+<meta name="twitter:card" content="summary_large_image">
+</head>
+
+<body class="nav-sidebar floating quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../chapters/temporal-data/index.html">Working with Temporal Data</a></li><li class="breadcrumb-item"><a href="../../chapters/temporal-data/time-series.html"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Time Series</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header sidebar-header-stacked">
+      <a href="https://datalab.ucdavis.edu/" class="sidebar-logo-link">
+      <img src="../../images/logos/datalab-logo-full-color-rgb.png" alt="The logo of the UC Davis DataLab." class="sidebar-logo light-content py-0 d-lg-inline d-none">
+      <img src="../../images/logos/datalab-logo-full-color-rgb.png" alt="The logo of the UC Davis DataLab." class="sidebar-logo dark-content py-0 d-lg-inline d-none">
+      </a>
+    <div class="sidebar-title mb-0 py-0">
+      <a href="../../">DWR Statistics Workshops</a> 
+        <div class="sidebar-tools-main">
+    <a href="https://github.com/ucdavisdatalab/dwr_workshop_statistics" title="Source Code" class="quarto-navigation-tool px-1" aria-label="Source Code"><i class="bi bi-github"></i></a>
+</div>
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Overview</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text">Exploring Data</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/exploring-data/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Overview</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/exploring-data/getting-to-know-data.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Getting to Know the Data</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/exploring-data/categorical-features.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Categorical Features</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/exploring-data/numerical-features.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Numerical Features</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/exploring-data/outliers.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Outliers</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/exploring-data/relationships-between-features.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Relationships Between Features</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/exploring-data/missing-values.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Missing Values</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true">
+ <span class="menu-text">Introduction to Applied Statistics</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/applied-statistics/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Overview</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/applied-statistics/quantifying-uncertainty.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Quantifying Uncertainty</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/applied-statistics/hypothesis-tests.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Hypothesis Tests</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/applied-statistics/linear-models.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Linear Models</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true">
+ <span class="menu-text">Working with Temporal Data</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/temporal-data/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Overview</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/temporal-data/types-of-temporal-data.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Getting Started</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/temporal-data/time-series.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Time Series</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/temporal-data/repeated-measures.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Repeated Measures</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true">
+ <span class="menu-text">Working with Missing and Censored Data</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/censored-data/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Overview</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/censored-data/missing-data.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Missing Data</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/censored-data/censored-data.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Censored Data</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="true">
+ <span class="menu-text">Appendices</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/references.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">References</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#sec-ts-time-series-r" id="toc-sec-ts-time-series-r" class="nav-link active" data-scroll-target="#sec-ts-time-series-r"><span class="header-section-number">11.1</span> Time Series in R</a></li>
+  <li><a href="#sec-ts-cleaning" id="toc-sec-ts-cleaning" class="nav-link" data-scroll-target="#sec-ts-cleaning"><span class="header-section-number">11.2</span> Cleaning</a></li>
+  <li><a href="#sec-ts-decomposition" id="toc-sec-ts-decomposition" class="nav-link" data-scroll-target="#sec-ts-decomposition"><span class="header-section-number">11.3</span> Decomposition</a>
+  <ul class="collapse">
+  <li><a href="#sec-ts-seasonality-plots" id="toc-sec-ts-seasonality-plots" class="nav-link" data-scroll-target="#sec-ts-seasonality-plots"><span class="header-section-number">11.3.1</span> Seasonality Plots</a></li>
+  <li><a href="#sec-ts-stl-decomposition" id="toc-sec-ts-stl-decomposition" class="nav-link" data-scroll-target="#sec-ts-stl-decomposition"><span class="header-section-number">11.3.2</span> STL Decomposition</a></li>
+  </ul></li>
+  <li><a href="#autocorrelations" id="toc-autocorrelations" class="nav-link" data-scroll-target="#autocorrelations"><span class="header-section-number">11.4</span> Autocorrelations</a>
+  <ul class="collapse">
+  <li><a href="#partial-autocorrelations" id="toc-partial-autocorrelations" class="nav-link" data-scroll-target="#partial-autocorrelations"><span class="header-section-number">11.4.1</span> Partial Autocorrelations</a></li>
+  </ul></li>
+  <li><a href="#stationary-series" id="toc-stationary-series" class="nav-link" data-scroll-target="#stationary-series"><span class="header-section-number">11.5</span> Stationary Series</a></li>
+  <li><a href="#sec-ts-forecasting" id="toc-sec-ts-forecasting" class="nav-link" data-scroll-target="#sec-ts-forecasting"><span class="header-section-number">11.6</span> Forecasting</a>
+  <ul class="collapse">
+  <li><a href="#simple-methods" id="toc-simple-methods" class="nav-link" data-scroll-target="#simple-methods"><span class="header-section-number">11.6.1</span> Simple Methods</a></li>
+  <li><a href="#linear-models" id="toc-linear-models" class="nav-link" data-scroll-target="#linear-models"><span class="header-section-number">11.6.2</span> Linear Models</a></li>
+  <li><a href="#arima-models" id="toc-arima-models" class="nav-link" data-scroll-target="#arima-models"><span class="header-section-number">11.6.3</span> ARIMA Models</a></li>
+  </ul></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/ucdavisdatalab/dwr_workshop_statistics/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li><li><a href="https://github.com/ucdavisdatalab/dwr_workshop_statistics/blob/main/chapters/temporal-data/time-series.qmd" class="toc-action"><i class="bi empty"></i>View source</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../chapters/temporal-data/index.html">Working with Temporal Data</a></li><li class="breadcrumb-item"><a href="../../chapters/temporal-data/time-series.html"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Time Series</span></a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Time Series</span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<div class="callout callout-style-default callout-note callout-titled" title="Learning Goals">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-1-contents" aria-controls="callout-1" aria-expanded="true" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Learning Goals
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-1" class="callout-1-contents callout-collapse collapse show">
+<div class="callout-body-container callout-body">
+<p>After this lesson, you should be able to:</p>
+<ul>
+<li>Summarize the current ecosystem of R packages for time series</li>
+<li>Explain the primary concerns when cleaning a time series</li>
+<li>Plot time series</li>
+<li>Explain what trend, seasonal, and remainder components are</li>
+<li>Explain what cycles are</li>
+<li>Use seasonality plots to check for seasonality</li>
+<li>Use STL decomposition to extract components of a time series</li>
+<li>Explain how to assess the quality of an STL decomposition</li>
+<li>Explain what autocorrelations and partial autocorrelations are</li>
+<li>Use autocorrelation plots to assess trend and seasonality in time series</li>
+<li>Explain what it means for a time series to be stationary</li>
+<li>Describe some simple methods for forecasting</li>
+<li>Fit a linear model to a time series and use it to forecast</li>
+<li>Fit an ARIMA model to a time series and use it to forecast</li>
+<li>Explain some ways to assess the quality of a fitted time series model</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="callout callout-style-default callout-important callout-titled" title="Required Packages">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Important</span>Required Packages
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>This chapter uses the following R packages:</p>
+<ul>
+<li>dplyr</li>
+<li>fable</li>
+<li>feasts</li>
+<li>forecast</li>
+<li>ggplot2</li>
+<li>ggtime</li>
+<li>lubridate</li>
+<li>tsibble</li>
+</ul>
+<p>For a refresher about how to install and load packages, see the <a href="https://ucdavisdatalab.github.io/dwr_workshop_r_basics/chapters/getting-started/getting-started.html#sec-packages">Packages</a> section of DataLab’s R Basics workshop reader.</p>
+</div>
+</div>
+<p>This chapter introduces the fundamentals of time series analysis. Time series analysis is a deep topic and remains an area of active research, so this chapter should not be considered comprehensive by any means.</p>
+<section id="sec-ts-time-series-r" class="level2" data-number="11.1">
+<h2 data-number="11.1" class="anchored" data-anchor-id="sec-ts-time-series-r"><span class="header-section-number">11.1</span> Time Series in R</h2>
+<p>There are many different packages and data structures for representing time series in R. A few of these include:</p>
+<ul>
+<li>R’s built-in time series (see <code>?ts</code>)</li>
+<li>The <a href="https://doi.org/10.32614/CRAN.package.forecast">forecast</a> package (after installing, see <code>?msts</code>)</li>
+<li>The <a href="https://doi.org/10.32614/CRAN.package.tsibble">tsibble</a> package (after installing, see <code>?tsibble</code>)</li>
+<li>The <a href="https://doi.org/10.32614/CRAN.package.zoo">zoo</a> package (after installing, see <code>?zoo</code> and <code>?zooreg</code>)</li>
+<li>The <a href="https://doi.org/10.32614/CRAN.package.xts">xts</a> package (after installing, see <code>?xts</code>)</li>
+</ul>
+<p>Unfortunately, these representations are mostly incompatible with each other (but see the <a href="https://doi.org/10.32614/CRAN.package.tsbox">tsbox</a> package, which provides conversion functions). Which representations are supported by methods packages varies.</p>
+<p>In this reader, we mostly use tsibble (and associated packages) to so that learners can easily refer to the textbook <a href="https://otexts.com/fpp3/"><em>Forecasting: Principles and Practice</em>, 3rd Edition</a> <span class="citation" data-cites="hyndman2021">(<a href="../references.html#ref-hyndman2021" role="doc-biblioref">Hyndman and Athanasopoulos 2021</a>)</span>. We’ve found that tsibbles lead to the nicest visualizations (with good ggplot2 support) and are also the most convenient for time series with multiple features (sometimes called multivariate time series or panel data).</p>
+<p>We may occasionally use forecast as well. It’s an older package from several of the same developers as tsibble; visualizations aside, it generally has more features, better performance, and fewer bugs. The textbook <a href="https://otexts.com/fpp2/"><em>Forecasting: Principles and Practice</em>, 2nd Editon</a> <span class="citation" data-cites="hyndman2018">(<a href="../references.html#ref-hyndman2018" role="doc-biblioref">Hyndman and Athanasopoulos 2018</a>)</span> provides an introduction to the forecast package.</p>
+<div class="callout callout-style-default callout-note callout-titled" title="See Also">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>See Also
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The <a href="https://cran.r-project.org/web/views/TimeSeries.html">CRAN Task View: Time Series Analysis</a> page is a curated list of R’s most prominent time series packages.</p>
+<p>The <a href="https://rc2e.com/timeseriesanalysis">Time Series Analysis</a> chapter of the <em>R Cookbook</em> <span class="citation" data-cites="long2019">(<a href="../references.html#ref-long2019" role="doc-biblioref">Long and Teetor 2019</a>)</span> discusses the tradeoffs of R’s many time series data structures (and recommends zoo or xts for most purposes). It also provides examples of several common time series analysis tasks.</p>
+</div>
+</div>
+</section>
+<section id="sec-ts-cleaning" class="level2" data-number="11.2">
+<h2 data-number="11.2" class="anchored" data-anchor-id="sec-ts-cleaning"><span class="header-section-number">11.2</span> Cleaning</h2>
+<p>As with any dataset, the first step in working with a time series is to clean it. Specifically, we need to:</p>
+<ul>
+<li><p>Identify outliers. Later in this section, we’ll explain some strategies tailored to time series, but most general-purpose strategies (<a href="../exploring-data/outliers.html" class="quarto-xref"><span>Chapter 4</span></a>) are also appropriate. If there are outliers, we need to investigate further to decide whether they’re valid (and should be left as-is) or erroneous (and should be corrected or removed).</p></li>
+<li><p>Check for missing values. If there are missing values, determine how many and whether they exhibit any patterns. We’ll introduce a few ways to impute missing values later in this section.</p></li>
+<li><p>Check whether the series is <strong>regular</strong>, meaning the interval of time between each pair of consecutive observations is the same. A series that’s not regular is <strong>irregular</strong>. Many time series methods assume regularity, so working with an irregular series is often difficult. Fortunately, there are several ways to regularize an irregular series, such as “rounding” times, aggregating to a coarser timescale, or interpolating the missing “observations” on a regular grid.</p></li>
+<li><p>Check for “gaps” in the series. This is related to checking for missing values and regularity, but gaps can also arise due to missing observations (that is, observations which are not present in the dataset). When a series has a long interval with relatively few or no observations, it may be better to treat it as two separate series. Consider whether each (separate) part of the series contains uniquely important information relevant to the analysis. For forecasting, we often focus the most on relatively recent observations.</p></li>
+</ul>
+<p>To illustrate some of these points, let’s clean the Sacramento Water Temperature dataset (<a href="types-of-temporal-data.html#sec-dataset-sac-water-temp" class="quarto-xref"><span>Section 10.2</span></a>). To check for outliers, let’s start by visualizing the dataset. For time series, it’s natural to make point or line plots of numerical features against time. In this dataset, the only numerical feature is <code>temp_f</code>, the water temperature in degrees Fahrenheit:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(<span class="st">"ggplot2"</span>)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(hood) <span class="sc">+</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">aes</span>(<span class="at">x =</span> time, <span class="at">y =</span> temp_f) <span class="sc">+</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div id="fig-sacwt-line-messy" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-sacwt-line-messy-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="time-series_files/figure-html/fig-sacwt-line-messy-1.png" class="img-fluid figure-img" width="672">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-sacwt-line-messy-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;11.1: Line plot of time versus temperature for the Sacramento River Water Temperature dataset.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>The most striking thing in <a href="#fig-sacwt-line-messy" class="quarto-xref">Figure&nbsp;<span>11.1</span></a> is that at least two of the temperatures are close to 10,000! These are clearly either erroneous or meant to indicate the the actual measurement is missing.</p>
+<p>It’s reasonable to expect that the water temperature will never be below freezing (32°F; it’s extremely rare for the Sacramento River to freeze) or above boiling (212°F). Let’s check how many observations are outside these bounds:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(<span class="st">"dplyr"</span>)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">filter</span>(hood, temp_f <span class="sc">&lt;</span> <span class="dv">32</span> <span class="sc">|</span> temp_f <span class="sc">&gt;</span> <span class="dv">212</span>), <span class="at">n =</span> <span class="dv">30</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 24 × 2
+   time                temp_f
+   &lt;dttm&gt;               &lt;dbl&gt;
+ 1 2011-06-15 14:00:00     14
+ 2 2011-08-19 12:00:00   9999
+ 3 2011-10-12 13:00:00     14
+ 4 2011-12-20 11:00:00     14
+ 5 2012-07-09 05:00:00     14
+ 6 2012-07-09 06:00:00     14
+ 7 2012-07-09 07:00:00     14
+ 8 2012-07-09 08:00:00     14
+ 9 2012-07-09 09:00:00     14
+10 2013-04-11 00:00:00     14
+11 2013-04-11 01:00:00     14
+12 2013-04-11 02:00:00     14
+13 2013-04-11 03:00:00     14
+14 2013-04-11 04:00:00     14
+15 2013-04-11 05:00:00     14
+16 2013-04-11 06:00:00     14
+17 2013-04-11 07:00:00     14
+18 2013-04-11 08:00:00     14
+19 2014-06-03 14:00:00     14
+20 2014-08-05 12:00:00     14
+21 2014-08-14 05:00:00     14
+22 2014-09-19 13:00:00     14
+23 2019-06-05 14:00:00   9999
+24 2019-06-05 15:00:00   9999</code></pre>
+</div>
+</div>
+<p>All of these are either 14 or 9,999. Both seem unlikely to be valid measurements, so let’s replace these with missing values, then replot the series:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>hood<span class="sc">$</span>temp_f[hood<span class="sc">$</span>temp_f <span class="sc">&lt;</span> <span class="dv">32</span> <span class="sc">|</span> hood<span class="sc">$</span>temp_f <span class="sc">&gt;</span> <span class="dv">212</span>] <span class="ot">=</span> <span class="cn">NA</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(hood) <span class="sc">+</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">aes</span>(<span class="at">x =</span> time, <span class="at">y =</span> temp_f) <span class="sc">+</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div id="fig-sacwt-line" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-sacwt-line-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="time-series_files/figure-html/fig-sacwt-line-1.png" class="img-fluid figure-img" width="672">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-sacwt-line-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;11.2: Line plot of time versus temperature for the Sacramento River Water Temperature dataset, after removing temperatures below freezing and above boiling.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p><a href="#fig-sacwt-line" class="quarto-xref">Figure&nbsp;<span>11.2</span></a> shows there is a strong, wavelike pattern to the temperatures over time. This likely reflects changes in season. There are still about three observations that seem to deviate substantially from the others; their values are extremely unlikely but not impossible, so we’ll leave them as-is for now. The figure also shows that there are no major gaps in the series.</p>
+<p>Next, let’s check whether the series is regular. To do this, we’ll use the <a href="https://doi.org/10.32614/CRAN.package.tsibble">tsibble</a> package, which provides a Tidyverse-compatible data structure for time series: a “time series tibble” or tsibble. To convert the data frame, we can use the <code>tsibble</code> function; we also need to specify which feature is the time index for the series:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(<span class="st">"tsibble"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>
+Attaching package: 'tsibble'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>The following objects are masked from 'package:base':
+
+    intersect, setdiff, union</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>hood <span class="ot">=</span> <span class="fu">tsibble</span>(hood, <span class="at">index =</span> time)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>After converting the series, we can use the <code>scan_gaps</code> function to identify missing observations (and gaps):</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">scan_gaps</span>(hood)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tsibble: 15 x 1 [1h] &lt;UTC&gt;
+   time               
+   &lt;dttm&gt;             
+ 1 2010-03-14 02:00:00
+ 2 2011-03-13 02:00:00
+ 3 2012-03-11 02:00:00
+ 4 2013-03-10 02:00:00
+ 5 2014-03-09 02:00:00
+ 6 2015-03-08 02:00:00
+ 7 2016-03-13 02:00:00
+ 8 2017-03-12 02:00:00
+ 9 2018-03-11 02:00:00
+10 2019-03-10 02:00:00
+11 2020-03-08 02:00:00
+12 2021-03-14 02:00:00
+13 2022-03-13 02:00:00
+14 2023-03-12 02:00:00
+15 2024-03-10 02:00:00</code></pre>
+</div>
+</div>
+<p>The series is mostly regular, but there are 15 times for which there’s no observation. We can use tsibble’s <code>fill_gaps</code> function to insert observations at these times (with missing values for the features):</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>hood <span class="ot">=</span> <span class="fu">fill_gaps</span>(hood)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tip
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Another way to check regularity is to compute differences between observation times with R’s built in <code>diff</code> function. In a regular series, the differences will all be equal.</p>
+<p>Another way to insert missing observations is to use <code>seq</code> to create a regular sequence of times, then use <code>merge</code> or dplyr’s <code>left_join</code> to left join the sequence with the time series.</p>
+</div>
+</div>
+<p>Finally, let’s check for missing values in the time series:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(hood)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>      time                         temp_f      
+ Min.   :2010-01-01 00:00:00   Min.   : 32.00  
+ 1st Qu.:2013-10-01 17:45:00   1st Qu.: 53.00  
+ Median :2017-07-02 11:30:00   Median : 61.30  
+ Mean   :2017-07-02 11:30:00   Mean   : 61.21  
+ 3rd Qu.:2021-04-02 05:15:00   3rd Qu.: 69.70  
+ Max.   :2024-12-31 23:00:00   Max.   :102.10  
+                               NA's   :696     </code></pre>
+</div>
+</div>
+<p>There are 696 missing values (39 of which we created) out of 131496 observations. Let’s create a new column to mark the observations where temperature is missing:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>hood<span class="sc">$</span>na_temp <span class="ot">=</span> <span class="fu">is.na</span>(hood<span class="sc">$</span>temp_f)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Since temperature is only missing for a small proportion of observations, let’s impute the missing values. There are many different ways to do this. For instance, we can propagate prior non-missing values forward, aggregate the nearest non-missing values, or fit a model to the non-missing values and use its predictions.</p>
+<p>The <a href="https://doi.org/10.32614/CRAN.package.forecast">forecast</a> package’s <code>na.interp</code> function can impute missing values in a vector or time series by linear interpolation:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(<span class="st">"forecast"</span>)</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>hood<span class="sc">$</span>temp_f <span class="ot">=</span> <span class="fu">as.numeric</span>(<span class="fu">na.interp</span>(hood<span class="sc">$</span>temp_f, <span class="at">linear =</span> <span class="cn">TRUE</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>The argument <code>linear = TRUE</code> makes the function use linear interpolation; it can also impute values by time series decomposition (more about this in <a href="#sec-ts-decomposition" class="quarto-xref"><span>Section 11.3</span></a>). The function returns a <code>ts</code> object, so we also need to convert it back to a vector with <code>as.numeric</code>.</p>
+<p>Now that we’ve imputed the missing values, we can plot the series one more time with the imputed values marked. This is one way to check for patterns in (the former) missing values:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(hood) <span class="sc">+</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">aes</span>(<span class="at">x =</span> time, <span class="at">y =</span> temp_f) <span class="sc">+</span></span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>() <span class="sc">+</span></span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">data =</span> <span class="fu">filter</span>(hood, na_temp), <span class="at">color =</span> <span class="st">"red"</span>, <span class="at">size =</span> <span class="fl">0.1</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div id="fig-sacwt-line-na" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-sacwt-line-na-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="time-series_files/figure-html/fig-sacwt-line-na-1.png" class="img-fluid figure-img" width="672">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-sacwt-line-na-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;11.3: Line plot of time versus temperature for the Sacramento River Water Temperature dataset, with imputed values marked in red.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>Based on <a href="#fig-sacwt-line-na" class="quarto-xref">Figure&nbsp;<span>11.3</span></a>, the former missing values are relatively spread out across the series. There appear to be a few clusters of missing values, which could indicate a multi-hour sensor failure. We’ll proceed with the imputed values. In practice, we should carry out further investigation of the missing values to look for patterns, identify potential causes, and evaluate how they might influence subsequent analyses. However, since the number of missing values was small, and this series includes a large number of observations, they’re unlikely to have much impact.</p>
+</section>
+<section id="sec-ts-decomposition" class="level2" data-number="11.3">
+<h2 data-number="11.3" class="anchored" data-anchor-id="sec-ts-decomposition"><span class="header-section-number">11.3</span> Decomposition</h2>
+<p>Many time series can be decomposed into meaningful components:</p>
+<ul>
+<li><p>A <strong>trend</strong> component: a smooth curve that follows long-term increases and decreases in the series. Some time series also exhibit long-term <strong>cycles</strong>: patterns of increases and decreases over irregular lengths of time. When a series has cycles, we call this a <strong>trend-cycle</strong> component.</p></li>
+<li><p>One or more <strong>seasonal</strong> components: a curve which follows increases and decreases that repeat over a fixed (or regular) length of time. We call the fixed length of time a <strong>seasonal period</strong> or simply a season. There can be multiple seasonal components with different season lengths—we’ll see an example of this shortly.</p></li>
+<li><p>A <strong>remainder</strong> component: the variation in the observations that’s left over after removing the trend and seasonal components. Generally, we want this component to be devoid of any trends, cycles, or seasonal patterns.</p></li>
+</ul>
+<p>There are many different methods for decomposing time series.</p>
+<section id="sec-ts-seasonality-plots" class="level3" data-number="11.3.1">
+<h3 data-number="11.3.1" class="anchored" data-anchor-id="sec-ts-seasonality-plots"><span class="header-section-number">11.3.1</span> Seasonality Plots</h3>
+<p>As a first step towards decomposition, let’s make a <strong>seasonality plot</strong>. In a seasonality plot, we split the time series into subseries by season, align each subseries to the same starting time, and then make a time versus feature plot with a separate line for each subseries. The idea is that any seasonal patterns will be visible in the plot as similarities between in the subseries.</p>
+<p>The <a href="https://doi.org/10.32614/CRAN.package.ggtime">ggtime</a> package provides functions to make seasonality plots for tsibbles. It also provides functions for other kinds of time series visualizations. The package is relatively new as of writing, so there are some missing features and bugs.</p>
+<p>The ggtime function to make a seasonality plot is <code>gg_season</code>. The function requires three arguments: a tsibble, the name of the feature to plot on the y-axis, and the seasonal period. See <code>?gg_season</code> for details about how to set the seasonal period; stricly speaking, this argument is optional, but it’s usually best to specify it.</p>
+<p>Let’s make a seasonality plot where the seasonal period is one year for the Sacramento River Water Temperature series:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(<span class="st">"ggtime"</span>)</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a><span class="fu">gg_season</span>(hood, temp_f, <span class="st">"1y"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div id="fig-sacwt-season-year" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-sacwt-season-year-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="time-series_files/figure-html/fig-sacwt-season-year-1.png" class="img-fluid figure-img" width="672">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-sacwt-season-year-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;11.4: Seasonality plot with a 1-year seasonal period for the Sacramento River Water Temperature dataset.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>There’s a clear pattern visible in <a href="#fig-sacwt-season-year" class="quarto-xref">Figure&nbsp;<span>11.4</span></a>. At the beginning of the year, in Winter, temperatures are relatively low (about 50°F). They gradually increase over time until the peak in Summer (about 70°F). Then they gradually decrease as Winter approaches again. So this series has strong seasonality at the 1-year level; any decomposition we make should include a 1-year seasonal component.</p>
+<p>It’s up to us to determine appropriate seasonal period(s) for a time series (although some functions will try to guess). In general, we should check the seasonality plots for any seasonal periods that we suspect might exhibit a pattern, regardless of whether that’s because we have expert knowledege about the processes that affect the series or because we see signs of the pattern in the initial time versus feature plots.</p>
+<p>Let’s check the 1-month and 1-week seasonality plots:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">gg_season</span>(hood, temp_f, <span class="st">"1m"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div id="fig-sacwt-season-month" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-sacwt-season-month-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="time-series_files/figure-html/fig-sacwt-season-month-1.png" class="img-fluid figure-img" width="672">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-sacwt-season-month-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;11.5: Seasonality plot with a 1-month seasonal period for the Sacramento River Water Temperature dataset.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>In <a href="#fig-sacwt-season-month" class="quarto-xref">Figure&nbsp;<span>11.5</span></a>, it’s much harder to see a clear pattern than it was in <a href="#fig-sacwt-season-year" class="quarto-xref">Figure&nbsp;<span>11.4</span></a>. One notable pattern is that there are small bumps over the course of the entire month; these suggest there might be seasonality over a shorter seasonal period.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">gg_season</span>(hood, temp_f, <span class="st">"1w"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div id="fig-sacwt-season-week" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-sacwt-season-week-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="time-series_files/figure-html/fig-sacwt-season-week-1.png" class="img-fluid figure-img" width="672">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-sacwt-season-week-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;11.6: Seasonality plot with a 1-week seasonal period for the Sacramento River Water Temperature dataset.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p><a href="#fig-sacwt-season-week" class="quarto-xref">Figure&nbsp;<span>11.6</span></a> doesn’t exhibit any strong week-level patterns, but once again there are small bumps. They appear to correspond to days (there are seven bumps), so let’s check the 1-day seasonality plot:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="fu">gg_season</span>(hood, temp_f, <span class="st">"1d"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div id="fig-sacwt-season-day" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-sacwt-season-day-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="time-series_files/figure-html/fig-sacwt-season-day-1.png" class="img-fluid figure-img" width="672">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-sacwt-season-day-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;11.7: Seasonality plot with a 1-day seasonal period for the Sacramento River Water Temperature dataset.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>The annual seasonality we saw in <a href="#fig-sacwt-season-year" class="quarto-xref">Figure&nbsp;<span>11.4</span></a> makes it quite difficult to see patterns in the 1-day seasonality plot in <a href="#fig-sacwt-season-day" class="quarto-xref">Figure&nbsp;<span>11.7</span></a>. The 1-day seasonality was easier to see in <a href="#fig-sacwt-season-week" class="quarto-xref">Figure&nbsp;<span>11.6</span></a>. Based on what we know about earth, it seems likely that temperatures increase during the day and decrease at night.</p>
+<p>After reviewing the seasonality plots for the Sacramento River Water Temperature series, we can conclude that there are seasonal effects at the 1-year and 1-day level. When we decompose the series, we should compute seasonal components at both of these levels.</p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tip
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The ggtime package’s <code>autoplot</code> function is a convenient way to make a time versus feature plot for a tsibble:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="fu">autoplot</span>(hood, temp_f)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="time-series_files/figure-html/unnamed-chunk-9-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>This is the same as <a href="#fig-sacwt-line" class="quarto-xref">Figure&nbsp;<span>11.2</span></a>, but the code is much more concise. The <code>autoplot</code> function returns an ordinary ggplot2 object, so we can still add layers to customize the plot.</p>
+</div>
+</div>
+</section>
+<section id="sec-ts-stl-decomposition" class="level3" data-number="11.3.2">
+<h3 data-number="11.3.2" class="anchored" data-anchor-id="sec-ts-stl-decomposition"><span class="header-section-number">11.3.2</span> STL Decomposition</h3>
+<p>The Seasonal-Trend Decomposition Procedure Based on LOESS <span class="citation" data-cites="cleveland1990">(<a href="../references.html#ref-cleveland1990" role="doc-biblioref">Cleveland et al. 1990</a>)</span>, commonly known as <strong>STL</strong>, is a very effective method for decomposing time series. An STL decomposition provides numerical estimates of the trend and seasonal components for a series.</p>
+<p>The core of STL is a 2-step process:</p>
+<ol type="1">
+<li>Fit a seasonal component after removing the trend component.</li>
+<li>Fit a trend component after removing the seasonal component.</li>
+</ol>
+<p>These steps are repeated many times, starting from an initial trend component of 0 (no trend). STL uses <strong>LOESS</strong> (“locally estimated scatterplot smoothing”), a kind of local polynomial regression, to fit each component. Local polynomial regression approximates a smooth curve by fitting a polynomial (via least squares) at each point where the curve is to be evaluated. STL also uses some additional steps to handle spikes in series robustly; see <span class="citation" data-cites="cleveland1990">Cleveland et al. (<a href="../references.html#ref-cleveland1990" role="doc-biblioref">1990</a>)</span> for details.</p>
+<p>In R, the <a href="https://doi.org/10.32614/CRAN.package.feasts">feasts</a> package provides an implementation of STL that works with tsibbles. To fit an STL decomposition, we can use the package’s <code>model</code> function, which is a generic interface for fitting models. The first argument must be the time series to decompose. The second argument must be a model description.</p>
+<p>For an STL decomposition, we can use the <code>STL</code> function to write the model description. The function’s only required argument is a model formula, written with <code>~</code>, which describes the decomposition. The left-hand side should be the feature to decompose. On the right-hand side, we can use the <code>trend</code> and <code>season</code> functions to describe which components to extract.</p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tip
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>An STL decomposition always includes a trend component, so we can omit the <code>trend</code> function in the model description unless we want to set parameters related to the trend.</p>
+<p>See <code>?STL</code> for more details.</p>
+</div>
+</div>
+<p>As a demonstration, let’s apply STL decomposition to the Sacramento River Water Temperature series. We’ll extract seasonal components at the 1-year and 1-day level, since we saw patterns there in <a href="#sec-ts-seasonality-plots" class="quarto-xref"><span>Section 11.3.1</span></a>. The code to fit the STL decomposition is:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(<span class="st">"feasts"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Loading required package: fabletools</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>stl_fit <span class="ot">=</span> <span class="fu">model</span>(</span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>  hood,</span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">STL</span>(</span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>    temp_f <span class="sc">~</span> <span class="fu">season</span>(<span class="st">"1y"</span>) <span class="sc">+</span> <span class="fu">season</span>(<span class="st">"1d"</span>),</span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">robust =</span> <span class="cn">TRUE</span>  <span class="co"># make fit robust against outliers</span></span>
+<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>After fitting an STL decomposition, we’ll generally want to inspect or use the individual components. We can get the components as a tsibble with the <code>components</code> function:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>stl_cmp <span class="ot">=</span> <span class="fu">components</span>(stl_fit)</span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>stl_cmp</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A dable: 131,496 x 8 [1h] &lt;UTC&gt;
+# Key:     .model [1]
+# :        temp_f = trend + season_1y + season_1d + remainder
+   .model         time                temp_f trend season_1d season_1y remainder
+   &lt;chr&gt;          &lt;dttm&gt;               &lt;dbl&gt; &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;
+ 1 "STL(temp_f ~… 2010-01-01 00:00:00   47.4  60.4   -0.172      -13.6     0.712
+ 2 "STL(temp_f ~… 2010-01-01 01:00:00   47.6  60.4   -0.176      -13.6     0.916
+ 3 "STL(temp_f ~… 2010-01-01 02:00:00   47.5  60.4   -0.109      -13.6     0.783
+ 4 "STL(temp_f ~… 2010-01-01 03:00:00   47.6  60.4   -0.0554     -13.6     0.831
+ 5 "STL(temp_f ~… 2010-01-01 04:00:00   47.7  60.4   -0.0138     -13.6     0.880
+ 6 "STL(temp_f ~… 2010-01-01 05:00:00   47.7  60.4    0.0141     -13.6     0.891
+ 7 "STL(temp_f ~… 2010-01-01 06:00:00   47.7  60.4    0.0112     -13.6     0.903
+ 8 "STL(temp_f ~… 2010-01-01 07:00:00   47.7  60.4    0.0107     -13.6     0.888
+ 9 "STL(temp_f ~… 2010-01-01 08:00:00   47.7  60.4   -0.0162     -13.6     0.918
+10 "STL(temp_f ~… 2010-01-01 09:00:00   47.7  60.4   -0.0300     -13.6     0.915
+# ℹ 131,486 more rows
+# ℹ 1 more variable: season_adjust &lt;dbl&gt;</code></pre>
+</div>
+</div>
+<p>The result includes columns for the original series, the trend component (<code>trend</code>), each seasonal component (<code>season_*</code>), and the remainder (<code>remainder</code>) after removing the trend and seasonal components from the series. It also includes a column for the <strong>seasonally adjusted</strong> series (<code>season_adjust</code>), which is the series with only the seasonal components removed. The seasonally adjusted series is useful when we’re only interested in trend or want to use a forecasting method that assumes no seasonality.</p>
+<p>The best way to inspect an STL decomposition is by plotting it. The ggtime package’s <code>autoplot</code> function automatically makes a per-component plot for STL components:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="fu">autoplot</span>(stl_cmp)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div id="fig-sacwt-stl" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-sacwt-stl-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="time-series_files/figure-html/fig-sacwt-stl-1.png" class="img-fluid figure-img" width="672">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-sacwt-stl-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;11.8: STL components plot for the Sacramento River Water Temperature dataset.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>From top to bottom, <a href="#fig-sacwt-stl" class="quarto-xref">Figure&nbsp;<span>11.8</span></a> shows the original series, the trend component, the seasonal components, and the remainder. At the left-hand side of each panel, a gray bar shows the relative scale of the component: each gray bar has the same height in the units of the original time series.</p>
+<p>The STL decomposition for the Sacramento River Water Temperature series shows a mostly flat trend (compare the heights of the gray bars in the panel for the original series and the trend component). The 1-year seasonal component has a parabolic shape, similar to the pattern in <a href="#fig-sacwt-season-year" class="quarto-xref">Figure&nbsp;<span>11.4</span></a>.</p>
+<p>By default, STL allows seasonal components to change slowly from one season to the next. <a href="#fig-sacwt-stl" class="quarto-xref">Figure&nbsp;<span>11.8</span></a> suggests that this has caused some of the 1-year seasonal component to leak into the 1-day seasonal component—notice how the peaks in the 1-year and 1-day seasonal components are similar. The 1-day seasonal component also appears as a filled area instead of a curve because it fluctuates over hours, but the plot is on the scale of years. We can plot the 1-day component separately over a shorter time interval, say the first week of January 2024, to make patterns easier to see:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(<span class="st">"lubridate"</span>)</span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Limit from 2024-01-01 to 2024-01-07.</span></span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>lims <span class="ot">=</span> <span class="fu">make_datetime</span>(<span class="at">year =</span> <span class="dv">2024</span>, <span class="at">month =</span> <span class="dv">1</span>, <span class="at">day =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">7</span>))</span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a><span class="fu">autoplot</span>(stl_cmp, season_1d) <span class="sc">+</span></span>
+<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlim</span>(lims)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div id="fig-sacwt-stl-day" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-sacwt-stl-day-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="time-series_files/figure-html/fig-sacwt-stl-day-1.png" class="img-fluid figure-img" width="672">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-sacwt-stl-day-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;11.9: 1-day seasonal STL component plot for the Sacramento River Water Temperature dataset, limited to the first week of January 2024.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p><a href="#fig-sacwt-stl-day" class="quarto-xref">Figure&nbsp;<span>11.9</span></a> reveals the pattern for each day and also shows how it’s slowly changing.</p>
+<div class="callout callout-style-default callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Warning
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The ggplot2 package sometimes converts datetimes into dates, which can make hourly plots like <a href="#fig-sacwt-stl-day" class="quarto-xref">Figure&nbsp;<span>11.9</span></a> visually misleading.</p>
+<p>One way to ensure that a plot uses datetimes is to explicitly set the limits in terms of datetimes (not dates!), as we did for the figure.</p>
+</div>
+</div>
+<p>For series where there are multiple seasonal components and the largest one leaks into the others, it can be useful to disallow gradual change for the smaller seasonal components. To do so, we refit the STL model with the setting <code>window = "periodic"</code> for the seasonal components where we want to disallow change:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>stl_fit <span class="ot">=</span> <span class="fu">model</span>(</span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>  hood,</span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">STL</span>(</span>
+<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a>    temp_f <span class="sc">~</span> <span class="fu">season</span>(<span class="st">"1y"</span>) <span class="sc">+</span> <span class="fu">season</span>(<span class="st">"1d"</span>, <span class="at">window =</span> <span class="st">"periodic"</span>),</span>
+<span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">robust =</span> <span class="cn">TRUE</span>  <span class="co"># make fit robust against outliers</span></span>
+<span id="cb29-6"><a href="#cb29-6" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb29-7"><a href="#cb29-7" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb29-8"><a href="#cb29-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-9"><a href="#cb29-9" aria-hidden="true" tabindex="-1"></a>stl_cmp <span class="ot">=</span> <span class="fu">components</span>(stl_fit)</span>
+<span id="cb29-10"><a href="#cb29-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-11"><a href="#cb29-11" aria-hidden="true" tabindex="-1"></a><span class="fu">autoplot</span>(stl_cmp)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div id="fig-sacwt-stl-periodic" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-sacwt-stl-periodic-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="time-series_files/figure-html/fig-sacwt-stl-periodic-1.png" class="img-fluid figure-img" width="672">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-sacwt-stl-periodic-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;11.10: STL components plot for the Sacramento River Water Temperature dataset, with periodic 1-day seasonal component.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>In <a href="#fig-sacwt-stl-periodic" class="quarto-xref">Figure&nbsp;<span>11.10</span></a>, the trend and 1-year seasonal components look about the same as with the previous model. The 1-day seasonal component looks like a black rectangle, again because it fluctuates over hours and the plot is on the scale of years. We can see the 1-day seasonal component better by focusing on a single week:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="fu">autoplot</span>(stl_cmp, season_1d) <span class="sc">+</span></span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlim</span>(lims)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div id="fig-sacwt-stl-periodic-day" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-sacwt-stl-periodic-day-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="time-series_files/figure-html/fig-sacwt-stl-periodic-day-1.png" class="img-fluid figure-img" width="672">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-sacwt-stl-periodic-day-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;11.11: Periodic 1-day seasonal STL component plot for the Sacramento River Water Temperature dataset, limited to the first week of January 2024.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p><a href="#fig-sacwt-stl-periodic-day" class="quarto-xref">Figure&nbsp;<span>11.11</span></a> shows that starting from midnight each day, temperatures decrease until about 6 am, then increase until about 6 pm, then decrease again. The overall change in temperature is relatively small (less than 1°F).</p>
+<div class="callout callout-style-default callout-note callout-titled" title="Note: STL Parameters">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Note: STL Parameters
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>There are several parameters that can be adjusted in the STL decomposition. The automatic decomposition we used here is not necessarily the best one.</p>
+<p>To learn more about these parameters, see <code>?STL</code> and <span class="citation" data-cites="cleveland1990">Cleveland et al. (<a href="../references.html#ref-cleveland1990" role="doc-biblioref">1990</a>)</span>.</p>
+</div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled" title="Note: Multiplicative Decompositions">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Note: Multiplicative Decompositions
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Throughout this section, we’ve assumed that decompositions are <strong>additive</strong>: adding up the trend, seasonal, and remainder components gives the original series.</p>
+<p>For a positive time series where the variations increase and decrease with the level of the series, it often makes more sense to use a <strong>multiplicative</strong> decomposition. In this case, multiplying the components gives the original series.</p>
+<p>One way to achieve a multiplicative decomposition is to take logarithms of the series before decomposition. There are also decomposition methods that are specifically multiplicative (or have both additive and multiplicative versions).</p>
+</div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled" title="See Also">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>See Also
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>There are several other methods for decomposing time series, ranging from simple to extremely complicated. Time series decomposition is often of interest to government agencies, so many of the methods have been developed by statisticians working for the United States and other countries. To learn more about these, see the <a href="https://otexts.com/fpp3/decomposition.html">Time Series Decomposition</a> chapter of <em>Forecasting: Principles and Practice</em>, 3rd edition <span class="citation" data-cites="hyndman2021">(<a href="../references.html#ref-hyndman2021" role="doc-biblioref">Hyndman and Athanasopoulos 2021</a>)</span>.</p>
+</div>
+</div>
+<!--
+c(
+  trend = var(stl_cmp$trend),
+  season_1y = var(stl_cmp$season_1y),
+  season_1d = var(stl_cmp$season_1d),
+  remainder = var(stl_cmp$remainder)
+) / var(stl_cmp$temp_f)
+-->
+</section>
+</section>
+<section id="autocorrelations" class="level2" data-number="11.4">
+<h2 data-number="11.4" class="anchored" data-anchor-id="autocorrelations"><span class="header-section-number">11.4</span> Autocorrelations</h2>
+<p>One more statistic we can use (and visualize) to investigate a series is <strong>autocorrelation</strong>. Autocorrelation is the correlation (<a href="../exploring-data/relationships-between-features.html#sec-correlation" class="quarto-xref"><span>Section 5.2</span></a>) between a time series and a time-lagged version of the same time series. For instance, lag-1 autocorrelation is the correlation between the series and the series lagged (shifted back) by 1 time step. As correlations, autocorrelations are bounded between -1 and 1, with 0 indicating no relationship and -1 or 1 indicating a strong negative or positive relationship.</p>
+<p>In practical terms, large lag-1 autocorrelation means that we can effectively predict an observation with the previous observation. Large lag-2 autocorrelation means there’s useful predictive information 2 observations back, and so on.</p>
+<p>The <code>ACF</code> function in the feasts package computes autocorrelations for a tsibble. The first two arguments are the time series and feature, respectively. We can optionally set the <code>lag_max</code> parameter to specify how many autocorrelations to compute.</p>
+<p>Let’s compute autocorrelations for the Sacramento River Water Temperature series:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>hood_acf <span class="ot">=</span> <span class="fu">ACF</span>(hood, temp_f, <span class="at">lag_max =</span> <span class="dv">24</span><span class="sc">*</span><span class="dv">5</span>)</span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(hood_acf)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tsibble: 6 x 2 [1h]
+       lag   acf
+  &lt;cf_lag&gt; &lt;dbl&gt;
+1       1h 0.999
+2       2h 0.999
+3       3h 0.998
+4       4h 0.998
+5       5h 0.998
+6       6h 0.997</code></pre>
+</div>
+</div>
+<p>We can use the <code>autoplot</code> function to make an <strong>autocorrelation plot</strong>, which shows lags on the x-axis and autocorrelations on the y-axis:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="fu">autoplot</span>(hood_acf)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div id="fig-sacwt-acf" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-sacwt-acf-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="time-series_files/figure-html/fig-sacwt-acf-1.png" class="img-fluid figure-img" width="672">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-sacwt-acf-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;11.12: Autocorrelation plot for the Sacramento River Water Temperature dataset.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>The autocorrelation plot shows two dashed horizontal lines at the upper and lower bounds for a significance test of zero autocorrelation. The test can be helpful for identifying which autocorrelations are likely to be zero. However, for a time series with a large number of observations, the bounds will be very close to zero, so even negligible autocorrelations will be considered statistically discernible. Thus it’s important to consider the actual autocorrelation value (the effect size) in addition to discernibility.</p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tip
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>When a time series has a trend, the autocorrelations tend to be large at low lags and decrease slowly as the number of lags increases.</p>
+<p>When a time series has seasonality, the largest autocorrelations tend to be at lags that are multiples of the seasonal period.</p>
+</div>
+</div>
+<p>The autocorrelations for the Sacramento River Water Temperature series exhibit both patterns simultaneously, although <a href="#fig-sacwt-acf" class="quarto-xref">Figure&nbsp;<span>11.12</span></a> only shows the trend pattern (try increasing the number of lags to see the seasonality pattern; remember that a year has approximately <span class="math inline">\(24 \times 365.25\)</span> hours).</p>
+<section id="partial-autocorrelations" class="level3" data-number="11.4.1">
+<h3 data-number="11.4.1" class="anchored" data-anchor-id="partial-autocorrelations"><span class="header-section-number">11.4.1</span> Partial Autocorrelations</h3>
+<p>Autocorrelations alone don’t give us a complete picture of the correlation structure in time series.</p>
+<p>To understand the problem, consider a series with just three observations: <span class="math inline">\(y_1, y_2, y_3\)</span>. If the lag-1 autocorrelation is large, then <span class="math inline">\(y_1\)</span> is correlated with <span class="math inline">\(y_2\)</span>, and <span class="math inline">\(y_2\)</span> is correlated with <span class="math inline">\(y_3\)</span>. When we examine the lag-2 autocorrelation, the correlation between <span class="math inline">\(y_1\)</span> and <span class="math inline">\(y_3\)</span>, the observations might be correlated on their own, or they might be correlated because both are correlated with <span class="math inline">\(y_2\)</span>. In other words, lag-1 autocorrelation affects lag-2 autocorrelation, and for longer series, this problem applies to all autocorrelations.</p>
+<p>To overcome the problem, we also examine <strong>partial autocorrelation</strong>, which is the autocorrelation <em>after removing the effects of observations at intermediary lags</em>.</p>
+<p>In R, the <code>PACF</code> function in the feasts package computes partial autocorrelations for a tsibble. The syntax is the same as for the <code>ACF</code> function.</p>
+<p>The partial autocorrelations for the Sacramento River Water Temperature series are:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>hood_pacf <span class="ot">=</span> <span class="fu">PACF</span>(hood, temp_f, <span class="at">lag_max =</span> <span class="dv">24</span><span class="sc">*</span><span class="dv">5</span>)</span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(hood_pacf)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tsibble: 6 x 2 [1h]
+       lag   pacf
+  &lt;cf_lag&gt;  &lt;dbl&gt;
+1       1h 0.999 
+2       2h 0.167 
+3       3h 0.0310
+4       4h 0.125 
+5       5h 0.0323
+6       6h 0.0136</code></pre>
+</div>
+</div>
+<p>Once again we can use the <code>autoplot</code> function to make a <strong>partial autocorelation plot</strong>, which shows lags on the x-axis and partial autocorrelations on the y-axis:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="fu">autoplot</span>(hood_pacf)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div id="fig-sacwt-pacf" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-sacwt-pacf-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="time-series_files/figure-html/fig-sacwt-pacf-1.png" class="img-fluid figure-img" width="672">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-sacwt-pacf-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;11.13: Partial autocorrelation plot for the Sacramento River Water Temperature dataset.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>When a time series has seasonality, the partial autocorrelation tends to spike at the lag approximately equal to the seasonal period. Using partial autocorrelations to detect trend is difficult; use a plot of the series, a decomposition, or autocorrelations instead.</p>
+<p><a href="#fig-sacwt-pacf" class="quarto-xref">Figure&nbsp;<span>11.13</span></a> shows large partial autocorrelations at lag-1 and perhaps lag-2. All of the others shown are below 0.1.</p>
+</section>
+</section>
+<section id="stationary-series" class="level2" data-number="11.5">
+<h2 data-number="11.5" class="anchored" data-anchor-id="stationary-series"><span class="header-section-number">11.5</span> Stationary Series</h2>
+<p>A time series is <strong>stationary</strong> if the distribution at each time step doesn’t depend on the time. A series with trend or seasonality is never stationary. For instance, the Sacramento River Water Temperature series is clearly not stationary based on <a href="#fig-sacwt-line" class="quarto-xref">Figure&nbsp;<span>11.2</span></a> and <a href="#fig-sacwt-stl-periodic" class="quarto-xref">Figure&nbsp;<span>11.10</span></a>.</p>
+<p>Visually, a stationary series displays no trend or seasonality, and the variance is constant (the fluctuations do not become noticeably smaller or larger over some time intervals). The [ARIMA Models][fpp-arima] chapter of <em>Forecasting: Principles and Practices</em>, 3rd edition <span class="citation" data-cites="hyndman2021">(<a href="../references.html#ref-hyndman2021" role="doc-biblioref">Hyndman and Athanasopoulos 2021</a>)</span> provides several plots of stationary and non-stationary time series.</p>
+<p>For a stationary series, the autocorrelations either decrease to zero rapidly or are all close to zero. Because of this, we’ll often use autocorrelation plots to help us assess whether a series is stationary.</p>
+<div class="callout callout-style-default callout-note callout-titled" title="Note: Portmanteau Tests">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Note: Portmanteau Tests
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>There are several hypothesis tests designed to test whether the autocorrelations for a series are (mostly) zero, as we’d expect of a stationary series. These are collectively known as <strong>portmanteau tests</strong> because they test many autocorrelations at once. The <strong>Ljung-Box test</strong> is one of the most widely-used portmanteau tests.</p>
+<p>These tests tend to be highly sensitive to sample size, and will almost always reject (which indicates the series is non-stationary) for time series with many observations.</p>
+</div>
+</div>
+<p>When we fit a forecasting model (<a href="#sec-ts-forecasting" class="quarto-xref"><span>Section 11.6</span></a>), as a diagnostic we can check that the residuals (for predictions of the training data) are stationary. If they’re not, then the model fails to capture some of the patterns in the series and a better model may exist.</p>
+<p>Some forecasting models (such as ARIMA; see <a href="#sec-ts-forecasting" class="quarto-xref"><span>Section 11.6</span></a>) assume the time series being forecasted is stationary. There are a few things we can do to transform a non-stationary series into a stationary series.</p>
+<p>If the variance is not constant, taking the logarithm or a power of the series will often stabilize it.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Logarithm and powe transformations are sometimes called <strong>Box-Cox transformations</strong> because they can be written in a more general form. There are automated methods to choose the best Box-Cox transformation for a series, although it’s still prudent to manually inspect the transformed series.</p>
+</div>
+</div>
+<p>If a series has trend or seasonality, we have several options for forecasting. One approach is to decompose the series to remove the trend and seasonality, check that the remainder is stationary, and then forecast on the remainder. The remainder forecast can be combined with the trend and seasonal components to get a forecast for the series.</p>
+<p>Let’s examine the remainder from the STL decomposition in <a href="#sec-ts-stl-decomposition" class="quarto-xref"><span>Section 11.3.2</span></a> to check for stationarity. First, we’ll make a time versus feature plot. <a href="#fig-sacwt-stl-periodic" class="quarto-xref">Figure&nbsp;<span>11.10</span></a> showed a few extreme values; we’ll remove those to make patterns easier to see:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="fu">autoplot</span>(stl_cmp, remainder) <span class="sc">+</span></span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_datetime</span>(<span class="at">date_minor_breaks =</span> <span class="st">"1 year"</span>) <span class="sc">+</span></span>
+<span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylim</span>(<span class="sc">-</span><span class="dv">10</span>, <span class="dv">10</span>)  <span class="co">#</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div id="fig-sacwt-stl-remainder" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-sacwt-stl-remainder-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="time-series_files/figure-html/fig-sacwt-stl-remainder-1.png" class="img-fluid figure-img" width="672">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-sacwt-stl-remainder-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;11.14: Line plot of time versus temperature for the remainder component from the STL decomposition of the Sacramento River Water Temperature series, with extreme values (below -10 or above 10) removed.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>The remainder series appears to have (mostly) constant variance and no trend in <a href="#fig-sacwt-stl-remainder" class="quarto-xref">Figure&nbsp;<span>11.14</span></a>. Even with the extreme values removed, it’s difficult to tell from the figure whether there’s any seasonality.</p>
+<p>Now let’s check the autocorrelation plot:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="fu">autoplot</span>(<span class="fu">ACF</span>(stl_cmp, remainder, <span class="at">lag_max =</span> <span class="dv">24</span><span class="sc">*</span><span class="dv">5</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div id="fig-sacwt-stl-remainder-acf" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-sacwt-stl-remainder-acf-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="time-series_files/figure-html/fig-sacwt-stl-remainder-acf-1.png" class="img-fluid figure-img" width="672">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-sacwt-stl-remainder-acf-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;11.15: Autocorrelation plot for the remainder component from the STL decomposition of the Sacramento River Water Temperature dataset.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p><a href="#fig-sacwt-stl-remainder-acf" class="quarto-xref">Figure&nbsp;<span>11.15</span></a> shows large autocorrelations at all of the lags in the plot. The remainder series is clearly not stationary. If we want to use it for forecasting, we’ll need to choose a method that doesn’t require a stationary series.</p>
+<p>Another approach to forecasting a non-stationary series is to take <strong>differences</strong>. In particular, take the series and subtract (or divide by) a lagged copy of the series. Differencing at lag-1 works well for many series, although if we have more context about the series, we may want to use a different lag. For instance, differencing at lag equal to the seasonal period can help remove seasonality. Occasionally, we might need to difference a series several times to get something stationary. After taking differences, we can check for stationarity, and then forecast on the differences.</p>
+<p>Let’s try taking differences of the remainder series from the STL decomposition of the Sacramento River Water Temperature series. We can use the tsibble package’s <code>difference</code> function to do so:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="fu">autoplot</span>(<span class="fu">ACF</span>(stl_cmp, <span class="fu">difference</span>(remainder, <span class="dv">1</span>), <span class="at">lag_max =</span> <span class="dv">24</span><span class="sc">*</span><span class="dv">5</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div id="fig-sacwt-stl-remainder-diff-acf" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-sacwt-stl-remainder-diff-acf-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="time-series_files/figure-html/fig-sacwt-stl-remainder-diff-acf-1.png" class="img-fluid figure-img" width="672">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-sacwt-stl-remainder-diff-acf-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;11.16: Autocorrelation plot for the first differences of the remainder component from the STL decomposition of the Sacramento River Water Temperature dataset.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>The autocorrelations for the differenced remainder series (<a href="#fig-sacwt-stl-remainder-diff-acf" class="quarto-xref">Figure&nbsp;<span>11.16</span></a>) are much smaller than the autocorrelations for the original remainder series (<a href="#fig-sacwt-stl-remainder-acf" class="quarto-xref">Figure&nbsp;<span>11.15</span></a>). Almost all of the autocorrelations except the lag-1 and lag-3 are smaller than 0.05. The largest, at lag-1, is only about -0.2. Although the differenced remainder series isn’t a perfect example of a stationary series, it might be okay to use it with a forecasting model that requires stationarity. If we do, we can check that the residuals are approximately stationary; this is a more important diagnostic.</p>
+</section>
+<section id="sec-ts-forecasting" class="level2" data-number="11.6">
+<h2 data-number="11.6" class="anchored" data-anchor-id="sec-ts-forecasting"><span class="header-section-number">11.6</span> Forecasting</h2>
+<p>As with decomposition, there are many different methods for forecasting or predicting future values of a time series. This section introduces just a few of the most well-known methods.</p>
+<p>There are also many different R packages for forecasting, as we hinted at in <a href="#sec-ts-time-series-r" class="quarto-xref"><span>Section 11.1</span></a>. See that section for links to comprehensive guides. In this section, we’ll mostly use the <a href="https://doi.org/10.32614/CRAN.package.fable">fable</a> package to fit forecasting models. Like the feasts package (from <a href="#sec-ts-stl-decomposition" class="quarto-xref"><span>Section 11.3.2</span></a>), the fable package uses the generic <code>model</code> function to fit models. The package also uses the generic <code>forecast</code> function to generate forecasts from fitted models.</p>
+<p>Forecasting models tend to be computationally demanding. Forecasting on a time series with a large number of observations sometimes requires a lot of time and memory. To ensure that the examples in this section will run on the average laptop, we’ll subset the Sacramento River Water Temperature series down to just the final two years (2023-2024). Instead of filtering the dataset directly, we’ll use the components tsibble from the STL decomposition (<a href="#sec-ts-stl-decomposition" class="quarto-xref"><span>Section 11.3.2</span></a>), since that contains the original data as well as the components, which we might use later:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a>hood23 <span class="ot">=</span> <span class="fu">filter</span>(stl_cmp, <span class="fu">year</span>(time) <span class="sc">&gt;=</span> <span class="dv">2023</span>)</span>
+<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-3"><a href="#cb40-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Remove the `.model` column, since it causes problems for downstream modeling:</span></span>
+<span id="cb40-4"><a href="#cb40-4" aria-hidden="true" tabindex="-1"></a>hood23 <span class="ot">=</span> <span class="fu">select</span>(hood23, <span class="sc">-</span>.model)</span>
+<span id="cb40-5"><a href="#cb40-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-6"><a href="#cb40-6" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(hood23)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tsibble: 6 x 7 [1h] &lt;UTC&gt;
+  time                temp_f trend season_1d season_1y remainder season_adjust
+  &lt;dttm&gt;               &lt;dbl&gt; &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;         &lt;dbl&gt;
+1 2023-01-01 00:00:00   50.9  60.1    0.0166     -12.6      3.44          63.5
+2 2023-01-01 01:00:00   50.9  60.1   -0.0203     -12.7      3.55          63.6
+3 2023-01-01 02:00:00   51    60.1   -0.0547     -12.7      3.69          63.8
+4 2023-01-01 03:00:00   51    60.1   -0.0893     -12.7      3.69          63.8
+5 2023-01-01 04:00:00   51    60.1   -0.125      -12.7      3.72          63.8
+6 2023-01-01 05:00:00   51    60.1   -0.160      -12.7      3.73          63.8</code></pre>
+</div>
+</div>
+<section id="simple-methods" class="level3" data-number="11.6.1">
+<h3 data-number="11.6.1" class="anchored" data-anchor-id="simple-methods"><span class="header-section-number">11.6.1</span> Simple Methods</h3>
+<p>There are several relatively simple methods for forecasting:</p>
+<ul>
+<li><strong>Naive</strong> forecasting: use the most recent observation for all forecasts. In fable, this is the <code>NAIVE</code> model function.</li>
+<li><strong>Seasonal naive</strong> forecasting: use the corresponding observation from the previous seasonal period for each forecast. In fable, this is the <code>SNAIVE</code> model function.</li>
+<li><strong>Mean</strong> forecasting: use the mean of the series for all forecasts. In fable, this is the <code>MEAN</code> model function.</li>
+<li><strong>Drift</strong> forecasting: use the line that passes through the first and last observation for all forecasts. In fable, this is the <code>DRIFT</code> model function.</li>
+</ul>
+<p>Let’s try forecasting for the Sacramento River Water Temperature series with the naive method. First, we fit the model with the <code>model</code> function:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb42"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(<span class="st">"fable"</span>)</span>
+<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-3"><a href="#cb42-3" aria-hidden="true" tabindex="-1"></a>naive_fit <span class="ot">=</span> <span class="fu">model</span>(hood23, <span class="at">naive =</span> <span class="fu">NAIVE</span>(temp_f))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Next, we forecast with the <code>forecast</code> function (see <code>?forecast.mdl_df</code> for help). Use the <code>h</code> parameter to set the number of forecasts. In this case, we’ll forecast the next 3 days:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a>naive_fcst <span class="ot">=</span> <span class="fu">forecast</span>(naive_fit, <span class="at">h =</span> <span class="dv">24</span><span class="sc">*</span><span class="dv">3</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>We can plot the forecasts with the <code>autoplot</code> function, adding an <code>autolayer</code> to also show the original series:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb44"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a>lims <span class="ot">=</span> <span class="fu">tail</span>(hood23<span class="sc">$</span>time, <span class="dv">1</span>) <span class="sc">+</span> <span class="fu">days</span>(<span class="fu">c</span>(<span class="sc">-</span><span class="dv">29</span>, <span class="dv">7</span>))</span>
+<span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb44-3"><a href="#cb44-3" aria-hidden="true" tabindex="-1"></a><span class="fu">autoplot</span>(naive_fcst) <span class="sc">+</span></span>
+<span id="cb44-4"><a href="#cb44-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">autolayer</span>(hood23, temp_f) <span class="sc">+</span></span>
+<span id="cb44-5"><a href="#cb44-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlim</span>(lims)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div id="fig-sacwt-fcst-naive" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-sacwt-fcst-naive-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="time-series_files/figure-html/fig-sacwt-fcst-naive-1.png" class="img-fluid figure-img" width="672">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-sacwt-fcst-naive-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;11.17: 7-day naive forecasts for the Sacramento River Water Temperature dataset.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>The forecasts (<a href="#fig-sacwt-fcst-naive" class="quarto-xref">Figure&nbsp;<span>11.17</span></a>) are automatically plotted with prediction intervals. Since we used the naive method, all of the forecasts are the same. The prediction intervals get wider at times farther into the future to indicate increasing uncertainty about the forecasts.</p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tip
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>To extract the prediction intervals as numbers, use the <code>hilo</code> function. See <code>?forecast.mdl_df</code> and <code>?hilo</code> for more details.</p>
+</div>
+</div>
+<p>As one more example, since this series exhibits strong seasonality, let’s forecast with the seasonal naive method. For this method, we must specify the length of the seasonal period with a model formula and the special <code>lag</code> function:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb45"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a>snaive_fit <span class="ot">=</span> <span class="fu">model</span>(hood23, <span class="at">snaive =</span> <span class="fu">SNAIVE</span>(temp_f <span class="sc">~</span> <span class="fu">lag</span>(<span class="st">"1y"</span>)))</span>
+<span id="cb45-2"><a href="#cb45-2" aria-hidden="true" tabindex="-1"></a>snaive_fcst <span class="ot">=</span> <span class="fu">forecast</span>(snaive_fit, <span class="at">h =</span> <span class="dv">24</span><span class="sc">*</span><span class="dv">3</span>)</span>
+<span id="cb45-3"><a href="#cb45-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb45-4"><a href="#cb45-4" aria-hidden="true" tabindex="-1"></a><span class="fu">autoplot</span>(snaive_fcst) <span class="sc">+</span></span>
+<span id="cb45-5"><a href="#cb45-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">autolayer</span>(hood23, temp_f) <span class="sc">+</span></span>
+<span id="cb45-6"><a href="#cb45-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlim</span>(lims)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div id="fig-sacwt-fcst-snaive" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-sacwt-fcst-snaive-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="time-series_files/figure-html/fig-sacwt-fcst-snaive-1.png" class="img-fluid figure-img" width="672">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-sacwt-fcst-snaive-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;11.18: 7-day seasonal naive forecasts for the Sacramento River Water Temperature dataset, where the seasonal period is 1 year.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>The forecasts in <a href="#fig-sacwt-fcst-snaive" class="quarto-xref">Figure&nbsp;<span>11.18</span></a> vary over time since the seasonal naive method takes observations from the previous season as forecasts. This is also why the prediction intervals have constant width and are wider than in <a href="#fig-sacwt-fcst-naive" class="quarto-xref">Figure&nbsp;<span>11.17</span></a>; the forecasts are not necessarily better closer to the most recent observation.</p>
+<p>Although the methods described in this section are simple, they often work surprisingly well. They’re also easy to interpret. For series with strong seasonal components, these methods can be improved without much additional complexity by decomposing the series, forecasting on the remainder series, and then recombining the forecasts with the seasonal components.</p>
+</section>
+<section id="linear-models" class="level3" data-number="11.6.2">
+<h3 data-number="11.6.2" class="anchored" data-anchor-id="linear-models"><span class="header-section-number">11.6.2</span> Linear Models</h3>
+<p>Linear models are especially useful for forecasting time series when there are meaningful predictors available, as is often the case for multivariate time series. Regardless of whether the time series is multivariate, linear models can be effective at modeling simple trends and relatively complex seasonality.</p>
+<p>In fable, the model function for a linear model is <code>TSLM</code>. The function requires a model formula (just like the <code>lm</code> function). The model formula can include several special functions, such as:</p>
+<ul>
+<li><code>trend</code> to include a linear time trend.</li>
+<li><code>season</code> to include a categorical predictors for seasonality. The seasonal period must be specified. This creates one predictor for each time step (except the first) in the seasonal period, so it’s not recommended for long seasonal periods.</li>
+<li><code>fourier</code> to include Fourier predictors for seasonality. The seasonal period must be specified, and the number of predictors can optionally be specified. Fourier predictors are sine and cosine functions of time; just a few Fourier predictors can approximate most seasonal patterns well. Fourier predictors are appropriate to use even for long seasonal periods.</li>
+</ul>
+<p>See <code>?common_xregs</code> for a complete list of special functions.</p>
+<p>Let’s fit a linear model to the Sacramento River Water Temperature series. We’ll include Fourier terms for 1-year and 1-day seasonality. Since linear models handle trend and seasonality reasonably well, we’ll forecast 1 year into the future:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb46"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a>tslm_fit <span class="ot">=</span> <span class="fu">model</span>(</span>
+<span id="cb46-2"><a href="#cb46-2" aria-hidden="true" tabindex="-1"></a>  hood23,</span>
+<span id="cb46-3"><a href="#cb46-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">lm =</span> <span class="fu">TSLM</span>(</span>
+<span id="cb46-4"><a href="#cb46-4" aria-hidden="true" tabindex="-1"></a>    temp_f <span class="sc">~</span> <span class="fu">trend</span>() <span class="sc">+</span> <span class="fu">fourier</span>(<span class="dv">24</span><span class="sc">*</span><span class="dv">365</span>, <span class="dv">5</span>) <span class="sc">+</span> <span class="fu">fourier</span>(<span class="dv">24</span>, <span class="dv">3</span>)</span>
+<span id="cb46-5"><a href="#cb46-5" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb46-6"><a href="#cb46-6" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb46-7"><a href="#cb46-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb46-8"><a href="#cb46-8" aria-hidden="true" tabindex="-1"></a><span class="fu">report</span>(tslm_fit)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Series: temp_f 
+Model: TSLM 
+
+Residuals:
+   Min     1Q Median     3Q    Max 
+-4.591 -1.343 -0.138  1.312  5.526 
+
+Coefficients:
+                              Estimate Std. Error  t value Pr(&gt;|t|)    
+(Intercept)                  5.812e+01  3.040e-02 1912.293  &lt; 2e-16 ***
+trend()                      2.003e-04  3.087e-06   64.869  &lt; 2e-16 ***
+fourier(24 * 365, 5)C1_8760 -8.789e+00  1.960e-02 -448.431  &lt; 2e-16 ***
+fourier(24 * 365, 5)S1_8760 -6.823e+00  2.124e-02 -321.144  &lt; 2e-16 ***
+fourier(24 * 365, 5)C2_8760 -1.668e-01  1.960e-02   -8.512  &lt; 2e-16 ***
+fourier(24 * 365, 5)S2_8760  8.863e-01  1.989e-02   44.548  &lt; 2e-16 ***
+fourier(24 * 365, 5)C3_8760 -6.117e-01  1.960e-02  -31.217  &lt; 2e-16 ***
+fourier(24 * 365, 5)S3_8760  4.197e-01  1.964e-02   21.371  &lt; 2e-16 ***
+fourier(24 * 365, 5)C4_8760 -2.500e-01  1.959e-02  -12.760  &lt; 2e-16 ***
+fourier(24 * 365, 5)S4_8760  8.294e-01  1.955e-02   42.427  &lt; 2e-16 ***
+fourier(24 * 365, 5)C5_8760 -2.122e-01  1.958e-02  -10.836  &lt; 2e-16 ***
+fourier(24 * 365, 5)S5_8760  7.601e-02  1.951e-02    3.895 9.85e-05 ***
+fourier(24, 3)C1_24          9.091e-02  1.951e-02    4.660 3.19e-06 ***
+fourier(24, 3)S1_24         -2.226e-01  1.951e-02  -11.408  &lt; 2e-16 ***
+fourier(24, 3)C2_24         -3.627e-02  1.951e-02   -1.859  0.06304 .  
+fourier(24, 3)S2_24          5.665e-02  1.951e-02    2.904  0.00369 ** 
+fourier(24, 3)C3_24          4.052e-03  1.951e-02    0.208  0.83546    
+fourier(24, 3)S3_24         -8.793e-03  1.951e-02   -0.451  0.65223    
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 1.827 on 17526 degrees of freedom
+Multiple R-squared: 0.952,  Adjusted R-squared: 0.952
+F-statistic: 2.045e+04 on 17 and 17526 DF, p-value: &lt; 2.22e-16</code></pre>
+</div>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tip
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The fable package’s <code>report</code> function provides a summary of a model fitted with <code>model</code> (similar to the output from <code>summary</code> for a model fitted with <code>lm</code>).</p>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb48"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a>tslm_fcst <span class="ot">=</span> <span class="fu">forecast</span>(tslm_fit, <span class="at">h =</span> <span class="dv">24</span><span class="sc">*</span><span class="dv">365</span>)</span>
+<span id="cb48-2"><a href="#cb48-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb48-3"><a href="#cb48-3" aria-hidden="true" tabindex="-1"></a><span class="fu">autoplot</span>(tslm_fcst) <span class="sc">+</span></span>
+<span id="cb48-4"><a href="#cb48-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">autolayer</span>(hood23, temp_f)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div id="fig-sacwt-fcst-linear-fourier" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-sacwt-fcst-linear-fourier-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="time-series_files/figure-html/fig-sacwt-fcst-linear-fourier-1.png" class="img-fluid figure-img" width="672">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-sacwt-fcst-linear-fourier-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;11.19: 1-year linear model forecasts for the Sacramento River Water Temperature dataset, with Fourier terms for 1-year and 24-hour seasonality.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p><a href="#fig-sacwt-fcst-linear-fourier" class="quarto-xref">Figure&nbsp;<span>11.19</span></a> shows the forecasts and associated prediction intervals. For a linear model, the prediction intervals are estimated based on the variance of the residuals (this is true for any linear model, not just in the time series context).</p>
+</section>
+<section id="arima-models" class="level3" data-number="11.6.3">
+<h3 data-number="11.6.3" class="anchored" data-anchor-id="arima-models"><span class="header-section-number">11.6.3</span> ARIMA Models</h3>
+<p>An autoregressive integrated moving average model, or <strong>ARIMA model</strong>, is a combination of three simpler methods:</p>
+<ol type="1">
+<li><p>An <strong>autoregressive model</strong>, denoted AR(<span class="math inline">\(p\)</span>) assumes each observation is a linear combination of the previous <span class="math inline">\(p\)</span> observations and an error term.</p>
+<p>The simplest AR model, denoted AR(1), uses only 1 previous observation. Mathematically, for an observation <span class="math inline">\(y_t\)</span> and error term <span class="math inline">\(\epsilon_t\)</span>, the model is</p>
+<p><span class="math display">\[
+y_t = c + \phi_1 y_{t-1} + \epsilon_t
+\]</span></p>
+<p>The model estimates the values of the coefficients <span class="math inline">\(c\)</span> and <span class="math inline">\(\phi_1\)</span>.</p></li>
+<li><p>Integrated (I) refers to differencing, which is built into ARIMA models. The order of differencing is denoted by <span class="math inline">\(d\)</span>.</p></li>
+<li><p>A <strong>moving average model</strong>, denoted MA(<span class="math inline">\(q\)</span>) assumes each observation is a linear combination of the previous <span class="math inline">\(q\)</span> error terms and a new error term.</p>
+<p>The simplest MA model, denoted MA(1), uses only 1 previous error term. Mathematically, for an observation <span class="math inline">\(y_t\)</span> and error term <span class="math inline">\(\epsilon_t\)</span>, the model is</p>
+<p><span class="math display">\[
+y_t = c + \theta_1 \epsilon_{t-1} + \epsilon_t
+\]</span></p>
+<p>The model estimates the values of the coefficients <span class="math inline">\(c\)</span> and <span class="math inline">\(\theta_1\)</span>.</p></li>
+</ol>
+<p>ARIMA models are denoted by ARIMA(<span class="math inline">\(p\)</span>, <span class="math inline">\(d\)</span>, <span class="math inline">\(q\)</span>) to indicate the parameters for the three methods.</p>
+<div class="callout callout-style-default callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Warning
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>AR, MA, and ARIMA models all assume a stationary time series.</p>
+<p>They will not necessarily work well for a series that isn’t stationary, and the estimated standard errors and prediction intervals will not be correct.</p>
+<p>There is an extension of ARIMA for time series with seasonality (but not trend). The <code>ARIMA</code> model function (explained and demonstrated below) will automatically consider seasonal ARIMA models.</p>
+</div>
+</div>
+<p>In fable, the model function for an ARIMA model is <code>ARIMA</code>. The function requires one argument: a feature to model or a model formula. With a model formula, we use the special <code>pdq</code> function to manually set the parameters <span class="math inline">\(p\)</span>, <span class="math inline">\(d\)</span>, and <span class="math inline">\(q\)</span>. When these are not specified, fable will automatically try to find the best settings by fitting and comparing multiple models.</p>
+<p>Let’s try fitting an ARIMA model to the almost-stationary remainder component from the STL decomposition (<a href="#sec-ts-stl-decomposition" class="quarto-xref"><span>Section 11.3.2</span></a>) of the Sacramento River Water Temperature series. We’ll let fable select the best model automatically:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb49"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a>arima_fit <span class="ot">=</span> <span class="fu">model</span>(hood23, <span class="at">arima =</span> <span class="fu">ARIMA</span>(remainder))</span>
+<span id="cb49-2"><a href="#cb49-2" aria-hidden="true" tabindex="-1"></a><span class="fu">report</span>(arima_fit)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Series: remainder 
+Model: ARIMA(1,0,4)(1,1,0)[24] 
+
+Coefficients:
+         ar1      ma1     ma2     ma3     ma4     sar1
+      0.9894  -0.0177  0.0562  0.0373  0.0228  -0.4072
+s.e.  0.0011   0.0077  0.0076  0.0073  0.0076   0.0070
+
+sigma^2 estimated as 0.009309:  log likelihood=16108.18
+AIC=-32202.37   AICc=-32202.36   BIC=-32147.97</code></pre>
+</div>
+</div>
+<p>In this case, the best model was an ARIMA(1, 0, 4) model with a seasonal ARIMA(1, 1, 0) model for a 24-hour seasonal period.</p>
+<p>Let’s use the model to forecast 1 year into the future:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb51"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a>arima_fcst <span class="ot">=</span> <span class="fu">forecast</span>(arima_fit, <span class="at">h =</span> <span class="dv">24</span><span class="sc">*</span><span class="dv">365</span>)</span>
+<span id="cb51-2"><a href="#cb51-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-3"><a href="#cb51-3" aria-hidden="true" tabindex="-1"></a><span class="fu">autoplot</span>(arima_fcst) <span class="sc">+</span></span>
+<span id="cb51-4"><a href="#cb51-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">autolayer</span>(hood23, remainder)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div id="fig-sacwt-fcst-arima" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-sacwt-fcst-arima-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="time-series_files/figure-html/fig-sacwt-fcst-arima-1.png" class="img-fluid figure-img" width="672">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-sacwt-fcst-arima-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;11.20: 1-year ARIMA forecasts for the remainder component from the STL decomposition of the Sacramento River Water Temperature dataset.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>Judging from <a href="#fig-sacwt-fcst-arima" class="quarto-xref">Figure&nbsp;<span>11.20</span></a>, it seems like the ARIMA model doesn’t fit well. While the forecasts do fluctuate slightly, they don’t appear to be that much different from the naive method or the mean method, despite the much more complicated model. This may be due to the lack of stationarity in the remainder series.</p>
+<div class="callout callout-style-default callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Warning
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>For any model, examining the residuals is critical for determining how well the model fits and whether its assumptions are satisfied.</p>
+<p>The <code>resid</code> function returns the residuals as a tsibble for an fable model.</p>
+<p>The ggtime package’s <code>gg_tsresiduals</code> function makes diagnostic plots for a time series model. These include a time versus feature plot, autocorrelation plot, and histogram for the residuals.</p>
+</div>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tip
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>When forecasting is the primary goal, estimates of forecast accuracy are usually the best way to compare models.</p>
+<p>We can estimate forecast accuracy by partitioning the time series into a training series and a testing series. Use only the training series to fit models, then forecast on the testing series to evaluate the models. The simplest way to do this is to treat (approximately) the first 80% of the series as training and the remaining 20% as testing. There are other, more sophisticated ways to partition time series into training and testing series that address specific limitations of this simple approach.</p>
+</div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled" title="See Also">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>See Also
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>There are many, many other kinds of decomposition and forecasting models!</p>
+<p>The textbook <a href="https://otexts.com/fpp3/"><em>Forecasting: Principles and Practice</em>, 3rd Edition</a> <span class="citation" data-cites="hyndman2021">(<a href="../references.html#ref-hyndman2021" role="doc-biblioref">Hyndman and Athanasopoulos 2021</a>)</span> is a good starting point for learning about more models. It also explains the statistics and algorithm fable uses to compare different ARIMA models.</p>
+</div>
+</div>
+<!--
+## Case Study: CA State Water Project Nutrients Dataset
+-->
+
+
+<div id="refs" class="references csl-bib-body hanging-indent" role="list" style="display: none">
+<div id="ref-anscombe1973" class="csl-entry" role="listitem">
+Anscombe, F. J. 1973. <span>“Graphs in Statistical Analysis.”</span> <em>The American Statistician</em> 27 (1): 17–21. <a href="https://doi.org/10.1080/00031305.1973.10478966">https://doi.org/10.1080/00031305.1973.10478966</a>.
+</div>
+<div id="ref-arel-bundock2025" class="csl-entry" role="listitem">
+Arel-Bundock, Vincent. 2025. <em>Model to Meaning: How to Interpret Statistical Models with <span>R</span> and Python</em>. <span>CRC</span> Press <span>LLC</span>. <a href="https://marginaleffects.com/">https://marginaleffects.com/</a>.
+</div>
+<div id="ref-carroll2020" class="csl-entry" role="listitem">
+Carroll, Stephanie Russo, Ibrahim Garba, Oscar L. Figueroa-Rodríguez, et al. 2020. <span>“The <span>CARE</span> Principles for Indigenous Data Governance.”</span> <em>Data Science Journal</em> 19 (1). <a href="https://doi.org/10.5334/dsj-2020-043">https://doi.org/10.5334/dsj-2020-043</a>.
+</div>
+<div id="ref-ims" class="csl-entry" role="listitem">
+Çetinkaya-Rundel, Mine, and Johanna Hardin. 2024. <em>Introduction to Modern Statistics</em>. 2nd ed. <span>OpenIntro</span>. <a href="https://openintrostat.github.io/ims/">https://openintrostat.github.io/ims/</a>.
+</div>
+<div id="ref-cleveland1990" class="csl-entry" role="listitem">
+Cleveland, Robert B., William S. Cleveland, Jean E. McRae, and Irma Terpenning. 1990. <span>“<span>STL</span>: A Seasonal-Trend Decomposition Procedure Based on Loess.”</span> <em>Journal of Official Statistics</em> (Sweden).
+</div>
+<div id="ref-cobb2007" class="csl-entry" role="listitem">
+Cobb, George W. 2007. <span>“The Introductory Statistics Course: A Ptolemaic Curriculum?”</span> <em>Technology Innovations in Statistics Education</em> 1 (1). <a href="https://doi.org/10.5070/T511000028">https://doi.org/10.5070/T511000028</a>.
+</div>
+<div id="ref-dignazio2020" class="csl-entry" role="listitem">
+D’Ignazio, Catherine, and Lauren F. Klein. 2020. <em>Data Feminism</em>. The <span>MIT</span> Press. <a href="https://doi.org/10.7551/mitpress/11805.001.0001">https://doi.org/10.7551/mitpress/11805.001.0001</a>.
+</div>
+<div id="ref-davison1997" class="csl-entry" role="listitem">
+Davison, A. C., and D. V. Hinkley. 1997. <em>Bootstrap Methods and Their Application</em>. Cambridge University Press.
+</div>
+<div id="ref-openintro" class="csl-entry" role="listitem">
+Diez, David M., Christopher D. Barr, and Mine Cetinkaya-Rundel. 2019. <em><span>OpenIntro</span> Statistics</em>. Fourth Edition. <span>OpenIntro</span>. <a href="https://open.umn.edu/opentextbooks/textbooks/60">https://open.umn.edu/opentextbooks/textbooks/60</a>.
+</div>
+<div id="ref-gelman2007" class="csl-entry" role="listitem">
+Gelman, Andrew, and Jennifer Hill. 2007. <em>Data Analysis Using Regression and Multilevel/Hierarchical Models</em>. Cambridge University Press. <a href="https://sites.stat.columbia.edu/gelman/arm/">https://sites.stat.columbia.edu/gelman/arm/</a>.
+</div>
+<div id="ref-gelman2020" class="csl-entry" role="listitem">
+Gelman, Andrew, Jennifer Hill, and Aki Vehtari. 2020. <em>Regression and Other Stories</em>. Cambridge University Press. <a href="https://avehtari.github.io/ROS-Examples/">https://avehtari.github.io/ROS-Examples/</a>.
+</div>
+<div id="ref-helsel2012" class="csl-entry" role="listitem">
+Helsel, Dennis R. 2012. <em>Statistics for Censored Environmental Data Using Minitab and <span>R</span></em>. 2nd ed. Statistics in Practice. Wiley.
+</div>
+<div id="ref-hesterberg2014" class="csl-entry" role="listitem">
+Hesterberg, Tim. 2014. <em>What Teachers Should Know about the Bootstrap: Resampling in the Undergraduate Statistics Curriculum</em>. <span>arXiv</span>:1411.5279. <span>arXiv</span>. <a href="https://doi.org/10.48550/arXiv.1411.5279">https://doi.org/10.48550/arXiv.1411.5279</a>.
+</div>
+<div id="ref-hyndman2018" class="csl-entry" role="listitem">
+Hyndman, Rob J., and George Athanasopoulos. 2018. <em>Forecasting: Principles and Practice</em>. 2nd ed. <span>OTexts</span>. <a href="https://otexts.com/fpp2/">https://otexts.com/fpp2/</a>.
+</div>
+<div id="ref-hyndman2021" class="csl-entry" role="listitem">
+Hyndman, Rob J., and George Athanasopoulos. 2021. <em>Forecasting: Principles and Practice</em>. 3rd ed. <span>OTexts</span>. <a href="https://otexts.com/fpp3/">https://otexts.com/fpp3/</a>.
+</div>
+<div id="ref-kleinbaum2012" class="csl-entry" role="listitem">
+Kleinbaum, David G., and Mitchel Klein. 2012. <em>Survival Analysis: A Self-Learning Text</em>. 3rd ed. Springer.
+</div>
+<div id="ref-kuhn2020" class="csl-entry" role="listitem">
+Kuhn, Max, and Kjell Johnson. 2020. <em>Feature Engineering and Selection: A Practical Approach for Predictive Models</em>. <span>CRC</span> Press, Taylor &amp; Francis Group. <a href="https://feat.engineering/">https://feat.engineering/</a>.
+</div>
+<div id="ref-lindelov2019" class="csl-entry" role="listitem">
+Lindeløv, Jonas Kristoffer. 2019. <span>“Common Statistical Tests Are Linear Models.”</span> June 28. <a href="https://lindeloev.github.io/tests-as-linear/">https://lindeloev.github.io/tests-as-linear/</a>.
+</div>
+<div id="ref-little2019" class="csl-entry" role="listitem">
+Little, Roderick J. A., and Donald B. Rubin. 2019. <em>Statistical Analysis with Missing Data</em>. 3rd ed. Vol. 793. Wiley Series in Probability and Statistics. Wiley.
+</div>
+<div id="ref-long2019" class="csl-entry" role="listitem">
+Long, J. D., and Paul Teetor. 2019. <em>R Cookbook: Proven Recipes for Data Analysis, Statistics, and Graphics</em>. O’Reilly Media. <a href="https://rc2e.com/">https://rc2e.com/</a>.
+</div>
+<div id="ref-lubin2004" class="csl-entry" role="listitem">
+Lubin, Jay H., Joanne S. Colt, David Camann, et al. 2004. <span>“Epidemiologic Evaluation of Measurement Data in the Presence of Detection Limits.”</span> <em>Environmental Health Perspectives</em> 112 (17): 1691–96. <a href="https://doi.org/10.1289/ehp.7199">https://doi.org/10.1289/ehp.7199</a>.
+</div>
+<div id="ref-mahr2017" class="csl-entry" role="listitem">
+Mahr, Tristan. 2017. <span>“Partial Pooling in Mixed-Effects Models.”</span> June 22. <a href="https://www.tjmahr.com/plotting-partial-pooling-in-mixed-effects-models/">https://www.tjmahr.com/plotting-partial-pooling-in-mixed-effects-models/</a>.
+</div>
+<div id="ref-datasaurus" class="csl-entry" role="listitem">
+Matejka, Justin, and George Fitzmaurice. 2017. <span>“Same Stats, Different Graphs: Generating Datasets with Varied Appearance and Identical Statistics Through Simulated Annealing.”</span> <em>Proceedings of the 2017 <span>CHI</span> Conference on Human Factors in Computing Systems</em> (New York, <span>NY</span>, <span>USA</span>), <span>CHI</span> ’17, May 2, 1290–94. <a href="https://doi.org/10.1145/3025453.3025912">https://doi.org/10.1145/3025453.3025912</a>.
+</div>
+<div id="ref-mcelreath2020" class="csl-entry" role="listitem">
+McElreath, Richard. 2020. <em>Statistical Rethinking: A Bayesian Course with Examples in <span>R</span> and <span>STAN</span></em>. <span>Chapman and Hall/<span>CRC</span></span>.
+</div>
+<div id="ref-molenberghs2014" class="csl-entry" role="listitem">
+Molenberghs, Geert, Garrett Fitzmaurice, Michael G. Kenward, Anastasios Tsiatis, and Geert Verbeke, eds. 2014. <em>Handbook of Missing Data Methodology</em>. <span>Chapman and Hall/<span>CRC</span></span>. <a href="https://doi.org/10.1201/b17622">https://doi.org/10.1201/b17622</a>.
+</div>
+<div id="ref-mean-calculator" class="csl-entry" role="listitem">
+Pul, Ruurtjan, Peter Troshin, and Svetlana Fomina. 2026. <span>“Mean Calculator.”</span> <a href="https://meancalculator.com/">https://meancalculator.com/</a>.
+</div>
+<div id="ref-turing-way" class="csl-entry" role="listitem">
+The Turing Way Community. 2025. <em>The Turing Way: A Handbook for Reproducible, Ethical and Collaborative Research</em>. V. 1.2.3. Zenodo, released April. <a href="https://doi.org/10.5281/zenodo.15213042">https://doi.org/10.5281/zenodo.15213042</a>.
+</div>
+<div id="ref-van_buuren2021" class="csl-entry" role="listitem">
+<span class="nocase">van Buuren, Stef</span>. 2021. <em>Flexible Imputation of Missing Data</em>. 2nd ed. <span>Chapman and Hall/<span>CRC</span></span>. <a href="https://stefvanbuuren.name/fimd/">https://stefvanbuuren.name/fimd/</a>.
+</div>
+<div id="ref-wilber2019" class="csl-entry" role="listitem">
+Wilber, Jared. 2019. <span>“The Permutation Test: A Visual Explanation of Statistical Testing.”</span> March. <a href="https://www.jwilber.me/permutationtest/">https://www.jwilber.me/permutationtest/</a>.
+</div>
+</div>
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/ucdavisdatalab\.github\.io\/dwr_workshop_statistics");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="../../chapters/temporal-data/types-of-temporal-data.html" class="pagination-link" aria-label="Getting Started">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Getting Started</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="../../chapters/temporal-data/repeated-measures.html" class="pagination-link" aria-label="Repeated Measures">
+        <span class="nav-page-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Repeated Measures</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+
+<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/ucdavisdatalab/dwr_workshop_statistics/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li><li><a href="https://github.com/ucdavisdatalab/dwr_workshop_statistics/blob/main/chapters/temporal-data/time-series.qmd" class="toc-action"><i class="bi empty"></i>View source</a></li></ul></div></div></div></footer></body></html>

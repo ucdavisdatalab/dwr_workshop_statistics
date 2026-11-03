@@ -427,9 +427,9 @@ more information about this.
 
 > When and where did they collect the dataset?
 
-The dataset spans spans all of California and covers multiple years (the source
-page doesn't say which years, but we established earlier that the cleaned
-DataLab version covers 2000-2023).
+The dataset spans all of California and covers multiple years (the source page
+doesn't say which years, but we established earlier that the cleaned DataLab
+version covers 2000-2023).
 
 > Does the dataset consist of the entire population? If not, how were subjects
 > selected?

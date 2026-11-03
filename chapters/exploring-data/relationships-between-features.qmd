@@ -218,9 +218,9 @@ between `pred_eggs` and `nonpred_eggs` is weak. This suggests that, perhaps
 unsurprisingly, the causes of non-predator mortality are probably unrelated to
 the causes of predation.
 
-It seems plausible that that observations with more breeding pairs will have
-more nests, so let's investigate whether this is true as our final exploration.
-We can use the `total_nests` and `bp_min` features for this. Once again, we'll
+It seems plausible that observations with more breeding pairs will have more
+nests, so let's investigate whether this is true as our final exploration. We
+can use the `total_nests` and `bp_min` features for this. Once again, we'll
 make a scatter plot:
 
 ```{r}

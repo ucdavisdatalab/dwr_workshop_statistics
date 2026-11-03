@@ -153,7 +153,7 @@ ggplot(hood) +
 
 The most striking thing in @fig-sacwt-line-messy is that at least two of the
 temperatures are close to 10,000! These are clearly either erroneous or meant
-to indicate the the actual measurement is missing.
+to indicate the actual measurement is missing.
 
 It's reasonable to expect that the water temperature will never be below
 freezing (32°F; it's extremely rare for the Sacramento River to freeze) or
